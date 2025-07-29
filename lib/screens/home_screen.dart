@@ -25,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _searchFocusNode.dispose();
-    super.dispose();
+    super.dispose();  // 一种内存释放？
   }
 
   @override

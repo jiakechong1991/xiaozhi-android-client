@@ -103,7 +103,12 @@ void main() async {
   runApp(
     MultiProvider(
       providers: [
+        // (_) => ThemeProvider() 这是匿名函数语法， _ 表示这个参数后面不用，所以用占位符替换
+        // 因为 create 回调函数实际上会接收一个 BuildContext 参数（用于访问上下文），但在这里我们暂时不需要使用它，所以用 _ 来占位
+        // =>：箭头符号，用于简化函数体的写法，相当于 { return ...; }
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        // 使用 value 方法直接提供一个已存在的 configProvider 实例（而不是创建新实例）
+        // 这种方式通常用于共享已经初始化好的对象
         ChangeNotifierProvider.value(value: configProvider),
         ChangeNotifierProvider(create: (_) => ConversationProvider()),
       ],
