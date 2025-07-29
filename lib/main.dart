@@ -92,7 +92,7 @@ void main() async {
   try {
     await AudioUtil.initRecorder();
     await AudioUtil.initPlayer();
-    print('音频系统初始化成功');
+    print('音频系统初始化成功!');
   } catch (e) {
     print('音频系统初始化失败: $e');
   }
