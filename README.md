@@ -1,4 +1,18 @@
 # 小智AI助手 Android IOS 客户端
+<p align="center">
+  <a href="https://github.com/TOM88812/xiaozhi-android-client/releases/latest">
+    <img src="https://img.shields.io/github/v/release/TOM88812/xiaozhi-android-client?style=flat-square&logo=github&color=blue" alt="Release"/>
+  </a>
+  <a href="https://opensource.org/licenses/Apache-2.0">
+    <img src="https://img.shields.io/badge/License-Apache_2.0-green.svg?style=flat-square" alt="License: Apache-2.0"/>
+  </a>
+  <a href="https://github.com/TOM88812/xiaozhi-android-client/stargazers">
+    <img src="https://img.shields.io/github/stars/TOM88812/xiaozhi-android-client?style=flat-square&logo=github" alt="Stars"/>
+  </a>
+  <a href="https://github.com/TOM88812/xiaozhi-android-client/releases/latest">
+    <img src="https://img.shields.io/github/downloads/TOM88812/xiaozhi-android-client/total?style=flat-square&logo=github&color=52c41a1&maxAge=86400" alt="Download"/>
+  </a>
+</p>
 
 
 > 目前已经发布新版本，敬请体验！flutter IOS与安卓回音消除已实现，~~欢迎大家PR~~。
@@ -33,6 +47,8 @@
 </table>
 
 # 近期出现不良社区风气，倒卖贩子泛滥，同时未对此开源项目做出署名，对开源社区造成严重影响，暂停开源推送。
+
+# 近期服务器受到大量渗透攻击，暂停开放社区APK版本，有人不讲武德，那就只能这样了。
 
 ## 功能特点（部分功能未在社区版实现）
 
