@@ -69,6 +69,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(12),
                           splashColor: Colors.grey.withOpacity(0.1),
                           highlightColor: Colors.grey.withOpacity(0.1),
+                          // 如果点击这个+号，将导航到 这个页面
                           onTap: () {
                             Navigator.push(
                               context,
@@ -544,9 +545,11 @@ class _HomeScreenState extends State<HomeScreen> {
       // 点击的回调函数
       onTap: () {
         // 直接导航到聊天页面
-        Navigator.push(
+        Navigator.push(  // 将一个新的页面push到栈顶部,作为显示页面
           context,
-          MaterialPageRoute(
+          // 这是一个路由包装器，定义了 新页面，以及页面切换的过渡动画(提供符合 Material Design 风格的页面过渡动画)
+          MaterialPageRoute(  
+            // builder 是一个函数，用于定义 新页面的内容()
             builder: (context) => ChatScreen(conversation: conversation),
           ),
         );
