@@ -20,11 +20,11 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
-  final FocusNode _searchFocusNode = FocusNode();
+  final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
 
   @override
   void dispose() {
-    _searchFocusNode.dispose();
+    _searchFocusNode.dispose(); // 释放焦点管理器
     super.dispose();  // 一种内存释放？
   }
 
@@ -38,9 +38,9 @@ class _HomeScreenState extends State<HomeScreen> {
         SlidableController.instance.closeCurrentTile();
       },
       child: Scaffold(
-        extendBody: true,
+        extendBody: true, //让 body 内容延伸到底部导航栏下方
         extendBodyBehindAppBar: true,
-        backgroundColor: const Color(0xFFF8F9FA),
+        backgroundColor: const Color(0xFFF8F9FA), // 设置背景颜色
         appBar:
             _selectedIndex == 1
                 ? null
@@ -331,17 +331,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBody() {
     // Messages tab
+    // 这是fluter中 “状态管理+动态UI构建”的 典型用法：
+    // Consumer 是 provider 包提供的组件，作用是监听 ConversationProvider 中的数据变化
+    // 当 ConversationProvider 中的对话数据（新增 / 删除 / 置顶状态改变）发生变化并
+    //      调用 notifyListeners() 时，builder 方法会重新执行，UI 随之刷新
     return Consumer<ConversationProvider>(
+      // builder回调的三个参数： 
+      //    context：当前上下文， 
+      //    provider：ConversationProvider 实例，用于获取对话数据（核心）
+      //    child：可选的 “静态子组件”（这里未使用，用于优化性能）
       builder: (context, provider, child) {
-        final pinnedConversations = provider.pinnedConversations;
-        final unpinnedConversations = provider.unpinnedConversations;
+        final pinnedConversations = provider.pinnedConversations; // 获取置顶对话
+        final unpinnedConversations = provider.unpinnedConversations; // 获取未置顶对话
 
-        return ListView(
-          padding: EdgeInsets.only(
+        return ListView(  // 滚动容器
+          padding: EdgeInsets.only(  // 填充留白
+            // 16是基础留白 ，MediaQuery.of(context).padding.bottom是
+            // 设备底部安全区域（如全面屏的底部刘海 / 导航栏高度），避免对话项被设备边缘遮挡
             bottom: 16 + MediaQuery.of(context).padding.bottom,
           ),
-          children: [
-            if (pinnedConversations.isNotEmpty) ...[
+          children: [ // 这个列表是支持 条件判断的，动态确定显示哪些组件
+            
+            // 置顶对话的区域
+            if (pinnedConversations.isNotEmpty) ...[  // ... 将后面list的元素平铺到外层list中
               const Padding(
                 padding: EdgeInsets.only(
                   left: 20,
@@ -365,11 +377,14 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               ),
+              // 集合展开语法... ，将list中的元素逐个展开，添加到外层list中
+              // 将pinnedConversations中的元素，逐个作为conversation，然后调用
+              //    _buildConversationTile(conversation)方法，返回一个组件，然后添加到列表中
               ...pinnedConversations.map(
                 (conversation) => _buildConversationTile(conversation),
               ),
             ],
-
+            // 非置顶对话的区域
             if (unpinnedConversations.isNotEmpty) ...[
               Padding(
                 padding: EdgeInsets.only(
@@ -398,7 +413,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 (conversation) => _buildConversationTile(conversation),
               ),
             ],
-
+            // 如果为空，显示的区域
             if (pinnedConversations.isEmpty && unpinnedConversations.isEmpty)
               Center(
                 child: Padding(
@@ -490,8 +505,9 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildConversationTile(Conversation conversation) {
-    return SlidableDeleteTile(
-      key: Key(conversation.id),
+    return SlidableDeleteTile(  // 这是一个封装了 滑动删除功能的 组件
+      key: Key(conversation.id), // 为每个对话项设置唯一标识
+      // 滑动删除的回调函数
       onDelete: () {
         // 删除对话
         Provider.of<ConversationProvider>(
@@ -525,6 +541,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
+      // 点击的回调函数
       onTap: () {
         // 直接导航到聊天页面
         Navigator.push(
@@ -534,6 +551,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         );
       },
+      // 长按的回调函数
       onLongPress: () {
         // 显示置顶等选项
         _showConversationOptions(conversation);
@@ -547,12 +565,14 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showConversationOptions(Conversation conversation) {
+    // showModalBottomSheet 是 Flutter 用于显示底部弹窗的[官方方法]，
+    //    函数通过配置其参数和构建弹窗内容，实现了美观且交互友好的操作菜单
     showModalBottomSheet(
-      context: context,
-      backgroundColor: Colors.white,
-      elevation: 20,
-      barrierColor: Colors.black.withOpacity(0.5),
-      shape: const RoundedRectangleBorder(
+      context: context, // 上下文
+      backgroundColor: Colors.white, // 弹窗背景色
+      elevation: 20, // 弹窗阴影高度
+      barrierColor: Colors.black.withOpacity(0.5), // 遮罩层颜色
+      shape: const RoundedRectangleBorder( // 弹窗形状
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
