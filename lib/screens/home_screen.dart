@@ -724,11 +724,16 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       onTap: () {
-                        Navigator.pop(context);
+                        // 关闭对话框, pop(context)会将当前页面从堆栈中移除，相当于关闭这个页面/弹窗。
+                        //     将之后的栈顶 弹窗/页面 显示出俩
+                        Navigator.pop(context);  
+                        // 从全局状态中获取 ConversationProvider 实例
                         Provider.of<ConversationProvider>(
                           context,
-                          listen: false,
-                        ).deleteConversation(conversation.id);
+                          listen: false, // 只获取实例并调用方法，不监听状态变化， 
+                              // 这个ListTile-widget就不要 在更新自己的UI了。因为此刻仅关注数据变化，不关注UI变换
+                        ).deleteConversation(conversation.id); //从数据源中移除该对话
+                        // 显示一个 SnackBar，告知用户对话已删除
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
                             content: Text('${conversation.title} 已删除'),
