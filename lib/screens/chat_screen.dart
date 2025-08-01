@@ -51,7 +51,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   void initState() {
-    super.initState();
+    super.initState(); // 框架要求，必须这样写
 
     // 设置状态栏为透明并使图标为黑色
     SystemChrome.setSystemUIOverlayStyle(
@@ -66,6 +66,7 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     // 在帧绘制后再次设置系统UI样式，避免被覆盖
+    // 使用 addPostFrameCallback：在第一帧绘制完成后再执行一次设置
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       SystemChrome.setSystemUIOverlayStyle(
         const SystemUiOverlayStyle(
@@ -78,22 +79,26 @@ class _ChatScreenState extends State<ChatScreen> {
         ),
       );
 
+      // 编辑该会话ID已读
       Provider.of<ConversationProvider>(
         context,
-        listen: false,
+        listen: false, // 本widget本次不监听数据变换，进而重绘制UI
       ).markConversationAsRead(widget.conversation.id);
 
       // 如果是小智对话，初始化服务
       if (widget.conversation.type == ConversationType.xiaozhi) {
         _initXiaozhiService();
-        // 添加定时器定期检查连接状态
-        _connectionCheckTimer = Timer.periodic(const Duration(seconds: 2), (
-          timer,
-        ) {
+        // 添加定时器，定期检查连接状态
+        // 调用方法是： Timer.periodic(Duration interval, void Function(Timer) callback)
+        // (timer) { ... } 这是一种匿名函数的写法
+        _connectionCheckTimer = Timer.periodic(const Duration(seconds: 2), (timer,) {
+          // mounted，widget提供的属性，判断自己是否已经 挂在了widget树上
           if (mounted && _xiaozhiService != null) {
             final wasConnected = _xiaozhiService!.isConnected;
 
             // 刷新UI
+            // setState是State-widget的内部函数， 一旦调用就会通知flutter重新绘制所在的widget-UI
+            // 顺序是： 先调用入参的函数，然后通知flutter重新绘制UI
             setState(() {});
 
             // 如果状态从连接变为断开，尝试自动重连
@@ -400,7 +405,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                 )
-                : Consumer<ConfigProvider>(
+                : Consumer<ConfigProvider>(  //Consumer组件，会监听 某个共享状态（比如 ConfigProvider），
+                  // 一旦状态变化，就会自动重新执行builder函数
                   builder: (context, configProvider, child) {
                     // 查找此会话对应的Dify配置
                     final String? configId = widget.conversation.configId;
