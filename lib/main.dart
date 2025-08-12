@@ -54,6 +54,7 @@ void main() async {
   ].request();
 
   // 添加中文本地化支持
+  //
   timeago.setLocaleMessages('zh', timeago.ZhMessages());
   timeago.setDefaultLocale('zh');
 
@@ -101,8 +102,7 @@ void main() async {
   final configProvider = ConfigProvider();
 
   /*
-  flutterdfsdf
-
+  flutter
    */
   runApp(
     MultiProvider(
@@ -155,7 +155,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    return MaterialApp(
+    return MaterialApp( // 
       title: 'AI-LHHT',
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
