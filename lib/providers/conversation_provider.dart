@@ -407,6 +407,7 @@ class ConversationProvider extends ChangeNotifier {
     }
   }
 
+  // 标记会话为已读
   Future<void> markConversationAsRead(String conversationId) async {
     final index = _conversations.indexWhere(
       (conversation) => conversation.id == conversationId,

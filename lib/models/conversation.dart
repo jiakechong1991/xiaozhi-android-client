@@ -1,17 +1,17 @@
 enum ConversationType { dify, xiaozhi }
 
+// 对话的数据结构
 class Conversation {
   final String id;
-  final String title;
+  final String title;  // 与xx的对话
   final ConversationType type;
-  final String
-  configId; // For both Xiaozhi and Dify conversations, references the config
+  final String configId; // For both Xiaozhi and Dify conversations, references the config
   final DateTime lastMessageTime;
-  final String lastMessage;
+  final String lastMessage;  // 最后一条消息
   final int unreadCount;
   final bool isPinned;
 
-  Conversation({
+  Conversation({ // 构造函数
     required this.id,
     required this.title,
     required this.type,
@@ -22,6 +22,7 @@ class Conversation {
     this.isPinned = false,
   });
 
+  // 下面是几种 常用方法：
   factory Conversation.fromJson(Map<String, dynamic> json) {
     return Conversation(
       id: json['id'],

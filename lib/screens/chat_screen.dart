@@ -20,7 +20,7 @@ import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Conversation conversation;
+  final Conversation conversation;  //  增加一个参数，用于传递当前会话
 
   const ChatScreen({super.key, required this.conversation});
 
@@ -28,12 +28,14 @@ class ChatScreen extends StatefulWidget {
   State<ChatScreen> createState() => _ChatScreenState();
 }
 
+// 对话page的主体：
 class _ChatScreenState extends State<ChatScreen> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   XiaozhiService? _xiaozhiService; // 保持XiaozhiService实例
   DifyService? _difyService; // 保持DifyService实例
+
   Timer? _connectionCheckTimer; // 添加定时器检查连接状态
   Timer? _autoReconnectTimer; // 自动重连定时器
 
@@ -331,6 +333,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
             ),
         ],
+        // 前面的导航返回按钮
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.black, size: 26),
           onPressed: () {
@@ -338,7 +341,7 @@ class _ChatScreenState extends State<ChatScreen> {
             if (_xiaozhiService != null) {
               _xiaozhiService!.stopPlayback();
             }
-            Navigator.of(context).pop();
+            Navigator.of(context).pop();  // 返回上一个页面
           },
         ),
         title:
@@ -372,7 +375,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          widget.conversation.title,
+                          widget.conversation.title, // 与xx的对话
                           style: const TextStyle(
                             color: Colors.black,
                             fontWeight: FontWeight.bold,
@@ -493,16 +496,17 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
       ),
       body: Column(
-        children: [
+        children: [  // 页面的主要widget组件（他们会形成大的部分）
           if (widget.conversation.type == ConversationType.xiaozhi)
-            _buildXiaozhiInfo(),
-          Expanded(child: _buildMessageList()),
-          _buildInputArea(),
+            _buildXiaozhiInfo(),  // 上面部分 （小智连接信息）
+          Expanded(child: _buildMessageList()),  // 中间部分（消息列表）
+          _buildInputArea(),  // 下面部分（信息输入区域）
         ],
       ),
     );
   }
 
+  // 构建小智 连接信息 区域
   Widget _buildXiaozhiInfo() {
     final configProvider = Provider.of<ConfigProvider>(context);
     final xiaozhiConfig = configProvider.xiaozhiConfigs.firstWhere(
@@ -536,7 +540,7 @@ class _ChatScreenState extends State<ChatScreen> {
       ),
       child: Row(
         children: [
-          // 连接状态指示器
+          // 连接状态指示器 一个红点/绿点
           Container(
             width: 10,
             height: 10,
@@ -582,6 +586,7 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           ),
 
+          // MAC地址信息
           if (xiaozhiConfig.macAddress.isNotEmpty)
             Padding(
               padding: const EdgeInsets.only(left: 8),
