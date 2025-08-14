@@ -11,7 +11,7 @@ class AppTheme {
   static const Color surfaceColor = Colors.white;
   static const Color errorColor = Colors.red;
 
-  // Light theme
+  // Light theme主题
   static final ThemeData lightTheme = ThemeData(
     brightness: Brightness.light,
     primaryColor: primaryColor,

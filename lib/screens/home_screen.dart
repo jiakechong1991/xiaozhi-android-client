@@ -19,19 +19,20 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;
+  int _selectedIndex = 0;  // 当前选中的底部导航栏索引
   final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
 
   @override
   void dispose() {
     _searchFocusNode.dispose(); // 释放焦点管理器
-    super.dispose();  // 一种内存释放？
+    super.dispose(); // 一种内存释放？
   }
 
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
+        // 用户轻触屏幕时，调用这个函数
         // 点击页面任何地方时，让搜索框失去焦点
         _searchFocusNode.unfocus();
         // 同时关闭所有打开的删除按钮
@@ -41,26 +42,26 @@ class _HomeScreenState extends State<HomeScreen> {
         extendBody: true, //让 body 内容延伸到底部导航栏下方
         extendBodyBehindAppBar: true,
         backgroundColor: const Color(0xFFF8F9FA), // 设置背景颜色
-        appBar:
+        appBar: // 顶部导航栏
             _selectedIndex == 1
                 ? null
-                : AppBar(
+                : AppBar( // 通常位于屏幕顶部，用于显示当前页面的标题和导航按钮，设置按钮等
                   title: const Text(
-                    '消息',
+                    '消息哈哈',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 28,
                       color: Colors.black,
                     ),
                   ),
-                  elevation: 0,
-                  scrolledUnderElevation: 0,
-                  backgroundColor: const Color(0xFFF8F9FA),
-                  centerTitle: false,
-                  titleSpacing: 20,
-                  toolbarHeight: 65,
-                  actions: [
-                    Padding(
+                  elevation: 0, // 设置导航栏阴影
+                  scrolledUnderElevation: 0, // 设置导航栏在滚动时的高度
+                  backgroundColor: const Color(0xFFF8F9FA), // 设置导航栏背景颜色
+                  centerTitle: false,  // 设置标题是否居中
+                  titleSpacing: 20, // 
+                  toolbarHeight: 65, // 设置导航栏的高度
+                  actions: [  //右侧的操作按钮列表（如搜索、更多选项等）， 每个元素就是一个按钮
+                    Padding( // 按钮1
                       padding: const EdgeInsets.only(right: 16),
                       child: Material(
                         color: Colors.transparent,
@@ -69,18 +70,16 @@ class _HomeScreenState extends State<HomeScreen> {
                           borderRadius: BorderRadius.circular(12),
                           splashColor: Colors.grey.withOpacity(0.1),
                           highlightColor: Colors.grey.withOpacity(0.1),
-                          // 如果点击这个+号，将导航到 这个页面
+                          // 如果点击这个 齿轮符号，将导航到 这个页面
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(
-                                builder: (context) => const SettingsScreen(),
-                              ),
+                              MaterialPageRoute(builder: (context) => const SettingsScreen()),
                             );
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(12),
-                            child: Icon(
+                            child: Icon(  // 齿轮icon
                               Icons.settings,
                               size: 26,
                               color: Colors.grey.shade700,
@@ -110,7 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     ],
                   ),
                 ),
-        floatingActionButton:
+        floatingActionButton: // 悬浮按钮
             _selectedIndex == 0
                 ? Container(
                   decoration: BoxDecoration(
@@ -130,29 +129,32 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  child: FloatingActionButton(
-                    onPressed: () {
-                      Navigator.push(
+                  child: FloatingActionButton(  // 这是一个圆形悬浮在界面上的按钮, 一般在右下角
+                    onPressed: () {  // 如果点击这个按钮，将回调 这个函数
+                      Navigator.push( // 切换到另一个页面
                         context,
-                        MaterialPageRoute(
+                        MaterialPageRoute( // 一种Material风格过渡动画的路由（页面）
+                          // 要跳转的目标页面（必须是 StatelessWidget 或 StatefulWidget）
                           builder: (context) => const ConversationTypeScreen(),
                         ),
                       );
                     },
-                    backgroundColor: Colors.black,
-                    child: const Icon(Icons.add, size: 30, color: Colors.white),
-                    elevation: 0,
-                    shape: const CircleBorder(),
+                    backgroundColor: Colors.black, // 背景颜色
+                    child: const Icon(Icons.add, size: 30, color: Colors.white), // 子组件，这里是一个"+"图标
+                    elevation: 0,  // 阴影高度，达到 按钮凸起的感觉， 0表示没有阴影
+                    shape: const CircleBorder(),  // 按钮的形状，这里是一个圆形
                   ),
                 )
                 : null,
-        bottomNavigationBar: ClipRRect(
-          borderRadius: const BorderRadius.only(
+        // 底部导航栏
+        bottomNavigationBar: ClipRRect( //裁减圆角矩形
+          borderRadius: const BorderRadius.only( // 圆角半径
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
           ),
-          child: Theme(
-            data: ThemeData(
+          //需要被裁减的子组件
+          child: Theme(  // 主题组件，可以约束子组件的样式
+            data: ThemeData(  // 这是一个主题数据配置类，可以表示 一种样式
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
             ),
@@ -173,29 +175,31 @@ class _HomeScreenState extends State<HomeScreen> {
                   bottom: MediaQuery.of(context).padding.bottom / 2,
                 ),
                 child: BottomNavigationBar(
-                  currentIndex: _selectedIndex,
-                  onTap: (index) {
+                  currentIndex: _selectedIndex,  // 当前被选中的索引
+                  onTap: (index) {  // 点击该组件的某个item时的 回调函数， index表示被点击的索引
                     setState(() {
                       _selectedIndex = index;
                     });
                   },
-                  selectedItemColor: Colors.black,
-                  unselectedItemColor: Colors.grey.shade600,
-                  showSelectedLabels: true,
-                  showUnselectedLabels: true,
-                  backgroundColor: Colors.white,
-                  elevation: 0,
-                  type: BottomNavigationBarType.fixed,
-                  selectedLabelStyle: const TextStyle(
+                  selectedItemColor: Colors.black,  // 选中时的颜色
+                  unselectedItemColor: Colors.grey.shade600, // 未选中时的颜色
+                  showSelectedLabels: true, // 是否显示 选中时的label（文字）
+                  showUnselectedLabels: true, // 是否显示 未选中时的label（文字）
+                  backgroundColor: Colors.white, // 背景颜色
+                  elevation: 0, // 阴影
+                  type: BottomNavigationBarType.fixed,  
+                  // BottomNavigationBarType.fixed: 所有item的尺寸相同,适合<=3的item数量
+                  // BottomNavigationBarType.shifting: 选中的item的尺寸会变大，其他会变小，适合多个item的情况
+                  selectedLabelStyle: const TextStyle(  // 选中时的label样式(你可以实现 选中是 字体改变效果)
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
-                  unselectedLabelStyle: const TextStyle(
+                  unselectedLabelStyle: const TextStyle(  // 未选中时的label样式
                     fontWeight: FontWeight.w500,
                     fontSize: 12,
                   ),
-                  iconSize: 26,
-                  items: [
+                  iconSize: 26,  // item中 图标的 大小
+                  items: [ // 底部导航栏的选项列表
                     BottomNavigationBarItem(
                       icon: Material(
                         color: Colors.transparent,
@@ -258,7 +262,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                         ),
                       ),
-                      label: '发现',
+                      label: '社区',
                     ),
                   ],
                 ),
@@ -293,24 +297,26 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(16),
         child: Material(
           color: Colors.white,
-          child: TextField(
-            focusNode: _searchFocusNode,
-            decoration: InputDecoration(
-              hintText: '搜索对话',
-              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 16),
+          child: TextField(  // 文本输入框
+            focusNode: _searchFocusNode,  // 控制文本输入框的 焦点状态
+            decoration: InputDecoration( // 定义文本输入框的样式
+              hintText: '搜索对话', // 当输入框为空时显示的提示文字
+              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 16), // 设置提示文字的样式
+              // 在输入框左侧添加一个 搜索图标
               prefixIcon: Container(
                 padding: const EdgeInsets.all(12),
                 child: Icon(
-                  Icons.search,
+                  Icons.search, // 搜索图标
                   color: Colors.grey.shade500,
                   size: 22,
                 ),
               ),
+              // 在输入框右侧添加一个 麦克风图标
               suffixIcon: Container(
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(right: 4),
                 child: Icon(
-                  Icons.mic_none_outlined,
+                  Icons.mic_none_outlined,  // 麦克风图标
                   color: Colors.grey.shade500,
                   size: 22,
                 ),
@@ -337,24 +343,28 @@ class _HomeScreenState extends State<HomeScreen> {
     // 当 ConversationProvider 中的对话数据（新增 / 删除 / 置顶状态改变）发生变化并
     //      调用 notifyListeners() 时，builder 方法会重新执行，UI 随之刷新
     return Consumer<ConversationProvider>(
-      // builder回调的三个参数： 
-      //    context：当前上下文， 
+      // builder回调的三个参数：
+      //    context：当前上下文，
       //    provider：ConversationProvider 实例，用于获取对话数据（核心）
       //    child：可选的 “静态子组件”（这里未使用，用于优化性能）
       builder: (context, provider, child) {
         final pinnedConversations = provider.pinnedConversations; // 获取置顶对话
         final unpinnedConversations = provider.unpinnedConversations; // 获取未置顶对话
 
-        return ListView(  // 滚动容器
-          padding: EdgeInsets.only(  // 填充留白
+        return ListView(
+          // 滚动容器
+          padding: EdgeInsets.only(
+            // 填充留白
             // 16是基础留白 ，MediaQuery.of(context).padding.bottom是
             // 设备底部安全区域（如全面屏的底部刘海 / 导航栏高度），避免对话项被设备边缘遮挡
             bottom: 16 + MediaQuery.of(context).padding.bottom,
           ),
-          children: [ // 这个列表是支持 条件判断的，动态确定显示哪些组件
-            
+          children: [
+            // 这个列表是支持 条件判断的，动态确定显示哪些组件
+
             // 置顶对话的区域
-            if (pinnedConversations.isNotEmpty) ...[  // ... 将后面list的元素平铺到外层list中
+            if (pinnedConversations.isNotEmpty) ...[
+              // ... 将后面list的元素平铺到外层list中
               const Padding(
                 padding: EdgeInsets.only(
                   left: 20,
@@ -437,7 +447,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         child: Icon(
-                          Icons.chat_bubble_outline,
+                          Icons.chat_bubble_outline,  // 对话图标
                           size: 48,
                           color: Colors.grey.shade300,
                         ),
@@ -506,7 +516,8 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildConversationTile(Conversation conversation) {
-    return SlidableDeleteTile(  // 这是一个封装了 滑动删除功能的 组件
+    return SlidableDeleteTile(
+      // 这是一个封装了 滑动删除功能的 组件
       key: Key(conversation.id), // 为每个对话项设置唯一标识
       // 滑动删除的回调函数
       onDelete: () {
@@ -545,10 +556,11 @@ class _HomeScreenState extends State<HomeScreen> {
       // 点击的回调函数
       onTap: () {
         // 直接导航到聊天页面
-        Navigator.push(  // 将一个新的页面push到栈顶部,作为显示页面
+        Navigator.push(
+          // 将一个新的页面push到栈顶部,作为显示页面
           context,
           // 这是一个路由包装器，定义了 新页面，以及页面切换的过渡动画(提供符合 Material Design 风格的页面过渡动画)
-          MaterialPageRoute(  
+          MaterialPageRoute(
             // builder 是一个函数，用于定义 新页面的内容()
             builder: (context) => ChatScreen(conversation: conversation),
           ),
@@ -575,7 +587,8 @@ class _HomeScreenState extends State<HomeScreen> {
       backgroundColor: Colors.white, // 弹窗背景色
       elevation: 20, // 弹窗阴影高度
       barrierColor: Colors.black.withOpacity(0.5), // 遮罩层颜色
-      shape: const RoundedRectangleBorder( // 弹窗形状
+      shape: const RoundedRectangleBorder(
+        // 弹窗形状
         borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
       ),
       builder: (context) {
@@ -729,12 +742,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       onTap: () {
                         // 关闭对话框, pop(context)会将当前页面从堆栈中移除，相当于关闭这个页面/弹窗。
                         //     将之后的栈顶 弹窗/页面 显示出俩
-                        Navigator.pop(context);  
+                        Navigator.pop(context);
                         // 从全局状态中获取 ConversationProvider 实例
                         Provider.of<ConversationProvider>(
                           context,
-                          listen: false, // 只获取实例并调用方法，不监听状态变化， 
-                              // 这个ListTile-widget就不要 在更新自己的UI了。因为此刻仅关注数据变化，不关注UI变换
+                          listen: false, // 只获取实例并调用方法，不监听状态变化，
+                          // 这个ListTile-widget就不要 在更新自己的UI了。因为此刻仅关注数据变化，不关注UI变换
                         ).deleteConversation(conversation.id); //从数据源中移除该对话
                         // 显示一个 SnackBar，告知用户对话已删除
                         ScaffoldMessenger.of(context).showSnackBar(
