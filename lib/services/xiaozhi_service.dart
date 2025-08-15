@@ -260,7 +260,7 @@ class XiaozhiService {
         }
       }
 
-      // 先添加监听器，确保不会错过任何消息
+      // 先添加监听器，确保不会错过任何消息（主要是和服务器建立连接用）
       addListener(onceListener);
 
       // 发送文本请求
@@ -531,7 +531,7 @@ class XiaozhiService {
     }
   }
 
-  /// 处理WebSocket事件
+  /// 处理WebSocket事件（）
   void _onWebSocketEvent(XiaozhiEvent event) {
     switch (event.type) {
       case XiaozhiEventType.connected:

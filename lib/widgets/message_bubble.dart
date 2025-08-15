@@ -61,6 +61,7 @@ class MessageBubble extends StatelessWidget {
                             : null,
                   ),
                   // 检查是否为图片消息
+                  // 嵌套三目运算法 A ? B : C ? D : E <===> A ? B : (C ? D : E)
                   child:
                       isThinking
                           ? _buildThinkingIndicator(context)

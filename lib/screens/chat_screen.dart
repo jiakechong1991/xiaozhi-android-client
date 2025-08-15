@@ -187,7 +187,7 @@ class _ChatScreenState extends State<ChatScreen> {
       token: xiaozhiConfig.token,
     );
 
-    // 添加消息监听器
+    // 添加消息监听器 ---> 通知展示层，有消息来了
     _xiaozhiService!.addListener(_handleXiaozhiMessage);
 
     // 连接服务
@@ -646,17 +646,17 @@ class _ChatScreenState extends State<ChatScreen> {
             ),
           );
         }
-
+        // ListView经常用于构建 长列表/聊天界面 等动态内容，是懒加载方式，只构建当前可见的列表部分
         return ListView.builder(
-          controller: _scrollController,
-          padding: const EdgeInsets.all(16),
-          reverse: true,
-          itemCount: messages.length + (_isLoading ? 1 : 0),
-          cacheExtent: 1000.0,
+          controller: _scrollController, // 滚动控制器
+          padding: const EdgeInsets.all(16), // 列表item的内边距，给所有 item 外围留出空白
+          reverse: true, // 新消息在下面，而非上面
+          itemCount: messages.length + (_isLoading ? 1 : 0),  // item列表 总数
+          cacheExtent: 1000.0, // 预加载范围：上下各预渲染 1000 像素范围内的 item，提升滚动流畅性
           addRepaintBoundaries: true,
-          addAutomaticKeepAlives: true,
-          physics: const ClampingScrollPhysics(),
-          itemBuilder: (context, index) {
+          addAutomaticKeepAlives: true, 
+          physics: const ClampingScrollPhysics(), // 滚动效果（到边界就停，不回弹）
+          itemBuilder: (context, index) { // 根据index动态构建item
             if (_isLoading && index == 0) {
               return MessageBubble(
                 message: Message(
@@ -672,11 +672,12 @@ class _ChatScreenState extends State<ChatScreen> {
             }
 
             final adjustedIndex = _isLoading ? index - 1 : index;
+            // 获得对应的msg
             final message = messages[messages.length - 1 - adjustedIndex];
 
-            return RepaintBoundary(
+            return RepaintBoundary(  // 通知flutter,它包含的widget，是需要经常 重新绘制的，提升性能用
               child: MessageBubble(
-                key: ValueKey(message.id),
+                key: ValueKey(message.id), //从message.id初始化一个key，作为 listView比较多个item的id_key
                 message: message,
                 conversationType: widget.conversation.type,
               ),
@@ -767,7 +768,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       fontSize: 16,
                     ),
                     maxLines: 1,
-                    textInputAction: TextInputAction.send,
+                    textInputAction: TextInputAction.send,  // 发送按钮
                     onSubmitted: (_) => _sendMessage(),
                     onChanged: (_) => setState(() {}),
                   ),
@@ -1143,6 +1144,7 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
+  // 向着服务器发送msg
   void _sendMessage() async {
     final message = _textController.text.trim();
     if (message.isEmpty || _isLoading) return;
@@ -1216,7 +1218,7 @@ class _ChatScreenState extends State<ChatScreen> {
           setState(() {});
         }
 
-        // 发送消息
+        // 向着服务器发送msg消息
         await _xiaozhiService!.sendTextMessage(message);
       }
     } catch (e) {

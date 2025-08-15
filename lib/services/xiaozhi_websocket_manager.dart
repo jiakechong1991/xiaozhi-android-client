@@ -136,11 +136,11 @@ class XiaozhiWebSocketManager {
         });
       }
 
-      // 监听WebSocket事件
+      // 监听WebSocket stream流事件
       _streamSubscription = _channel!.stream.listen(
-        _onMessage,
-        onDone: _onDisconnected,
-        onError: _onError,
+        _onMessage, // 数据到来时的回调
+        onDone: _onDisconnected, // 当 stream 结束（即连接正常关闭）时触发
+        onError: _onError, // 当 stream 发生错误时触发（如网络中断、解析失败、连接失败等）
         cancelOnError: false,
       );
 
@@ -198,7 +198,7 @@ class XiaozhiWebSocketManager {
     sendMessage(jsonEncode(hello));
   }
 
-  /// 发送文本消息
+  /// 发送文本消息(真正的发送msg---》ws的位置)
   void sendMessage(String message) {
     if (_channel != null && isConnected) {
       _channel!.sink.add(message);
