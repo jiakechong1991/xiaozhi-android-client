@@ -49,6 +49,7 @@ android {
             isDebuggable = true
         }
     }
+
 }
 
 flutter {
