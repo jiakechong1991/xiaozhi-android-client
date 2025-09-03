@@ -6,6 +6,8 @@ import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/models/dify_config.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class ConversationTypeCreate extends StatefulWidget {
   const ConversationTypeCreate({super.key});
@@ -15,9 +17,23 @@ class ConversationTypeCreate extends StatefulWidget {
 }
 
 class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
-  ConversationType? _selectedType;
   XiaozhiConfig? _selectedXiaozhiConfig;
-  DifyConfig? _selectedDifyConfig;
+  String? default_gender = '女';
+
+    // 表单控制器
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _ageController = TextEditingController();
+  final TextEditingController _jobController = TextEditingController();
+  final TextEditingController _personalityController = TextEditingController();
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _ageController.dispose();
+    _jobController.dispose();
+    _personalityController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +102,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 const Text(
-                  '请创建角色信息',
+                  '请填写角色基本信息',
                   style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                 ),
                 const SizedBox(height: 6)
@@ -95,85 +111,81 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
           ),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           const SizedBox(height: 16),
-          Row(
-  children: [
-    Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('名字：', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          TextField(
-            decoration: InputDecoration(
-              hintText: '请输入名字',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ],
-      ),
-    ),
-    const SizedBox(width: 10),
-    Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('性别：', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          TextField(
-            decoration: InputDecoration(
-              hintText: '请输入性别',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ],
-      ),
-    ),
-    const SizedBox(width: 10),
-    Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('年龄：', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          TextField(
-            keyboardType: TextInputType.number,
-            decoration: InputDecoration(
-              hintText: '请输入年龄',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ],
-      ),
-    ),
-    const SizedBox(width: 10),
-    Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('职业：', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          TextField(
-            decoration: InputDecoration(
-              hintText: '请输入职业',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ],
-      ),
-    ),
-    const SizedBox(width: 10),
-    Expanded(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text('性格：', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
-          TextField(
-            decoration: InputDecoration(
-              hintText: '请输入性格',
-              border: OutlineInputBorder(),
-            ),
-          ),
-        ],
-      ),
-    ),
-  ],
-),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const Text('名字：', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              TextField(
+                controller: _nameController,
+                decoration: InputDecoration(
+                  hintText: '请输入名字',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 15),
+
+              const Text('可选性别：', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              DropdownButtonFormField<String>(
+                value: default_gender,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  // 可选：添加 label 或 hint
+                  // labelText: '性别',
+                ),
+                items: ['男', '女']
+                    .map((String value) {
+                      return DropdownMenuItem<String>(
+                        value: value,
+                        child: Text(value),
+                      );
+                    })
+                    .toList(),
+                onChanged: (String? newValue) {
+                  setState(() {
+                    default_gender = newValue; // 更新选中的性别
+                  });
+                },
+                // 可选：添加验证
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return '请选择性别';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 15),
+
+              const Text('年龄：', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              TextField(
+                controller: _ageController,
+                keyboardType: TextInputType.number,
+                decoration: InputDecoration(
+                  hintText: '请输入年龄',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 15),
+
+              const Text('职业：', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              TextField(
+                controller: _jobController,
+                decoration: InputDecoration(
+                  hintText: '请输入职业',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+              const SizedBox(height: 15),
+
+              const Text('性格：', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
+              TextField(
+                controller: _personalityController,
+                decoration: InputDecoration(
+                  hintText: '请输入性格',
+                  border: OutlineInputBorder(),
+                ),
+              ),
+            ],
+          )
         ],
       ),
     );
@@ -200,7 +212,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: _selectedType == null ? null : _createConversation,
+        onPressed: _createConversation,
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: Colors.black,
@@ -209,14 +221,11 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          elevation: _selectedType == null ? 0 : 4,
-          shadowColor:
-              _selectedType == null
-                  ? Colors.transparent
-                  : Colors.black.withOpacity(0.3),
+          elevation:  4,
+          shadowColor: Colors.black.withOpacity(0.3),
         ),
         child: const Text(
-          '创建对话',
+          '创建角色a',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ),
@@ -224,51 +233,107 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
   }
 
   void _createConversation() async {
-    if (_selectedType == ConversationType.dify && _selectedDifyConfig != null) {
-      _createDifyConversation(_selectedDifyConfig!);
-    } else if (_selectedType == ConversationType.xiaozhi &&
-        _selectedXiaozhiConfig != null) {
-      _createXiaozhiConversation(_selectedXiaozhiConfig!);
-    }
+      _createXiaozhiConversation();
   }
 
-  void _createDifyConversation(DifyConfig config) async {
-    final conversation = await Provider.of<ConversationProvider>(
-      context,
-      listen: false,
-    ).createConversation(
-      title: '与 ${config.name} 的对话',
-      type: ConversationType.dify,
-      configId: config.id,
-    );
 
-    if (context.mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChatScreen(conversation: conversation),
-        ),
+  Future<void> _createXiaozhiConversation() async {
+      // 获取输入值
+    final String name = _nameController.text.trim();
+    final String ageStr = _ageController.text.trim();
+    final String job = _jobController.text.trim();
+    final String personality = _personalityController.text.trim();
+    final String gender = default_gender ?? '女';
+
+    // 简单验证
+    if (name.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请填写名字')),
+      );
+      return;
+    }
+    if (ageStr.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请填写年龄')),
+      );
+      return;
+    }
+    int? age = int.tryParse(ageStr);
+    if (age == null || age < 0 || age > 100) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('请输入有效的年龄')),
+      );
+      return;
+    }
+
+    // 构造请求，向服务端发送 创建角色的请求
+      // 构造请求体
+    final Map<String, dynamic> requestBody = {
+      "name": name,
+      "age": age,
+      "gender": gender,
+      "job": job,
+      "personality": personality,
+    };
+
+    try{
+      final response = await http.post(
+        Uri.parse('http://192.168.1.22:7865/create_role'),
+        headers: <String, String>{
+          'Content-Type': 'application/json; charset=UTF-8',
+        },
+        body: jsonEncode(requestBody),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        // 创建成功
+        final responseData = jsonDecode(response.body);
+        String? roleId = responseData['id']?.toString(); // 假设返回中有 id 字段
+        String roleName = responseData['name'] ?? name;
+
+        // 可以在这里保存到本地（比如 ConversationProvider）
+
+        //////////////////////////////
+        final conversation = await Provider.of<ConversationProvider>(
+          context,
+          listen: false,
+        ).createConversation(
+          title: '与 ${roleName} 的对话',
+          type: ConversationType.xiaozhi,
+          configId: roleId!,
+        );
+
+        // 跳转到聊天界面
+        if (context.mounted) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => ChatScreen(conversation: conversation),
+            ),
+          );
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('角色 "$roleName" 创建成功！')),
+        );
+    } else {
+      // 服务器返回错误
+      final errorMsg = jsonDecode(response.body)['message'] ?? '创建失败，请重试';
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('创建失败：$errorMsg')),
       );
     }
-  }
 
-  void _createXiaozhiConversation(XiaozhiConfig config) async {
-    final conversation = await Provider.of<ConversationProvider>(
-      context,
-      listen: false,
-    ).createConversation(
-      title: '与 ${config.name} 的对话',
-      type: ConversationType.xiaozhi,
-      configId: config.id,
-    );
-
-    if (context.mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChatScreen(conversation: conversation),
-        ),
+    } catch (e) {
+      // 网络异常等
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('网络错误：$e')),
       );
     }
+  
+
+
+
+
   }
 }
