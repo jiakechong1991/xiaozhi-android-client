@@ -5,7 +5,8 @@ import 'package:ai_assistant/providers/conversation_provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
 import 'package:ai_assistant/screens/settings_screen.dart';
-import 'package:ai_assistant/screens/conversation_type_screen.dart';
+// import 'package:ai_assistant/screens/conversation_type_screen.dart';
+import 'package:ai_assistant/screens/conversation_create.dart';
 import 'package:ai_assistant/widgets/conversation_tile.dart';
 import 'package:ai_assistant/widgets/slidable_delete_tile.dart';
 import 'package:ai_assistant/widgets/discovery_screen.dart';
@@ -135,7 +136,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         context,
                         MaterialPageRoute( // 一种Material风格过渡动画的路由（页面）
                           // 要跳转的目标页面（必须是 StatelessWidget 或 StatefulWidget）
-                          builder: (context) => const ConversationTypeScreen(),
+                          builder: (context) => const ConversationTypeCreate(),
                         ),
                       );
                     },
