@@ -9,6 +9,7 @@ import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/models/dify_config.dart';
 
 class ConfigProvider extends ChangeNotifier {
+  // 创建一个默认的XiaozhiConfig
   List<XiaozhiConfig> _xiaozhiConfigs = [];
   List<DifyConfig> _difyConfigs = [];
   bool _isLoaded = false;
@@ -27,12 +28,21 @@ class ConfigProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
 
     // Load Xiaozhi configs
-    final xiaozhiConfigsJson = prefs.getStringList('xiaozhiConfigs') ?? [];
+    final xiaozhiConfigsJson = prefs.getStringList('xiaozhiConfigs') ?? ['''
+    {
+      "id": "0",
+      "name": "default",
+      "websocketUrl": "ws://60.205.170.254:8000/xiaozhi/v1/",
+      "macAddress": "b4:3a:45:a2:0f:7c",
+      "token": "test-token"
+    }
+    '''];
     _xiaozhiConfigs =
         xiaozhiConfigsJson
             .map((json) => XiaozhiConfig.fromJson(jsonDecode(json)))
             .toList();
-
+    // 打印当前的xiaozhiConfigs的数量
+    print('加载默认的 ${_xiaozhiConfigs.length} 小智服务器配置configs');
     // 加载多个Dify配置
     final difyConfigsJson = prefs.getStringList('difyConfigs') ?? [];
     _difyConfigs =

@@ -40,8 +40,8 @@ class _SettingsScreenState extends State<SettingsScreen>
     // 保存Provider引用，以便在dispose中安全使用
     _configProvider = configProvider;
 
-    // 初始化选项卡控制器
-    _tabController = TabController(length: 3, vsync: this);
+    // 初始化选项卡控制器 （这个2表示只有2个tab页面）
+    _tabController = TabController(length: 2, vsync: this);
     _tabController.addListener(() {
       if (_tabController.indexIsChanging) {
         setState(() {
@@ -76,13 +76,14 @@ class _SettingsScreenState extends State<SettingsScreen>
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
         toolbarHeight: 70,
-        leading: IconButton(
+        leading: IconButton(  // 导航返回 <- 按钮
           icon: const Icon(Icons.arrow_back, color: Colors.black, size: 26),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -103,7 +104,7 @@ class _SettingsScreenState extends State<SettingsScreen>
               controller: _tabController,
               children: [
                 _buildGeneralTab(),
-                _buildDifyConfigTab(),
+                // _buildDifyConfigTab(),
                 _buildXiaozhiConfigTab(),
               ],
             ),
@@ -164,7 +165,9 @@ class _SettingsScreenState extends State<SettingsScreen>
             fontWeight: FontWeight.w500,
             fontSize: 16,
           ),
-          tabs: const [Tab(text: '通用'), Tab(text: 'Dify配置'), Tab(text: '小智服务')],
+          tabs: const [Tab(text: '通用'), 
+          // Tab(text: 'Dify配置'), 
+          Tab(text: '小智服务')],
         ),
       ),
     );
@@ -178,7 +181,7 @@ class _SettingsScreenState extends State<SettingsScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             _buildCard(
-              title: '外观',
+              title: '外观哈',
               subtitle: '调整应用的外观设置',
               child: Column(
                 children: [
@@ -1097,10 +1100,12 @@ class _SettingsScreenState extends State<SettingsScreen>
   }
 
   Widget _buildXiaozhiConfigTab() {
+
     return Consumer<ConfigProvider>(
       builder: (context, configProvider, child) {
         final xiaozhiConfigs = configProvider.xiaozhiConfigs;
-
+        debugPrint('xiaozhiConfigs 数量阿: ${xiaozhiConfigs.length}');
+        debugPrint('xiaozhiConfigs 内容: ${xiaozhiConfigs.map((e) => e.name).join(', ')}'); // 打印名字方便看
         return SingleChildScrollView(
           padding: const EdgeInsets.all(16),
           child: Column(
