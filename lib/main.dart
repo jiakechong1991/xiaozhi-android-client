@@ -9,6 +9,8 @@ import 'package:ai_assistant/screens/home_screen.dart';
 import 'package:ai_assistant/screens/settings_screen.dart';
 import 'package:ai_assistant/screens/test_screen.dart';
 import 'package:ai_assistant/utils/app_theme.dart';
+import 'package:ai_assistant/route.dart';
+import 'package:ai_assistant/state/token.dart';
 import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
 import 'package:opus_dart/opus_dart.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -17,6 +19,7 @@ import 'dart:io';
 import 'dart:ui';
 import 'package:ai_assistant/utils/audio_util.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
+import 'package:get/get.dart';
 
 // 是否启用调试工具
 const bool enableDebugTools = true;
@@ -100,6 +103,7 @@ void main() async {
 
   // 初始化配置管理
   final configProvider = ConfigProvider();
+  Get.put(TokenController());
 
   /*
   flutter
@@ -155,17 +159,20 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     final themeProvider = Provider.of<ThemeProvider>(context);
 
-    return MaterialApp( // 
+    return GetMaterialApp(
+      //
       title: 'AI-小美', // app名称
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
-      home: const HomeScreen(),
-      routes: {
-        // 添加测试界面路由
-        '/test': (context) => const TestScreen(),
-      },
+      initialRoute: '/home',
+      // routes: { // 这是flutter原生的方式，功能有限
+      //   // 添加测试界面路由
+      //   '/test': (context) => const TestScreen(),
+      // },
+      //在 GetMaterialApp 中，你应该使用 getPages 来定义路由表 —— 它是 GetX 专属、功能更强、更推荐的方式
+      getPages: getRoutes,
       // 添加平滑滚动设置
       scrollBehavior: const MaterialScrollBehavior().copyWith(
         // 启用物理滚动

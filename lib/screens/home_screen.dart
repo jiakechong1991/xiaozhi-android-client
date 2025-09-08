@@ -10,7 +10,9 @@ import 'package:ai_assistant/screens/conversation_create.dart';
 import 'package:ai_assistant/widgets/conversation_tile.dart';
 import 'package:ai_assistant/widgets/slidable_delete_tile.dart';
 import 'package:ai_assistant/widgets/discovery_screen.dart';
+import 'package:ai_assistant/state/token.dart';
 import 'package:flutter/rendering.dart';
+import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,8 +22,33 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  int _selectedIndex = 0;  // 当前选中的底部导航栏索引
+  int _selectedIndex = 0; // 当前选中的底部导航栏索引
   final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
+
+  void _checkToken(String token) {
+    if (token.isEmpty) {
+      print("token为空,跳转到登录页面");
+      // 延迟到下一帧，避免在 initState 中直接导航的潜在问题
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Get.toNamed('/login/password');
+      });
+    } else {
+      print("token有效，留在当前页面");
+      // 不跳转，留在首页
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // 👇 立即检查当前 token 状态
+    _checkToken(TokenController.to.token.value);
+
+    // 👇 监听后续变化
+    ever(TokenController.to.token, (token) {
+      _checkToken(token);
+    });
+  }
 
   @override
   void dispose() {
@@ -46,9 +73,10 @@ class _HomeScreenState extends State<HomeScreen> {
         appBar: // 顶部导航栏
             _selectedIndex == 1
                 ? null
-                : AppBar( // 通常位于屏幕顶部，用于显示当前页面的标题和导航按钮，设置按钮等
+                : AppBar(
+                  // 通常位于屏幕顶部，用于显示当前页面的标题和导航按钮，设置按钮等
                   title: const Text(
-                    '消息哈哈',
+                    '消息哈哈1',
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: 28,
@@ -58,11 +86,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   elevation: 0, // 设置导航栏阴影
                   scrolledUnderElevation: 0, // 设置导航栏在滚动时的高度
                   backgroundColor: const Color(0xFFF8F9FA), // 设置导航栏背景颜色
-                  centerTitle: false,  // 设置标题是否居中
-                  titleSpacing: 20, // 
+                  centerTitle: false, // 设置标题是否居中
+                  titleSpacing: 20, //
                   toolbarHeight: 65, // 设置导航栏的高度
-                  actions: [  //右侧的操作按钮列表（如搜索、更多选项等）， 每个元素就是一个按钮
-                    Padding( // 按钮1
+                  actions: [
+                    //右侧的操作按钮列表（如搜索、更多选项等）， 每个元素就是一个按钮
+                    Padding(
+                      // 按钮1
                       padding: const EdgeInsets.only(right: 16),
                       child: Material(
                         color: Colors.transparent,
@@ -75,12 +105,15 @@ class _HomeScreenState extends State<HomeScreen> {
                           onTap: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const SettingsScreen()),
+                              MaterialPageRoute(
+                                builder: (context) => const SettingsScreen(),
+                              ),
                             );
                           },
                           child: Padding(
                             padding: const EdgeInsets.all(12),
-                            child: Icon(  // 齿轮icon
+                            child: Icon(
+                              // 齿轮icon
                               Icons.settings,
                               size: 26,
                               color: Colors.grey.shade700,
@@ -130,32 +163,44 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ],
                   ),
-                  child: FloatingActionButton(  // 这是一个圆形悬浮在界面上的按钮, 一般在右下角
-                    onPressed: () {  // 如果点击这个按钮，将回调 这个函数
-                      Navigator.push( // 切换到另一个页面
+                  child: FloatingActionButton(
+                    // 这是一个圆形悬浮在界面上的按钮, 一般在右下角
+                    onPressed: () {
+                      // 如果点击这个按钮，将回调 这个函数
+                      Navigator.push(
+                        // 切换到另一个页面
                         context,
-                        MaterialPageRoute( // 一种Material风格过渡动画的路由（页面）
+                        MaterialPageRoute(
+                          // 一种Material风格过渡动画的路由（页面）
                           // 要跳转的目标页面（必须是 StatelessWidget 或 StatefulWidget）
                           builder: (context) => const ConversationTypeCreate(),
                         ),
                       );
                     },
                     backgroundColor: Colors.black, // 背景颜色
-                    child: const Icon(Icons.add, size: 30, color: Colors.white), // 子组件，这里是一个"+"图标
-                    elevation: 0,  // 阴影高度，达到 按钮凸起的感觉， 0表示没有阴影
-                    shape: const CircleBorder(),  // 按钮的形状，这里是一个圆形
+                    child: const Icon(
+                      Icons.add,
+                      size: 30,
+                      color: Colors.white,
+                    ), // 子组件，这里是一个"+"图标
+                    elevation: 0, // 阴影高度，达到 按钮凸起的感觉， 0表示没有阴影
+                    shape: const CircleBorder(), // 按钮的形状，这里是一个圆形
                   ),
                 )
                 : null,
         // 底部导航栏
-        bottomNavigationBar: ClipRRect( //裁减圆角矩形
-          borderRadius: const BorderRadius.only( // 圆角半径
+        bottomNavigationBar: ClipRRect(
+          //裁减圆角矩形
+          borderRadius: const BorderRadius.only(
+            // 圆角半径
             topLeft: Radius.circular(20),
             topRight: Radius.circular(20),
           ),
           //需要被裁减的子组件
-          child: Theme(  // 主题组件，可以约束子组件的样式
-            data: ThemeData(  // 这是一个主题数据配置类，可以表示 一种样式
+          child: Theme(
+            // 主题组件，可以约束子组件的样式
+            data: ThemeData(
+              // 这是一个主题数据配置类，可以表示 一种样式
               splashColor: Colors.transparent,
               highlightColor: Colors.transparent,
             ),
@@ -176,31 +221,35 @@ class _HomeScreenState extends State<HomeScreen> {
                   bottom: MediaQuery.of(context).padding.bottom / 2,
                 ),
                 child: BottomNavigationBar(
-                  currentIndex: _selectedIndex,  // 当前被选中的索引
-                  onTap: (index) {  // 点击该组件的某个item时的 回调函数， index表示被点击的索引
+                  currentIndex: _selectedIndex, // 当前被选中的索引
+                  onTap: (index) {
+                    // 点击该组件的某个item时的 回调函数， index表示被点击的索引
                     setState(() {
                       _selectedIndex = index;
                     });
                   },
-                  selectedItemColor: Colors.black,  // 选中时的颜色
+                  selectedItemColor: Colors.black, // 选中时的颜色
                   unselectedItemColor: Colors.grey.shade600, // 未选中时的颜色
                   showSelectedLabels: true, // 是否显示 选中时的label（文字）
                   showUnselectedLabels: true, // 是否显示 未选中时的label（文字）
                   backgroundColor: Colors.white, // 背景颜色
                   elevation: 0, // 阴影
-                  type: BottomNavigationBarType.fixed,  
+                  type: BottomNavigationBarType.fixed,
                   // BottomNavigationBarType.fixed: 所有item的尺寸相同,适合<=3的item数量
                   // BottomNavigationBarType.shifting: 选中的item的尺寸会变大，其他会变小，适合多个item的情况
-                  selectedLabelStyle: const TextStyle(  // 选中时的label样式(你可以实现 选中是 字体改变效果)
+                  selectedLabelStyle: const TextStyle(
+                    // 选中时的label样式(你可以实现 选中是 字体改变效果)
                     fontWeight: FontWeight.w600,
                     fontSize: 12,
                   ),
-                  unselectedLabelStyle: const TextStyle(  // 未选中时的label样式
+                  unselectedLabelStyle: const TextStyle(
+                    // 未选中时的label样式
                     fontWeight: FontWeight.w500,
                     fontSize: 12,
                   ),
-                  iconSize: 26,  // item中 图标的 大小
-                  items: [ // 底部导航栏的选项列表
+                  iconSize: 26, // item中 图标的 大小
+                  items: [
+                    // 底部导航栏的选项列表
                     BottomNavigationBarItem(
                       icon: Material(
                         color: Colors.transparent,
@@ -298,11 +347,16 @@ class _HomeScreenState extends State<HomeScreen> {
         borderRadius: BorderRadius.circular(16),
         child: Material(
           color: Colors.white,
-          child: TextField(  // 文本输入框
-            focusNode: _searchFocusNode,  // 控制文本输入框的 焦点状态
-            decoration: InputDecoration( // 定义文本输入框的样式
+          child: TextField(
+            // 文本输入框
+            focusNode: _searchFocusNode, // 控制文本输入框的 焦点状态
+            decoration: InputDecoration(
+              // 定义文本输入框的样式
               hintText: '搜索对话', // 当输入框为空时显示的提示文字
-              hintStyle: TextStyle(color: Colors.grey.shade400, fontSize: 16), // 设置提示文字的样式
+              hintStyle: TextStyle(
+                color: Colors.grey.shade400,
+                fontSize: 16,
+              ), // 设置提示文字的样式
               // 在输入框左侧添加一个 搜索图标
               prefixIcon: Container(
                 padding: const EdgeInsets.all(12),
@@ -317,7 +371,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 padding: const EdgeInsets.all(12),
                 margin: const EdgeInsets.only(right: 4),
                 child: Icon(
-                  Icons.mic_none_outlined,  // 麦克风图标
+                  Icons.mic_none_outlined, // 麦克风图标
                   color: Colors.grey.shade500,
                   size: 22,
                 ),
@@ -448,7 +502,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         child: Icon(
-                          Icons.chat_bubble_outline,  // 对话图标
+                          Icons.chat_bubble_outline, // 对话图标
                           size: 48,
                           color: Colors.grey.shade300,
                         ),
