@@ -6,16 +6,16 @@ import 'package:ai_assistant/screens/ui/theme.dart';
 
 //import 'package:get/get.dart';
 
-// HACK: 密码登录
+// HACK: 注册界面
 
-class LoginPassword extends StatefulWidget {
-  const LoginPassword({Key? key}) : super(key: key);
+class LoginRegister extends StatefulWidget {
+  const LoginRegister({Key? key}) : super(key: key);
 
   @override
-  State<LoginPassword> createState() => _LoginState();
+  State<LoginRegister> createState() => _RegisterState();
 }
 
-class _LoginState extends State<LoginPassword> {
+class _RegisterState extends State<LoginRegister> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -55,13 +55,13 @@ class _LoginState extends State<LoginPassword> {
                         onTap: () {
                           Navigator.pushReplacementNamed(
                             context,
-                            '/login/register',
+                            '/login/password',
                           );
                         },
                         child: Container(
                           alignment: Alignment.center,
                           child: Text(
-                            "没密码，注册新用户",
+                            "有账号，直接登录",
                             style: TextStyle(
                               color: WcaoTheme.primaryFocus,
                               fontWeight: FontWeight.w500,
@@ -183,7 +183,7 @@ class _LoginState extends State<LoginPassword> {
           borderRadius: WcaoTheme.radius,
         ),
         child: const Text(
-          '直接登录',
+          '注册新用户',
           style: TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.w500,
