@@ -20,6 +20,7 @@ class LoginController extends GetxController {
   }
 
   Future<void> login() async {
+    print(">>> 登录按钮被点击，开始登录流程");
     if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
       errorMessage.value = "用户名或密码不能为空";
       return;

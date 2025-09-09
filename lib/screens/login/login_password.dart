@@ -20,13 +20,8 @@ class _LoginState extends State<LoginPassword> {
   // 初始化login控制器
   final LoginController loginController = Get.put(LoginController());
 
-  final usernameController = TextEditingController();
-  final passwordController = TextEditingController();
-
   @override
   void dispose() {
-    usernameController.dispose();
-    passwordController.dispose();
     super.dispose();
   }
 
@@ -165,6 +160,7 @@ class _LoginState extends State<LoginPassword> {
           child: TextField(
             keyboardType: TextInputType.phone,
             maxLength: 11,
+            controller: loginController.usernameController,
             decoration: InputDecoration(
               counterText: "",
               hintText: "请输入手机号码",
@@ -215,6 +211,7 @@ class _LoginState extends State<LoginPassword> {
             obscureText: true,
             enableSuggestions: false,
             autocorrect: false,
+            controller: loginController.passwordController,
             decoration: InputDecoration(
               hintText: "请输入密码",
               contentPadding: const EdgeInsets.symmetric(
@@ -237,27 +234,29 @@ class _LoginState extends State<LoginPassword> {
   }
 
   /// 登录按钮
-  InkWell loginButton() {
-    return InkWell(
-      onTap:
-          loginController.isLoading.value
-              ? null // 加载中禁用点击
-              : () => loginController.login(), // 触发登录,
-      child: Container(
-        margin: const EdgeInsets.only(top: 36),
-        alignment: Alignment.center,
-        width: double.infinity,
-        height: 44,
-        decoration: BoxDecoration(
-          color: WcaoTheme.primary,
-          borderRadius: WcaoTheme.radius,
-        ),
-        child: const Text(
-          '直接登录',
-          style: TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.w500,
-            color: Colors.white,
+  Widget loginButton() {
+    return Obx(
+      () => InkWell(
+        onTap:
+            loginController.isLoading.value
+                ? null // 加载中禁用点击
+                : () => loginController.login(), // 触发登录,
+        child: Container(
+          margin: const EdgeInsets.only(top: 36),
+          alignment: Alignment.center,
+          width: double.infinity,
+          height: 44,
+          decoration: BoxDecoration(
+            color: WcaoTheme.primary,
+            borderRadius: WcaoTheme.radius,
+          ),
+          child: const Text(
+            '直接登录',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.w500,
+              color: Colors.white,
+            ),
           ),
         ),
       ),

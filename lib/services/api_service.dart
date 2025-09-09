@@ -7,7 +7,7 @@ import 'package:ai_assistant/state/token.dart'; // 你的 TokenController
 
 class ApiService {
   final Dio _dio = Dio();
-  final String baseUrl = "http://127.0.0.1:5609"; // 未来可配置为环境变量
+  final String baseUrl = "http://192.168.0.102:5609"; // 未来可配置为环境变量
 
   ApiService() {
     _dio.options.baseUrl = baseUrl;
