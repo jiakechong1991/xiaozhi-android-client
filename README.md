@@ -1,4 +1,4 @@
-# 小智AI助手 Android IOS 客户端
+# 小智AI助手 Android IOS  客户端
 <p align="center">
   <a href="https://github.com/TOM88812/xiaozhi-android-client/releases/latest">
     <img src="https://img.shields.io/github/v/release/TOM88812/xiaozhi-android-client?style=flat-square&logo=github&color=blue" alt="Release"/>
