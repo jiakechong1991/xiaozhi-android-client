@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
-import 'package:ai_assistant/screens/login/widgets/head.dart';
 //import 'package:ai_assistant/state/token.dart';
 import 'package:ai_assistant/screens/ui/theme.dart';
 import 'dart:async';
@@ -48,7 +47,7 @@ class _RegisterState extends State<LoginRegister> {
                 // mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Head(), // 这是手机号输入框，共用组件，所以共用了
+                  buildUsername(), // 这是手机号输入框，共用组件，所以共用了
                   buildPassWord(),
                   // buildVerificationCode(), 临时关闭验证码空间，以后再弄
                   rigisterButton(),
@@ -135,6 +134,62 @@ class _RegisterState extends State<LoginRegister> {
           ),
         ),
       ),
+    );
+  }
+
+  /// 账户输入框
+  Column buildUsername() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '注册',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w500,
+            color: WcaoTheme.base,
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 36),
+          child: Wrap(
+            children: [
+              Text(
+                '账户名称',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: WcaoTheme.placeholder,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 12),
+          height: 50,
+          child: TextField(
+            keyboardType: TextInputType.phone,
+            maxLength: 11,
+            decoration: InputDecoration(
+              counterText: "",
+              hintText: "请输入手机号码",
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 0,
+                horizontal: 16,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: WcaoTheme.outline, width: 2),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: WcaoTheme.primaryFocus, width: 2),
+              ),
+            ),
+          ),
+        ),
+      ],
     );
   }
 

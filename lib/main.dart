@@ -11,6 +11,7 @@ import 'package:ai_assistant/screens/test_screen.dart';
 import 'package:ai_assistant/utils/app_theme.dart';
 import 'package:ai_assistant/route.dart';
 import 'package:ai_assistant/state/token.dart';
+import 'package:ai_assistant/services/api_service.dart';
 import 'package:opus_flutter/opus_flutter.dart' as opus_flutter;
 import 'package:opus_dart/opus_dart.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -104,6 +105,7 @@ void main() async {
   // 初始化配置管理
   final configProvider = ConfigProvider();
   Get.put(TokenController());
+  Get.put(ApiService()); // ApiService 无异步构造函数时
 
   /*
   flutter

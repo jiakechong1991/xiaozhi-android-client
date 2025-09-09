@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
-import 'package:ai_assistant/screens/login/widgets/head.dart';
 //import 'package:ai_assistant/state/token.dart';
 import 'package:ai_assistant/screens/ui/theme.dart';
+import 'package:ai_assistant/controllers/login_controller.dart';
+import 'package:get/get.dart';
 
 //import 'package:get/get.dart';
 
@@ -16,6 +17,19 @@ class LoginPassword extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginPassword> {
+  // 初始化login控制器
+  final LoginController loginController = Get.put(LoginController());
+
+  final usernameController = TextEditingController();
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    usernameController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,7 +46,7 @@ class _LoginState extends State<LoginPassword> {
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Head(),
+                buildUsername(),
                 buildPassWord(),
                 loginButton(),
                 Container(
@@ -117,6 +131,62 @@ class _LoginState extends State<LoginPassword> {
     );
   }
 
+  /// 账户输入框
+  Column buildUsername() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '登录',
+          style: TextStyle(
+            fontSize: 30,
+            fontWeight: FontWeight.w500,
+            color: WcaoTheme.base,
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 36),
+          child: Wrap(
+            children: [
+              Text(
+                '账户名称',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: WcaoTheme.placeholder,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
+          ),
+        ),
+        Container(
+          margin: const EdgeInsets.only(top: 12),
+          height: 50,
+          child: TextField(
+            keyboardType: TextInputType.phone,
+            maxLength: 11,
+            decoration: InputDecoration(
+              counterText: "",
+              hintText: "请输入手机号码",
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 0,
+                horizontal: 16,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: WcaoTheme.outline, width: 2),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: WcaoTheme.primaryFocus, width: 2),
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   /// 密码登录
   Column buildPassWord() {
     return Column(
@@ -169,10 +239,10 @@ class _LoginState extends State<LoginPassword> {
   /// 登录按钮
   InkWell loginButton() {
     return InkWell(
-      onTap: () {
-        //TokenController.to.set();
-        //Get.offAllNamed('/home');
-      },
+      onTap:
+          loginController.isLoading.value
+              ? null // 加载中禁用点击
+              : () => loginController.login(), // 触发登录,
       child: Container(
         margin: const EdgeInsets.only(top: 36),
         alignment: Alignment.center,
