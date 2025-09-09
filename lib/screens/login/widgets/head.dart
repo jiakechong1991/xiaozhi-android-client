@@ -27,7 +27,7 @@ class _HeadState extends State<Head> {
           child: Wrap(
             children: [
               Text(
-                '手机号码',
+                '账户名称',
                 style: TextStyle(
                   fontSize: 14,
                   color: WcaoTheme.placeholder,
