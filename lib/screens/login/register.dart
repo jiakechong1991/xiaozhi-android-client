@@ -43,89 +43,94 @@ class _RegisterState extends State<LoginRegister> {
             alignment: Alignment.centerLeft,
             padding: const EdgeInsets.symmetric(horizontal: 26),
             margin: const EdgeInsets.only(bottom: 56),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Head(), // 这是手机号输入框，共用组件，所以共用了
-                buildPassWord(),
-                // buildVerificationCode(),
-                loginButton(),
-                Container(
-                  margin: const EdgeInsets.only(top: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Opacity(
-                        opacity: 0,
-                        child: Text(
-                          "忘记密码?",
-                          style: TextStyle(
-                            color: WcaoTheme.placeholder,
-                            fontSize: 12,
-                          ),
-                        ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          Navigator.pushReplacementNamed(
-                            context,
-                            '/login/password',
-                          );
-                        },
-                        child: Container(
-                          alignment: Alignment.center,
+            child: SingleChildScrollView(
+              child: Column(
+                // mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Head(), // 这是手机号输入框，共用组件，所以共用了
+                  buildPassWord(),
+                  // buildVerificationCode(), 临时关闭验证码空间，以后再弄
+                  rigisterButton(),
+                  Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        Opacity(
+                          opacity: 0,
                           child: Text(
-                            "有账号，直接登录",
+                            "忘记密码?",
                             style: TextStyle(
-                              color: WcaoTheme.primaryFocus,
-                              fontWeight: FontWeight.w500,
+                              color: WcaoTheme.placeholder,
+                              fontSize: 12,
                             ),
                           ),
                         ),
-                      ),
-                      InkWell(
-                        onTap: () {
-                          //Get.toNamed('/verify-code/reset_password');
-                        },
-                        child: Text(
-                          "忘记密码?",
-                          style: TextStyle(
-                            color: WcaoTheme.secondary,
-                            fontSize: 12,
+                        InkWell(
+                          onTap: () {
+                            Navigator.pushReplacementNamed(
+                              context,
+                              '/login/password',
+                            );
+                          },
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: Text(
+                              "有账号，直接登录",
+                              style: TextStyle(
+                                color: WcaoTheme.primaryFocus,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
+                        InkWell(
+                          onTap: () {
+                            //Get.toNamed('/verify-code/reset_password');
+                          },
+                          child: Text(
+                            "忘记密码?",
+                            style: TextStyle(
+                              color: WcaoTheme.secondary,
+                              fontSize: 12,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-                Container(
-                  margin: const EdgeInsets.only(top: 16),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        "登录即同意",
-                        style: TextStyle(color: WcaoTheme.placeholder),
-                      ),
-                      InkWell(
-                        child: const Text('《用户协议》'),
-                        onTap: () {
-                          Navigator.pushNamed(context, "/agreement/user");
-                        },
-                      ),
-                      Text("及", style: TextStyle(color: WcaoTheme.placeholder)),
-                      InkWell(
-                        child: const Text('《隐私政策》'),
-                        onTap: () {
-                          Navigator.pushNamed(context, "/agreement/privacy");
-                        },
-                      ),
-                    ],
+                  Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Text(
+                          "登录即同意",
+                          style: TextStyle(color: WcaoTheme.placeholder),
+                        ),
+                        InkWell(
+                          child: const Text('《用户协议》'),
+                          onTap: () {
+                            Navigator.pushNamed(context, "/agreement/user");
+                          },
+                        ),
+                        Text(
+                          "及",
+                          style: TextStyle(color: WcaoTheme.placeholder),
+                        ),
+                        InkWell(
+                          child: const Text('《隐私政策》'),
+                          onTap: () {
+                            Navigator.pushNamed(context, "/agreement/privacy");
+                          },
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
         ),
@@ -334,8 +339,8 @@ class _RegisterState extends State<LoginRegister> {
     });
   }
 
-  /// 登录按钮
-  InkWell loginButton() {
+  /// 注册按钮
+  InkWell rigisterButton() {
     return InkWell(
       onTap: () {
         //TokenController.to.set();

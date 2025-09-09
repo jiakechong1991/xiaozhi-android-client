@@ -30,6 +30,9 @@ dependencies:
   image_picker: ^1.0.7  # 从相册/相机 选择图片/视频
   fl_chart: ^0.66.2  # 可视化，绘图库
   get: ^4.7.2  # get风格库
+  jwt_decoder: ^2.0.1  # jwt解析库
+  flutter_secure_storage: ^9.2.4 # token安全存储库
+  dio: ^5.9.0 # 一个更好用的http请求库
   
   
   # 音频处理相关库
