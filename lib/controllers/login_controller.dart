@@ -2,6 +2,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/services/api_service.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginController extends GetxController {
   final ApiService _api = Get.find<ApiService>();
@@ -19,6 +20,22 @@ class LoginController extends GetxController {
     super.onClose();
   }
 
+  @override
+  void onInit() {
+    super.onInit();
+    _loadSavedUsername(); // 初始化时加载保存的用户名
+  }
+
+  Future<void> _loadSavedUsername() async {
+    final prefs = await SharedPreferences.getInstance();
+    final savedUsername = prefs.getString('saved_username');
+    if (savedUsername != null && savedUsername.isNotEmpty) {
+      usernameController.text = savedUsername;
+      // 可选：自动聚焦到密码框
+      FocusScope.of(Get.context!).requestFocus(FocusNode());
+    }
+  }
+
   Future<void> login() async {
     print(">>> 登录按钮被点击，开始登录流程");
     if (usernameController.text.isEmpty || passwordController.text.isEmpty) {
@@ -31,6 +48,9 @@ class LoginController extends GetxController {
 
     try {
       await _api.login(usernameController.text, passwordController.text);
+      // 保存用户名，方便输入
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setString('saved_username', usernameController.text);
       Get.offAllNamed('/home');
     } catch (e) {
       errorMessage.value = e.toString().replaceAll("Exception: ", "");

@@ -3,10 +3,12 @@ import 'package:ai_assistant/screens/home_screen.dart';
 import 'package:ai_assistant/screens/login/login_password.dart';
 import 'package:ai_assistant/screens/login/register.dart';
 import 'package:ai_assistant/screens/conversation_create.dart';
+import 'package:ai_assistant/models/conversation.dart';
 
 import 'package:ai_assistant/screens/test_screen.dart';
 import 'package:ai_assistant/screens/agreement/privacy.dart';
 import 'package:ai_assistant/screens/agreement/user.dart';
+import 'package:ai_assistant/screens/chat_screen.dart';
 
 List<GetPage<dynamic>> getRoutes = [
   GetPage(name: '/home', page: () => const HomeScreen()),
@@ -25,4 +27,12 @@ List<GetPage<dynamic>> getRoutes = [
   // 聊天相关
   // 创建agent
   GetPage(name: '/agent/create', page: () => const ConversationTypeCreate()),
+  GetPage(
+    name: '/agent/chatlist',
+    page: () {
+      // 从 Get.arguments 中获取参数
+      final conversation = Get.arguments as Conversation;
+      return ChatScreen(conversation: conversation);
+    },
+  ),
 ];

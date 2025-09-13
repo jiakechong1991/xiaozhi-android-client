@@ -128,12 +128,16 @@ class ApiService {
       },
     );
 
-    if (response.statusCode == 200) {
+    if (response.statusCode == 201) {
       print("创建agent成功");
       final data = response.data as Map<String, dynamic>;
-
+      // 打印data
+      print(data);
       return data;
     } else {
+      print("创建agent失败---");
+      final data = response.data as Map<String, dynamic>;
+      print(data);
       throw Exception('创建agent失败: ${response.statusMessage}');
     }
   }

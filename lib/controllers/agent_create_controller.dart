@@ -2,6 +2,9 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/services/api_service.dart';
+import 'package:provider/provider.dart';
+import 'package:ai_assistant/providers/conversation_provider.dart';
+import 'package:ai_assistant/models/conversation.dart';
 
 class CreateAgentController extends GetxController {
   final ApiService _api = Get.find<ApiService>();
@@ -40,7 +43,7 @@ class CreateAgentController extends GetxController {
     errorMessage.value = '';
 
     try {
-      await _api.create_agent(
+      final responseData = await _api.create_agent(
         agentNameController.text,
         sex.value,
         birthdayController.text,
@@ -48,9 +51,34 @@ class CreateAgentController extends GetxController {
         hobbyController.text,
       );
       print("创建agent成功,要返回聊天界面了， 这里先用log代替");
-      //Get.offAllNamed('/home');其实这里不需要，因为create_agent接口会返回创建的agent信息，所以可以直接跳转到home页面
+      //回到 聊天界面
+      String? agentId = responseData['id']?.toString();
+      String agentName = responseData['agent_name'];
+
+      // ✅ 使用 Get.context 获取 context
+      final context = Get.context;
+      if (context == null) {
+        throw Exception('Context is not available');
+      }
+
+      final conversation = await Provider.of<ConversationProvider>(
+        context,
+        listen: false,
+      ).createConversation(
+        title: '与 ${agentName} 的对话',
+        type: ConversationType.xiaozhi,
+        configId: agentId!,
+      );
+      // 带参数跳转到聊天列表界面
+      Get.toNamed('/agent/chatlist', arguments: conversation);
+      print(">>> 创建agent成功end");
     } catch (e) {
-      errorMessage.value = e.toString().replaceAll("Exception: ", "");
+      print(">>> 创建agent失败");
+      print(e.toString());
+      print("----");
+      errorMessage.value = e.toString().replaceAll("Exception: ", "").trim();
+      print(errorMessage);
+      // 打印错误信息
     } finally {
       isLoading.value = false;
     }
