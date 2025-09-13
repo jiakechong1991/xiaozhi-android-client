@@ -5,6 +5,7 @@ import 'package:ai_assistant/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'package:ai_assistant/providers/conversation_provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
+import 'package:ai_assistant/providers/config_provider.dart';
 
 class CreateAgentController extends GetxController {
   final ApiService _api = Get.find<ApiService>();
@@ -60,17 +61,18 @@ class CreateAgentController extends GetxController {
       if (context == null) {
         throw Exception('Context is not available');
       }
-
+      final xiaozhiConfigs =
+          Provider.of<ConfigProvider>(context, listen: false).xiaozhiConfigs;
       final conversation = await Provider.of<ConversationProvider>(
         context,
         listen: false,
       ).createConversation(
         title: '与 ${agentName} 的对话',
         type: ConversationType.xiaozhi,
-        configId: agentId!,
+        configId: xiaozhiConfigs.first.id!, // 默认使用第一个小智server
       );
       // 带参数跳转到聊天列表界面
-      Get.toNamed('/agent/chatlist', arguments: conversation);
+      Get.offAllNamed('/agent/chatlist', arguments: conversation);
       print(">>> 创建agent成功end");
     } catch (e) {
       print(">>> 创建agent失败");

@@ -1,17 +1,19 @@
 enum ConversationType { dify, xiaozhi }
 
-// 对话的数据结构
+// agent对话的数据结构
 class Conversation {
-  final String id;
-  final String title;  // 与xx的对话
+  final String id; // agent_id
+  final String title; // 与agent_name的对话
   final ConversationType type;
-  final String configId; // For both Xiaozhi and Dify conversations, references the config
+  final String
+  configId; // server类型 For both Xiaozhi and Dify conversations, references the config
   final DateTime lastMessageTime;
-  final String lastMessage;  // 最后一条消息
+  final String lastMessage; // 最后一条消息
   final int unreadCount;
   final bool isPinned;
 
-  Conversation({ // 构造函数
+  Conversation({
+    // 构造函数
     required this.id,
     required this.title,
     required this.type,

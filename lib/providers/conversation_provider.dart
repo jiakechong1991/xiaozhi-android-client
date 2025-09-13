@@ -7,6 +7,7 @@ import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/message.dart';
 import 'package:path_provider/path_provider.dart';
 
+// 这个对应 多agent的对话列表，[每个agent是一个对话项]
 class ConversationProvider extends ChangeNotifier {
   List<Conversation> _conversations = [];
   Map<String, List<Message>> _messages = {};

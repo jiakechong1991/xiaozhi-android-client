@@ -1,3 +1,4 @@
+import 'package:ai_assistant/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
@@ -20,7 +21,7 @@ import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Conversation conversation;  //  增加一个参数，用于传递当前会话
+  final Conversation conversation; //  增加一个参数，用于传递当前会话
 
   const ChatScreen({super.key, required this.conversation});
 
@@ -93,7 +94,9 @@ class _ChatScreenState extends State<ChatScreen> {
         // 添加定时器，定期检查连接状态
         // 调用方法是： Timer.periodic(Duration interval, void Function(Timer) callback)
         // (timer) { ... } 这是一种匿名函数的写法
-        _connectionCheckTimer = Timer.periodic(const Duration(seconds: 2), (timer,) {
+        _connectionCheckTimer = Timer.periodic(const Duration(seconds: 2), (
+          timer,
+        ) {
           // mounted，widget提供的属性，判断自己是否已经 挂在了widget树上
           if (mounted && _xiaozhiService != null) {
             final wasConnected = _xiaozhiService!.isConnected;
@@ -177,6 +180,10 @@ class _ChatScreenState extends State<ChatScreen> {
   // 初始化小智服务
   Future<void> _initXiaozhiService() async {
     final configProvider = Provider.of<ConfigProvider>(context, listen: false);
+    print('configId from conversation: ${widget.conversation.configId}');
+    print(
+      'Available xiaozhi configs: ${configProvider.xiaozhiConfigs.map((c) => c.id)}',
+    );
     final xiaozhiConfig = configProvider.xiaozhiConfigs.firstWhere(
       (config) => config.id == widget.conversation.configId,
     );
@@ -341,7 +348,11 @@ class _ChatScreenState extends State<ChatScreen> {
             if (_xiaozhiService != null) {
               _xiaozhiService!.stopPlayback();
             }
-            Navigator.of(context).pop();  // 返回上一个页面
+            // 导航到home界面
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => HomeScreen()),
+            );
           },
         ),
         title:
@@ -408,7 +419,8 @@ class _ChatScreenState extends State<ChatScreen> {
                     ),
                   ],
                 )
-                : Consumer<ConfigProvider>(  //Consumer组件，会监听 某个共享状态（比如 ConfigProvider），
+                : Consumer<ConfigProvider>(
+                  //Consumer组件，会监听 某个共享状态（比如 ConfigProvider），
                   // 一旦状态变化，就会自动重新执行builder函数
                   builder: (context, configProvider, child) {
                     // 查找此会话对应的Dify配置
@@ -496,11 +508,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 ),
       ),
       body: Column(
-        children: [  // 页面的主要widget组件（他们会形成大的部分）
+        children: [
+          // 页面的主要widget组件（他们会形成大的部分）
           if (widget.conversation.type == ConversationType.xiaozhi)
-            _buildXiaozhiInfo(),  // 上面部分 （小智连接信息）
-          Expanded(child: _buildMessageList()),  // 中间部分（消息列表）
-          _buildInputArea(),  // 下面部分（信息输入区域）
+            _buildXiaozhiInfo(), // 上面部分 （小智连接信息）
+          Expanded(child: _buildMessageList()), // 中间部分（消息列表）
+          _buildInputArea(), // 下面部分（信息输入区域）
         ],
       ),
     );
@@ -651,12 +664,13 @@ class _ChatScreenState extends State<ChatScreen> {
           controller: _scrollController, // 滚动控制器
           padding: const EdgeInsets.all(16), // 列表item的内边距，给所有 item 外围留出空白
           reverse: true, // 新消息在下面，而非上面
-          itemCount: messages.length + (_isLoading ? 1 : 0),  // item列表 总数
+          itemCount: messages.length + (_isLoading ? 1 : 0), // item列表 总数
           cacheExtent: 1000.0, // 预加载范围：上下各预渲染 1000 像素范围内的 item，提升滚动流畅性
           addRepaintBoundaries: true,
-          addAutomaticKeepAlives: true, 
+          addAutomaticKeepAlives: true,
           physics: const ClampingScrollPhysics(), // 滚动效果（到边界就停，不回弹）
-          itemBuilder: (context, index) { // 根据index动态构建item
+          itemBuilder: (context, index) {
+            // 根据index动态构建item
             if (_isLoading && index == 0) {
               return MessageBubble(
                 message: Message(
@@ -675,9 +689,12 @@ class _ChatScreenState extends State<ChatScreen> {
             // 获得对应的msg
             final message = messages[messages.length - 1 - adjustedIndex];
 
-            return RepaintBoundary(  // 通知flutter,它包含的widget，是需要经常 重新绘制的，提升性能用
+            return RepaintBoundary(
+              // 通知flutter,它包含的widget，是需要经常 重新绘制的，提升性能用
               child: MessageBubble(
-                key: ValueKey(message.id), //从message.id初始化一个key，作为 listView比较多个item的id_key
+                key: ValueKey(
+                  message.id,
+                ), //从message.id初始化一个key，作为 listView比较多个item的id_key
                 message: message,
                 conversationType: widget.conversation.type,
               ),
@@ -768,7 +785,7 @@ class _ChatScreenState extends State<ChatScreen> {
                       fontSize: 16,
                     ),
                     maxLines: 1,
-                    textInputAction: TextInputAction.send,  // 发送按钮
+                    textInputAction: TextInputAction.send, // 发送按钮
                     onSubmitted: (_) => _sendMessage(),
                     onChanged: (_) => setState(() {}),
                   ),
