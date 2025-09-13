@@ -4,6 +4,7 @@ import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/screens/ui/theme.dart';
 import 'package:ai_assistant/controllers/login_controller.dart';
 import 'package:get/get.dart';
+import 'package:flutter/services.dart';
 
 //import 'package:get/get.dart';
 
@@ -158,12 +159,18 @@ class _LoginState extends State<LoginPassword> {
           margin: const EdgeInsets.only(top: 12),
           height: 50,
           child: TextField(
-            keyboardType: TextInputType.phone,
-            maxLength: 11,
+            keyboardType: TextInputType.text,
+            autocorrect: false, // ✅ 关闭自动纠正
+            enableSuggestions: false, // ✅ 关闭输入建议
+            textInputAction: TextInputAction.next, // 优化：点击回车跳到下一个字段
+            inputFormatters: [
+              FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9]*$')),
+            ],
+            maxLength: 16,
             controller: loginController.usernameController,
             decoration: InputDecoration(
               counterText: "",
-              hintText: "请输入手机号码",
+              hintText: "请输入英文数字的账户名称",
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 0,
                 horizontal: 16,
