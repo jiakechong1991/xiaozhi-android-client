@@ -6,7 +6,9 @@ import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/models/dify_config.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
+import 'package:ai_assistant/controllers/agent_create_controller.dart';
 import 'package:http/http.dart' as http;
+import 'package:get/get.dart';
 import 'dart:convert';
 
 class ConversationTypeCreate extends StatefulWidget {
@@ -18,20 +20,13 @@ class ConversationTypeCreate extends StatefulWidget {
 
 class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
   XiaozhiConfig? _selectedXiaozhiConfig;
-  String? default_gender = '女';
 
-  // 表单控制器
-  final TextEditingController _nameController = TextEditingController();
-  final TextEditingController _ageController = TextEditingController();
-  final TextEditingController _jobController = TextEditingController();
-  final TextEditingController _personalityController = TextEditingController();
+  final CreateAgentController createAgentController = Get.put(
+    CreateAgentController(),
+  );
 
   @override
   void dispose() {
-    _nameController.dispose();
-    _ageController.dispose();
-    _jobController.dispose();
-    _personalityController.dispose();
     super.dispose();
   }
 
@@ -118,7 +113,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: _nameController,
+                controller: createAgentController.agentNameController,
                 decoration: InputDecoration(
                   hintText: '请输入名字',
                   border: OutlineInputBorder(),
@@ -127,47 +122,47 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
               const SizedBox(height: 15),
 
               const Text(
-                '可选性别：',
+                '可选性别a：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              DropdownButtonFormField<String>(
-                value: default_gender,
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  // 可选：添加 label 或 hint
-                  // labelText: '性别',
+              Obx(
+                () => DropdownButtonFormField<String>(
+                  value: createAgentController.sex.value,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    // 可选：添加 label 或 hint
+                    // labelText: '性别',
+                  ),
+                  items: [
+                    DropdownMenuItem<String>(value: 'm', child: Text('男')),
+                    DropdownMenuItem<String>(value: 'f', child: Text('女')),
+                  ],
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      createAgentController.sex.value =
+                          newValue; // ✅ 同步到 controller
+                    }
+                  },
+                  // 可选：添加验证
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '请选择性别';
+                    }
+                    return null;
+                  },
                 ),
-                items:
-                    ['男', '女'].map((String value) {
-                      return DropdownMenuItem<String>(
-                        value: value,
-                        child: Text(value),
-                      );
-                    }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    default_gender = newValue; // 更新选中的性别
-                  });
-                },
-                // 可选：添加验证
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return '请选择性别';
-                  }
-                  return null;
-                },
               ),
               const SizedBox(height: 15),
 
               const Text(
-                '年龄：',
+                '生日：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: _ageController,
+                controller: createAgentController.birthdayController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
-                  hintText: '请输入年龄',
+                  hintText: '请输入生日',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -178,7 +173,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: _jobController,
+                controller: createAgentController.signatureController,
                 decoration: InputDecoration(
                   hintText: '请输入职业',
                   border: OutlineInputBorder(),
@@ -191,7 +186,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: _personalityController,
+                controller: createAgentController.hobbyController,
                 decoration: InputDecoration(
                   hintText: '请输入性格',
                   border: OutlineInputBorder(),
@@ -225,7 +220,10 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
         ],
       ),
       child: ElevatedButton(
-        onPressed: _createConversation,
+        onPressed:
+            createAgentController.isLoading.value
+                ? null // 加载中禁用点击
+                : () => createAgentController.create_agent(), // 点击 创建角色按钮
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: Colors.black,
@@ -243,103 +241,5 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
         ),
       ),
     );
-  }
-
-  void _createConversation() async {
-    _createXiaozhiConversation();
-  }
-
-  Future<void> _createXiaozhiConversation() async {
-    // 获取输入值
-    final String name = _nameController.text.trim();
-    final String ageStr = _ageController.text.trim();
-    final String job = _jobController.text.trim();
-    final String personality = _personalityController.text.trim();
-    final String gender = default_gender ?? '女';
-
-    // 简单验证
-    if (name.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请填写名字')));
-      return;
-    }
-    if (ageStr.isEmpty) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请填写年龄')));
-      return;
-    }
-    int? age = int.tryParse(ageStr);
-    if (age == null || age < 0 || age > 100) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('请输入有效的年龄')));
-      return;
-    }
-
-    // 构造请求，向服务端发送 创建角色的请求
-    // 构造请求体
-    final Map<String, dynamic> requestBody = {
-      "name": name,
-      "age": age,
-      "gender": gender,
-      "job": job,
-      "personality": personality,
-    };
-
-    try {
-      final response = await http.post(
-        Uri.parse('http://192.168.1.22:7865/create_role'),
-        headers: <String, String>{
-          'Content-Type': 'application/json; charset=UTF-8',
-        },
-        body: jsonEncode(requestBody),
-      );
-
-      if (response.statusCode == 200 || response.statusCode == 201) {
-        // 创建成功
-        final responseData = jsonDecode(response.body);
-        String? roleId = responseData['id']?.toString(); // 假设返回中有 id 字段
-        String roleName = responseData['name'] ?? name;
-
-        // 可以在这里保存到本地（比如 ConversationProvider）
-
-        //////////////////////////////
-        final conversation = await Provider.of<ConversationProvider>(
-          context,
-          listen: false,
-        ).createConversation(
-          title: '与 ${roleName} 的对话',
-          type: ConversationType.xiaozhi,
-          configId: roleId!,
-        );
-
-        // 跳转到聊天界面
-        if (context.mounted) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => ChatScreen(conversation: conversation),
-            ),
-          );
-        }
-
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('角色 "$roleName" 创建成功！')));
-      } else {
-        // 服务器返回错误
-        final errorMsg = jsonDecode(response.body)['message'] ?? '创建失败，请重试';
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('创建失败：$errorMsg')));
-      }
-    } catch (e) {
-      // 网络异常等
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('网络错误：$e')));
-    }
   }
 }

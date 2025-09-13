@@ -1,4 +1,5 @@
 import 'package:get/get.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 /* 
 使用 .obs 包装变量（如 String.obs, int.obs, List.obs）
@@ -18,4 +19,15 @@ class TokenController extends GetxController {
 
   /// 删除token
   void delete() => token.value = '';
+
+  // /// 使用 jwt_decoder 官方库判断 access token 是否过期
+  // Future<bool> isAccessTokenExpired() async {
+  //   final accessToken = await TokenStorage.getAccessToken();
+  //   if (accessToken == null || accessToken.isEmpty) {
+  //     return true; // 无 token 视为过期
+  //   }
+
+  //   // 核心：一行代码判断是否过期
+  //   return JwtDecoder.isExpired(accessToken);
+  // }
 }

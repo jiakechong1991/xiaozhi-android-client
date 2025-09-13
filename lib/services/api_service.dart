@@ -53,7 +53,7 @@ class ApiService {
 
     try {
       final response = await _dio.post(
-        '/api/auth/token/refresh/', // 通常是这个路径，根据你的 simplejwt 配置调整
+        '/api/auth/refresh/', // 通常是这个路径，根据你的 simplejwt 配置调整
         data: {'refresh': refreshToken},
       );
 
@@ -106,6 +106,35 @@ class ApiService {
       return data;
     } else {
       throw Exception('登录失败: ${response.statusMessage}');
+    }
+  }
+
+  // 👇 create_agent接口
+  Future<Map<String, dynamic>> create_agent(
+    String agent_name,
+    String sex,
+    String birthday,
+    String signature,
+    String hobby,
+  ) async {
+    final response = await _dio.post(
+      '/api/agents/',
+      data: {
+        'agent_name': agent_name,
+        'sex': sex,
+        'birthday': birthday,
+        'signature': signature,
+        'hobby': hobby,
+      },
+    );
+
+    if (response.statusCode == 200) {
+      print("创建agent成功");
+      final data = response.data as Map<String, dynamic>;
+
+      return data;
+    } else {
+      throw Exception('创建agent失败: ${response.statusMessage}');
     }
   }
 

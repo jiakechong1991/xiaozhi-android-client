@@ -167,15 +167,16 @@ class _HomeScreenState extends State<HomeScreen> {
                     // 这是一个圆形悬浮在界面上的按钮, 一般在右下角
                     onPressed: () {
                       // 如果点击这个按钮，将回调 这个函数
-                      Navigator.push(
-                        // 切换到另一个页面
-                        context,
-                        MaterialPageRoute(
-                          // 一种Material风格过渡动画的路由（页面）
-                          // 要跳转的目标页面（必须是 StatelessWidget 或 StatefulWidget）
-                          builder: (context) => const ConversationTypeCreate(),
-                        ),
-                      );
+                      // Navigator.push(
+                      //   // 切换到另一个页面
+                      //   context,
+                      //   MaterialPageRoute(
+                      //     // 一种Material风格过渡动画的路由（页面）
+                      //     // 要跳转的目标页面（必须是 StatelessWidget 或 StatefulWidget）
+                      //     builder: (context) => const ConversationTypeCreate(),
+                      //   ),
+                      // );
+                      Get.toNamed('/agent/create');
                     },
                     backgroundColor: Colors.black, // 背景颜色
                     child: const Icon(
