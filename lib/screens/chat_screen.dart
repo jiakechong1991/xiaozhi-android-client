@@ -86,7 +86,7 @@ class _ChatScreenState extends State<ChatScreen> {
       Provider.of<ConversationProvider>(
         context,
         listen: false, // 本widget本次不监听数据变换，进而重绘制UI
-      ).markConversationAsRead(widget.conversation.id);
+      ).markConversationAsRead(widget.conversation.agent_id);
 
       // 如果是小智对话，初始化服务
       if (widget.conversation.type == ConversationType.xiaozhi) {
@@ -223,7 +223,7 @@ class _ChatScreenState extends State<ChatScreen> {
       // 忽略空消息
       if (content.isNotEmpty) {
         conversationProvider.addMessage(
-          conversationId: widget.conversation.id,
+          conversationId: widget.conversation.agent_id,
           role: MessageRole.assistant,
           content: content,
         );
@@ -238,7 +238,7 @@ class _ChatScreenState extends State<ChatScreen> {
         // 语音消息可能有延迟，使用Future.microtask确保UI已更新
         Future.microtask(() {
           conversationProvider.addMessage(
-            conversationId: widget.conversation.id,
+            conversationId: widget.conversation.agent_id,
             role: MessageRole.user,
             content: content,
           );
@@ -649,7 +649,7 @@ class _ChatScreenState extends State<ChatScreen> {
   Widget _buildMessageList() {
     return Consumer<ConversationProvider>(
       builder: (context, provider, child) {
-        final messages = provider.getMessages(widget.conversation.id);
+        final messages = provider.getMessages(widget.conversation.agent_id);
 
         if (messages.isEmpty) {
           return Center(
@@ -674,7 +674,7 @@ class _ChatScreenState extends State<ChatScreen> {
             if (_isLoading && index == 0) {
               return MessageBubble(
                 message: Message(
-                  id: 'loading',
+                  messageId: 'loading',
                   conversationId: '',
                   role: MessageRole.assistant,
                   content: '思考中...',
@@ -693,7 +693,7 @@ class _ChatScreenState extends State<ChatScreen> {
               // 通知flutter,它包含的widget，是需要经常 重新绘制的，提升性能用
               child: MessageBubble(
                 key: ValueKey(
-                  message.id,
+                  message.messageId,
                 ), //从message.id初始化一个key，作为 listView比较多个item的id_key
                 message: message,
                 conversationType: widget.conversation.type,
@@ -1143,14 +1143,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
     if (_difyService != null) {
       // 使用会话的ID作为sessionId，确保与发送消息时使用相同的标识符
-      final sessionId = widget.conversation.id;
+      final sessionId = widget.conversation.agent_id;
 
       // 清除当前会话的conversation_id
       await _difyService!.clearConversation(sessionId);
 
       // 添加系统消息表明这是一个新对话
       await conversationProvider.addMessage(
-        conversationId: widget.conversation.id,
+        conversationId: widget.conversation.agent_id,
         role: MessageRole.system,
         content: '--- 开始新对话 ---',
       );
@@ -1175,7 +1175,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Add user message
     await conversationProvider.addMessage(
-      conversationId: widget.conversation.id,
+      conversationId: widget.conversation.agent_id,
       role: MessageRole.user,
       content: message,
     );
@@ -1199,7 +1199,7 @@ class _ChatScreenState extends State<ChatScreen> {
         }
 
         // 使用会话的ID作为sessionId，使每次请求保持相同的对话上下文
-        final sessionId = widget.conversation.id;
+        final sessionId = widget.conversation.agent_id;
 
         // 使用阻塞式响应
         final response = await _difyService!.sendMessage(
@@ -1213,7 +1213,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
         // 添加助手回复
         await conversationProvider.addMessage(
-          conversationId: widget.conversation.id,
+          conversationId: widget.conversation.agent_id,
           role: MessageRole.assistant,
           content: response,
         );
@@ -1245,7 +1245,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       // Add error message
       await conversationProvider.addMessage(
-        conversationId: widget.conversation.id,
+        conversationId: widget.conversation.agent_id,
         role: MessageRole.assistant,
         content: '发生错误: ${e.toString()}',
       );
@@ -1572,7 +1572,7 @@ class _ChatScreenState extends State<ChatScreen> {
       // 获取应用的文档目录
       final appDir = await getApplicationDocumentsDirectory();
       final conversationDir = Directory(
-        '${appDir.path}/conversations/${widget.conversation.id}/images',
+        '${appDir.path}/conversations/${widget.conversation.agent_id}/images',
       );
       await conversationDir.create(recursive: true);
 
@@ -1588,7 +1588,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       print('图片已保存到永久存储: $localPath');
 
-      final sessionId = widget.conversation.id;
+      final sessionId = widget.conversation.agent_id;
 
       // 在消息列表中显示用户上传的图片消息
       final conversationProvider = Provider.of<ConversationProvider>(
@@ -1598,7 +1598,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       // 添加用户消息，使用永久存储的路径
       await conversationProvider.addMessage(
-        conversationId: widget.conversation.id,
+        conversationId: widget.conversation.agent_id,
         role: MessageRole.user,
         content: "[图片上传中...]",
         isImage: true,
@@ -1616,7 +1616,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
         // 更新最后一条用户消息为实际的图片消息
         await conversationProvider.updateLastUserMessage(
-          conversationId: widget.conversation.id,
+          conversationId: widget.conversation.agent_id,
           content: messageContent,
           fileId: fileId,
           isImage: true,
@@ -1631,7 +1631,7 @@ class _ChatScreenState extends State<ChatScreen> {
         );
 
         await conversationProvider.addMessage(
-          conversationId: widget.conversation.id,
+          conversationId: widget.conversation.agent_id,
           role: MessageRole.assistant,
           content: chatResponse,
         );
@@ -1648,7 +1648,7 @@ class _ChatScreenState extends State<ChatScreen> {
         listen: false,
       );
       await conversationProvider.addMessage(
-        conversationId: widget.conversation.id,
+        conversationId: widget.conversation.agent_id,
         role: MessageRole.assistant,
         content: '图片上传失败: ${e.toString()}',
       );

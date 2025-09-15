@@ -77,7 +77,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
       websocketUrl: widget.xiaozhiConfig.websocketUrl,
       macAddress: widget.xiaozhiConfig.macAddress,
       token: widget.xiaozhiConfig.token,
-      sessionId: widget.conversation.id,
+      sessionId: widget.conversation.agent_id,
     );
 
     // 设置消息监听器
@@ -151,7 +151,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
 
       // 添加会话消息
       Provider.of<ConversationProvider>(context, listen: false).addMessage(
-        conversationId: widget.conversation.id,
+        conversationId: widget.conversation.agent_id,
         role: MessageRole.assistant,
         content: '语音通话已开始',
       );
@@ -358,7 +358,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
               children: [
                 // 圆形头像
                 Hero(
-                  tag: 'avatar_${widget.conversation.id}',
+                  tag: 'avatar_${widget.conversation.agent_id}',
                   child: Container(
                     width: 120,
                     height: 120,

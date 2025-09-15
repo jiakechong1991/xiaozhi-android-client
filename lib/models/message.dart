@@ -1,7 +1,7 @@
 enum MessageRole { user, assistant, system }
 
 class Message {
-  final String id;
+  final String messageId;
   final String conversationId;
   final MessageRole role;
   final String content;
@@ -12,11 +12,11 @@ class Message {
   final String? fileId;
 
   Message({
-    required this.id,
-    required this.conversationId,
-    required this.role,
-    required this.content,
-    required this.timestamp,
+    required this.messageId, // 消息id
+    required this.conversationId, // 聊天的agent
+    required this.role, // 角色（user or assistant or system）
+    required this.content, // 消息内容
+    required this.timestamp, // 时间戳
     this.isRead = false,
     this.isImage = false,
     this.imageLocalPath,
@@ -25,7 +25,7 @@ class Message {
 
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
-      id: json['id'],
+      messageId: json['messageId'],
       conversationId: json['conversationId'],
       role: MessageRole.values.byName(json['role']),
       content: json['content'],
@@ -39,7 +39,7 @@ class Message {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'messageId': messageId,
       'conversationId': conversationId,
       'role': role.name,
       'content': content,

@@ -2,11 +2,10 @@ enum ConversationType { dify, xiaozhi }
 
 // agent对话的数据结构
 class Conversation {
-  final String id; // agent_id
+  final String agent_id; // agent_id
   final String title; // 与agent_name的对话
   final ConversationType type;
-  final String
-  configId; // server类型 For both Xiaozhi and Dify conversations, references the config
+  final String configId; // server类型 现在固定是Xiaozhi
   final DateTime lastMessageTime;
   final String lastMessage; // 最后一条消息
   final int unreadCount;
@@ -14,7 +13,7 @@ class Conversation {
 
   Conversation({
     // 构造函数
-    required this.id,
+    required this.agent_id,
     required this.title,
     required this.type,
     this.configId = '',
@@ -27,7 +26,7 @@ class Conversation {
   // 下面是几种 常用方法：
   factory Conversation.fromJson(Map<String, dynamic> json) {
     return Conversation(
-      id: json['id'],
+      agent_id: json['agent_id'],
       title: json['title'],
       type: ConversationType.values.byName(json['type']),
       configId: json['configId'] ?? '',
@@ -40,7 +39,7 @@ class Conversation {
 
   Map<String, dynamic> toJson() {
     return {
-      'id': id,
+      'agent_id': agent_id,
       'title': title,
       'type': type.name,
       'configId': configId,
@@ -61,7 +60,7 @@ class Conversation {
     bool? isPinned,
   }) {
     return Conversation(
-      id: id,
+      agent_id: agent_id,
       title: title ?? this.title,
       type: type ?? this.type,
       configId: configId ?? this.configId,

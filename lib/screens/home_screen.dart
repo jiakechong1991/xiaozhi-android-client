@@ -576,14 +576,14 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildConversationTile(Conversation conversation) {
     return SlidableDeleteTile(
       // 这是一个封装了 滑动删除功能的 组件
-      key: Key(conversation.id), // 为每个对话项设置唯一标识
+      key: Key(conversation.agent_id), // 为每个对话项设置唯一标识
       // 滑动删除的回调函数
       onDelete: () {
         // 删除对话
         Provider.of<ConversationProvider>(
           context,
           listen: false,
-        ).deleteConversation(conversation.id);
+        ).deleteConversation(conversation.agent_id);
 
         // 显示撤销消息
         ScaffoldMessenger.of(context).clearSnackBars();
@@ -735,7 +735,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Provider.of<ConversationProvider>(
                           context,
                           listen: false,
-                        ).togglePinConversation(conversation.id);
+                        ).togglePinConversation(conversation.agent_id);
                       },
                     ),
                   ),
@@ -806,7 +806,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           context,
                           listen: false, // 只获取实例并调用方法，不监听状态变化，
                           // 这个ListTile-widget就不要 在更新自己的UI了。因为此刻仅关注数据变化，不关注UI变换
-                        ).deleteConversation(conversation.id); //从数据源中移除该对话
+                        ).deleteConversation(
+                          conversation.agent_id,
+                        ); //从数据源中移除该对话
                         // 显示一个 SnackBar，告知用户对话已删除
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
