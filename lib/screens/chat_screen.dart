@@ -188,6 +188,7 @@ class _ChatScreenState extends State<ChatScreen> {
       (config) => config.id == widget.conversation.configId,
     );
 
+    // 创建一个XiaozhiService实例
     _xiaozhiService = XiaozhiService(
       websocketUrl: xiaozhiConfig.websocketUrl,
       macAddress: xiaozhiConfig.macAddress,
@@ -647,8 +648,10 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   Widget _buildMessageList() {
+    // 绘制消息列表
     return Consumer<ConversationProvider>(
       builder: (context, provider, child) {
+        // 获得该agent的所有消息
         final messages = provider.getMessages(widget.conversation.agent_id);
 
         if (messages.isEmpty) {
@@ -1163,7 +1166,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // 向着服务器发送msg
   void _sendMessage() async {
-    final message = _textController.text.trim();
+    final message = _textController.text.trim(); // 获取输入框中的文本
     if (message.isEmpty || _isLoading) return;
 
     _textController.clear();

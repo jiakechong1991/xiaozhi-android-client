@@ -265,7 +265,7 @@ class XiaozhiService {
 
       // 发送文本请求
       print('$TAG: 发送文本请求: $message');
-      _webSocketManager!.sendTextRequest(message);
+      _webSocketManager!.sendTextRequest(message); // 这一步必须添加user_name, agent_id
 
       // 设置超时，15秒比10秒更宽松一些
       final timeoutTimer = Timer(const Duration(seconds: 15), () {
