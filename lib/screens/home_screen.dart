@@ -83,6 +83,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       color: Colors.black,
                     ),
                   ),
+                  leading: null,
+                  automaticallyImplyLeading: false,
                   elevation: 0, // 设置导航栏阴影
                   scrolledUnderElevation: 0, // 设置导航栏在滚动时的高度
                   backgroundColor: const Color(0xFFF8F9FA), // 设置导航栏背景颜色

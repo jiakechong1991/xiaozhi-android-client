@@ -16,6 +16,8 @@ class DiscoveryScreen extends StatelessWidget {
               color: Colors.black,
             ),
           ),
+          leading: null, // 👈 保持这个，明确表示“不要自定义”
+          automaticallyImplyLeading: false, // 👈 关键！禁用自动添加返回按钮
           elevation: 0,
           scrolledUnderElevation: 0,
           backgroundColor: const Color(0xFFF8F9FA),
