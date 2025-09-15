@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 
 // 这个对应 多agent的对话列表，[每个agent是一个对话项]
 class ConversationProvider extends ChangeNotifier {
-  List<Conversation> _conversations = [];
+  List<Conversation> _conversations = []; // [conversation1, conversation2, ...]
   Map<String, List<Message>> _messages =
       {}; // {agent_id, [message1, message2, ...]}
 
@@ -18,8 +18,10 @@ class ConversationProvider extends ChangeNotifier {
   List<Message>? _lastDeletedMessages;
 
   List<Conversation> get conversations => _conversations;
+  // 置顶的agent会话
   List<Conversation> get pinnedConversations =>
       _conversations.where((conv) => conv.isPinned).toList();
+  // 非置顶的agent会话
   List<Conversation> get unpinnedConversations =>
       _conversations.where((conv) => !conv.isPinned).toList();
 

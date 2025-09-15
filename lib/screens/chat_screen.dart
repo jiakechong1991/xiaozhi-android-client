@@ -21,7 +21,7 @@ import 'dart:async';
 import 'package:path_provider/path_provider.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Conversation conversation; //  增加一个参数，用于传递当前会话
+  final Conversation conversation; //  agent_conversation,代表一个agent的对话
 
   const ChatScreen({super.key, required this.conversation});
 
