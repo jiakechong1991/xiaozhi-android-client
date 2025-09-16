@@ -9,9 +9,10 @@ import 'package:path_provider/path_provider.dart';
 
 // 这个对应 多agent的对话列表，[每个agent是一个对话项]
 class ConversationProvider extends ChangeNotifier {
+  String? userName;
   List<Conversation> _conversations = []; // [conversation1, conversation2, ...]
   Map<String, List<Message>> _messages =
-      {}; // {agent_id, [message1, message2, ...]}
+      {}; // {agentId, [message1, message2, ...]}
 
   // 保存最后删除的会话及其消息，用于撤销删除
   Conversation? _lastDeletedConversation;
@@ -31,7 +32,6 @@ class ConversationProvider extends ChangeNotifier {
 
   Future<void> _loadConversations() async {
     final prefs = await SharedPreferences.getInstance();
-
     // Load 多agent的对话列表
     final conversationsJson = prefs.getStringList('conversations') ?? [];
     _conversations =
@@ -42,17 +42,17 @@ class ConversationProvider extends ChangeNotifier {
     // Load messages for each conversation
     for (final conversation in _conversations) {
       final messagesJson =
-          prefs.getStringList('messages_${conversation.agent_id}') ?? [];
+          prefs.getStringList('messages_${conversation.agentId}') ?? [];
 
       try {
-        _messages[conversation.agent_id] =
+        _messages[conversation.agentId] =
             messagesJson.map((json) {
               final decoded = jsonDecode(json);
               return Message.fromJson(decoded);
             }).toList();
 
         // 打印图片消息的信息
-        for (final message in _messages[conversation.agent_id] ?? []) {
+        for (final message in _messages[conversation.agentId] ?? []) {
           if (message.isImage) {
             // 检查图片文件是否存在
             if (message.imageLocalPath != null) {
@@ -65,16 +65,16 @@ class ConversationProvider extends ChangeNotifier {
         // 确保每个会话的图片目录存在
         final appDir = await getApplicationDocumentsDirectory();
         final conversationDir = Directory(
-          '${appDir.path}/conversations/${conversation.agent_id}/images',
+          '${appDir.path}/conversations/${conversation.agentId}/images',
         );
         if (!await conversationDir.exists()) {
           await conversationDir.create(recursive: true);
         }
       } catch (e, stackTrace) {
-        print('加载会话 ${conversation.agent_id} 的消息时出错: $e');
+        print('加载会话 ${conversation.agentId} 的消息时出错: $e');
         print('堆栈跟踪: $stackTrace');
         // 如果某个会话的消息加载失败，继续加载其他会话
-        _messages[conversation.agent_id] = [];
+        _messages[conversation.agentId] = [];
       }
     }
 
@@ -93,7 +93,7 @@ class ConversationProvider extends ChangeNotifier {
 
     // Save messages for each conversation
     for (final agent_entry in _messages.entries) {
-      // agent_entry key 是agent_id,value 是 [message1, message2, ...]
+      // agent_entry key 是agentId,value 是 [message1, message2, ...]
       final messagesJson =
           agent_entry.value
               .map((message) => jsonEncode(message.toJson()))
@@ -114,10 +114,17 @@ class ConversationProvider extends ChangeNotifier {
   }) async {
     final uuid = const Uuid();
     final conversationId = uuid.v4();
-
+    // 如果username为空 或者字符串长度为0，读取存储
+    if (userName == null || userName!.isEmpty) {
+      final prefs = await SharedPreferences.getInstance();
+      userName = prefs.getString("saved_username"); // 获取用户名
+    }
+    // print("@@@@@@@@@userName:");
+    // print(userName);
     final newConversation = Conversation(
-      agent_id: conversationId,
-      title: title,
+      userNmae: userName!,
+      agentId: conversationId,
+      agentName: title,
       type: type,
       configId: configId,
       lastMessageTime: DateTime.now(),
@@ -127,7 +134,7 @@ class ConversationProvider extends ChangeNotifier {
     );
 
     _conversations.add(newConversation);
-    _messages[newConversation.agent_id] = [];
+    _messages[newConversation.agentId] = [];
 
     await _saveConversations();
     notifyListeners();
@@ -139,7 +146,7 @@ class ConversationProvider extends ChangeNotifier {
   Future<void> deleteConversation(String id) async {
     // 寻找要删除的会话
     final conversationIndex = _conversations.indexWhere(
-      (conversation) => conversation.agent_id == id,
+      (conversation) => conversation.agentId == id,
     );
 
     if (conversationIndex != -1) {
@@ -191,9 +198,9 @@ class ConversationProvider extends ChangeNotifier {
 
       _conversations.add(_lastDeletedConversation!);
       if (_lastDeletedMessages != null) {
-        _messages[_lastDeletedConversation!.agent_id] = _lastDeletedMessages!;
+        _messages[_lastDeletedConversation!.agentId] = _lastDeletedMessages!;
       } else {
-        _messages[_lastDeletedConversation!.agent_id] = [];
+        _messages[_lastDeletedConversation!.agentId] = [];
       }
 
       // 重置删除记录
@@ -207,7 +214,7 @@ class ConversationProvider extends ChangeNotifier {
 
   Future<void> togglePinConversation(String id) async {
     final index = _conversations.indexWhere(
-      (conversation) => conversation.agent_id == id,
+      (conversation) => conversation.agentId == id,
     );
     if (index != -1) {
       final updatedConversation = _conversations[index].copyWith(
@@ -275,7 +282,7 @@ class ConversationProvider extends ChangeNotifier {
 
     // Update conversation last message
     final index = _conversations.indexWhere(
-      (conversation) => conversation.agent_id == conversationId,
+      (conversation) => conversation.agentId == conversationId,
     );
     if (index != -1) {
       final updatedConversation = _conversations[index].copyWith(
@@ -342,7 +349,7 @@ class ConversationProvider extends ChangeNotifier {
       // 如果这是最后一条消息，也更新会话的lastMessage
       if (lastUserMessageIndex == messages.length - 1) {
         final conversationIndex = _conversations.indexWhere(
-          (conversation) => conversation.agent_id == conversationId,
+          (conversation) => conversation.agentId == conversationId,
         );
 
         if (conversationIndex != -1) {
@@ -397,7 +404,7 @@ class ConversationProvider extends ChangeNotifier {
 
       // 更新会话的最后一条消息
       final conversationIndex = _conversations.indexWhere(
-        (conversation) => conversation.agent_id == targetConversationId,
+        (conversation) => conversation.agentId == targetConversationId,
       );
 
       if (conversationIndex != -1) {
@@ -417,7 +424,7 @@ class ConversationProvider extends ChangeNotifier {
   // 标记会话为已读
   Future<void> markConversationAsRead(String conversationId) async {
     final index = _conversations.indexWhere(
-      (conversation) => conversation.agent_id == conversationId,
+      (conversation) => conversation.agentId == conversationId,
     );
     if (index != -1) {
       final updatedConversation = _conversations[index].copyWith(

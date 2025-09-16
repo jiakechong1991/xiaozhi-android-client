@@ -2,8 +2,9 @@ enum ConversationType { dify, xiaozhi }
 
 // agent对话的数据结构
 class Conversation {
-  final String agent_id; // agent_id
-  final String title; // 与agent_name的对话
+  final String userNmae;
+  final String agentId; // agent_id
+  final String agentName; // 与agent_name的对话
   final ConversationType type;
   final String configId; // server类型 现在固定是Xiaozhi
   final DateTime lastMessageTime;
@@ -13,8 +14,9 @@ class Conversation {
 
   Conversation({
     // 构造函数
-    required this.agent_id,
-    required this.title,
+    required this.userNmae,
+    required this.agentId,
+    required this.agentName,
     required this.type,
     this.configId = '',
     required this.lastMessageTime,
@@ -26,8 +28,9 @@ class Conversation {
   // 下面是几种 常用方法：
   factory Conversation.fromJson(Map<String, dynamic> json) {
     return Conversation(
-      agent_id: json['agent_id'],
-      title: json['title'],
+      userNmae: json['userNmae'],
+      agentId: json['agentId'],
+      agentName: json['agentName'],
       type: ConversationType.values.byName(json['type']),
       configId: json['configId'] ?? '',
       lastMessageTime: DateTime.parse(json['lastMessageTime']),
@@ -39,8 +42,9 @@ class Conversation {
 
   Map<String, dynamic> toJson() {
     return {
-      'agent_id': agent_id,
-      'title': title,
+      'userNmae': userNmae,
+      'agentId': agentId,
+      'agentName': agentName,
       'type': type.name,
       'configId': configId,
       'lastMessageTime': lastMessageTime.toIso8601String(),
@@ -60,8 +64,9 @@ class Conversation {
     bool? isPinned,
   }) {
     return Conversation(
-      agent_id: agent_id,
-      title: title ?? this.title,
+      userNmae: userNmae,
+      agentId: agentId,
+      agentName: title ?? this.agentName,
       type: type ?? this.type,
       configId: configId ?? this.configId,
       lastMessageTime: lastMessageTime ?? this.lastMessageTime,

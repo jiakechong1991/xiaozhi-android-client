@@ -63,6 +63,12 @@ class CreateAgentController extends GetxController {
       }
       final xiaozhiConfigs =
           Provider.of<ConfigProvider>(context, listen: false).xiaozhiConfigs;
+
+      print('=== 调试：创建 Agent 的入参 ===');
+      print('✅ agentName: "${agentName}"');
+      print('✅ sex: ${xiaozhiConfigs.first.id!}');
+      print('=================================');
+
       final conversation = await Provider.of<ConversationProvider>(
         context,
         listen: false,
@@ -74,9 +80,11 @@ class CreateAgentController extends GetxController {
       // 带参数跳转到聊天列表界面
       Get.offAllNamed('/agent/chatlist', arguments: conversation);
       print(">>> 创建agent成功end");
-    } catch (e) {
+    } catch (e, stackTrace) {
       print(">>> 创建agent失败");
-      print(e.toString());
+      print("错误信息: $e");
+      print("完整堆栈:");
+      print(stackTrace); //
       print("----");
       errorMessage.value = e.toString().replaceAll("Exception: ", "").trim();
       print(errorMessage);

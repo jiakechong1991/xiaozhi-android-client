@@ -57,7 +57,7 @@ class ConversationTile extends StatelessWidget {
                             child: Row(
                               children: [
                                 Text(
-                                  conversation.title,
+                                  conversation.agentName,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,

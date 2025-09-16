@@ -27,8 +27,13 @@ class XiaozhiWebSocketManager {
 
   WebSocketChannel? _channel;
   String? _serverUrl;
+  String? _userId;
+  String? _userName;
+  String? _agentID;
+  String? _agentName;
   String? _deviceId;
-  String? _token;
+
+  String? _accessToken;
   bool _enableToken;
 
   final List<XiaozhiWebSocketListener> _listeners = [];
@@ -37,9 +42,17 @@ class XiaozhiWebSocketManager {
   StreamSubscription? _streamSubscription;
 
   /// 构造函数
-  XiaozhiWebSocketManager({required String deviceId, bool enableToken = false})
-    : _deviceId = deviceId,
-      _enableToken = enableToken;
+  XiaozhiWebSocketManager({
+    required String deviceId,
+    required String userName,
+    required String agentID,
+    required String agentName,
+    bool enableToken = false,
+  }) : _deviceId = deviceId,
+       _userName = userName,
+       _agentID = agentID,
+       _agentName = agentName,
+       _enableToken = enableToken;
 
   /// 添加事件监听器
   void addListener(XiaozhiWebSocketListener listener) {
@@ -61,7 +74,7 @@ class XiaozhiWebSocketManager {
   }
 
   /// 连接到WebSocket服务器
-  Future<void> connect(String url, String token) async {
+  Future<void> connect(String url, String accessToken) async {
     if (url.isEmpty) {
       _dispatchEvent(
         XiaozhiEvent(type: XiaozhiEventType.error, data: "WebSocket地址不能为空"),
@@ -71,7 +84,7 @@ class XiaozhiWebSocketManager {
 
     // 保存连接参数
     _serverUrl = url;
-    _token = token;
+    _accessToken = accessToken;
 
     // 如果已连接，先断开
     if (_channel != null) {
@@ -87,7 +100,7 @@ class XiaozhiWebSocketManager {
       print('$TAG: Token启用: $_enableToken');
 
       if (_enableToken) {
-        print('$TAG: 使用Token: $token');
+        print('$TAG: 使用Token: $_accessToken');
       }
 
       // 尝试使用headers (这在非Web平台上有效)
@@ -97,12 +110,16 @@ class XiaozhiWebSocketManager {
           'device-id': _deviceId ?? '',
           'client-id': _deviceId ?? '',
           'protocol-version': '1',
+          // 'user-id': _userId ?? '',
+          'user-name': _userName ?? '',
+          'agent-id': _agentID ?? '',
+          // 'agent-name': _agentName ?? '',
         };
 
         // 添加Authorization头，参考Java实现
-        if (_enableToken && token.isNotEmpty) {
-          headers['Authorization'] = 'Bearer $token';
-          print('$TAG: 添加Authorization头: Bearer $token');
+        if (_enableToken && _accessToken!.isNotEmpty) {
+          headers['Authorization'] = 'Bearer $_accessToken';
+          print('$TAG: 添加Authorization头: Bearer $_accessToken');
         } else {
           headers['Authorization'] = 'Bearer test-token';
           print('$TAG: 添加默认Authorization头: Bearer test-token');
@@ -112,9 +129,12 @@ class XiaozhiWebSocketManager {
         _channel = IOWebSocketChannel.connect(uri, headers: headers);
 
         print('$TAG: 使用headers方式连接WebSocket成功');
-      } catch (e) {
+      } catch (e, stackTrace) {
         // 如果不支持IOWebSocketChannel（web平台），则回退到使用基本连接
         print('$TAG: 不支持使用headers方式，回退到基本连接: $e');
+        print("错误信息: $e");
+        print("完整堆栈:");
+        print(stackTrace);
 
         // 创建基本连接
         _channel = WebSocketChannel.connect(uri);
@@ -124,7 +144,7 @@ class XiaozhiWebSocketManager {
           if (_channel != null && isConnected) {
             // 发送认证信息作为第一条消息
             String authMessage =
-                'Authorization: Bearer ${_enableToken && token.isNotEmpty ? token : "test-token"}';
+                'Authorization: Bearer ${_enableToken && accessToken.isNotEmpty ? accessToken : "test-token"}';
             _channel!.sink.add(authMessage);
             print('$TAG: 发送认证消息: $authMessage');
 
@@ -275,14 +295,14 @@ class XiaozhiWebSocketManager {
     );
 
     // 尝试自动重连
-    if (!_isReconnecting && _serverUrl != null && _token != null) {
+    if (!_isReconnecting && _serverUrl != null && _accessToken != null) {
       _isReconnecting = true;
       _reconnectTimer = Timer(
         const Duration(milliseconds: RECONNECT_DELAY),
         () {
           _isReconnecting = false;
-          if (_serverUrl != null && _token != null) {
-            connect(_serverUrl!, _token!);
+          if (_serverUrl != null && _accessToken != null) {
+            connect(_serverUrl!, _accessToken!);
           }
         },
       );
