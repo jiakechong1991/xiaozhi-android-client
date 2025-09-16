@@ -169,10 +169,6 @@ class MyApp extends StatelessWidget {
       darkTheme: AppTheme.darkTheme,
       themeMode: themeProvider.themeMode,
       initialRoute: '/home',
-      // routes: { // 这是flutter原生的方式，功能有限
-      //   // 添加测试界面路由
-      //   '/test': (context) => const TestScreen(),
-      // },
       //在 GetMaterialApp 中，你应该使用 getPages 来定义路由表 —— 它是 GetX 专属、功能更强、更推荐的方式
       getPages: getRoutes,
       // 添加平滑滚动设置

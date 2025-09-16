@@ -182,7 +182,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final configProvider = Provider.of<ConfigProvider>(context, listen: false);
     print('configId from conversation: ${widget.conversation.configId}');
     print(
-      'Available xiaozhi configs: ${configProvider.xiaozhiConfigs.map((c) => c.id)}',
+      '可用的 xiaozhi_server configs: ${configProvider.xiaozhiConfigs.map((c) => c.id)}',
     );
     final xiaozhiConfig = configProvider.xiaozhiConfigs.firstWhere(
       (config) => config.id == widget.conversation.configId,
