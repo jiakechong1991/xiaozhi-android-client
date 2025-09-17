@@ -12,11 +12,9 @@ class XiaozhiConfigSelectorScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final xiaozhiConfigs = Provider.of<ConfigProvider>(context).xiaozhiConfigs;
-    
+
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('选择小智服务'),
-      ),
+      appBar: AppBar(title: const Text('选择小智服务')),
       body: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: xiaozhiConfigs.length,
@@ -28,7 +26,10 @@ class XiaozhiConfigSelectorScreen extends StatelessWidget {
               borderRadius: BorderRadius.circular(12),
             ),
             child: ListTile(
-              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 8,
+              ),
               title: Text(
                 config.name,
                 style: const TextStyle(fontWeight: FontWeight.bold),
@@ -48,23 +49,25 @@ class XiaozhiConfigSelectorScreen extends StatelessWidget {
       ),
     );
   }
-  
-  void _createXiaozhiConversation(BuildContext context, XiaozhiConfig config) async {
-    final conversation = await Provider.of<ConversationProvider>(context, listen: false)
-        .createConversation(
-          title: '与 ${config.name} 的对话',
-          type: ConversationType.xiaozhi,
-          configId: config.id,
-        );
-    
-    if (context.mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChatScreen(conversation: conversation),
-        ),
-      );
-    }
+
+  void _createXiaozhiConversation(
+    BuildContext context,
+    XiaozhiConfig config,
+  ) async {
+    // final conversation = await Provider.of<ConversationProvider>(context, listen: false)
+    //     .createConversation(
+    //       title: '与 ${config.name} 的对话',
+    //       type: ConversationType.xiaozhi,
+    //       configId: config.id,
+    //     );
+
+    // if (context.mounted) {
+    //   Navigator.pushReplacement(
+    //     context,
+    //     MaterialPageRoute(
+    //       builder: (context) => ChatScreen(conversation: conversation),
+    //     ),
+    //   );
+    // }
   }
 }
-

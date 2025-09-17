@@ -66,6 +66,7 @@ class CreateAgentController extends GetxController {
 
       print('=== 调试：创建 Agent 的入参 ===');
       print('✅ agentName: "${agentName}"');
+      print('✅ agentId: "${agentId}"');
       print('✅ sex: ${xiaozhiConfigs.first.id!}');
       print('=================================');
 
@@ -74,6 +75,7 @@ class CreateAgentController extends GetxController {
         listen: false,
       ).createConversation(
         title: '与 ${agentName} 的对话',
+        agentId: agentId!,
         type: ConversationType.xiaozhi,
         configId: xiaozhiConfigs.first.id!, // 默认使用第一个小智server
       );

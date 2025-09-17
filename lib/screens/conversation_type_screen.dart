@@ -25,11 +25,12 @@ class _ConversationTypeScreenState extends State<ConversationTypeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(  
+      appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
         toolbarHeight: 70,
-        leading: IconButton(  // 返回按钮
+        leading: IconButton(
+          // 返回按钮
           icon: const Icon(Icons.arrow_back, color: Colors.black, size: 26),
           onPressed: () => Navigator.of(context).pop(),
         ),
@@ -910,50 +911,29 @@ class _ConversationTypeScreenState extends State<ConversationTypeScreen> {
 
   void _createConversation() async {
     if (_selectedType == ConversationType.dify && _selectedDifyConfig != null) {
-      _createDifyConversation(_selectedDifyConfig!);
     } else if (_selectedType == ConversationType.xiaozhi &&
         _selectedXiaozhiConfig != null) {
-      _createXiaozhiConversation(_selectedXiaozhiConfig!);
+      // _createXiaozhiConversation(_selectedXiaozhiConfig!);
     }
   }
 
-  void _createDifyConversation(DifyConfig config) async {
-    final conversation = await Provider.of<ConversationProvider>(
-      context,
-      listen: false,
-    ).createConversation(
-      title: '与 ${config.name} 的对话',
-      type: ConversationType.dify,
-      configId: config.id,
-    );
+  // void _createXiaozhiConversation(XiaozhiConfig config) async {
+  //   final conversation = await Provider.of<ConversationProvider>(
+  //     context,
+  //     listen: false,
+  //   ).createConversation(
+  //     title: '与 ${config.name} 的对话',
+  //     type: ConversationType.xiaozhi,
+  //     configId: config.id,
+  //   );
 
-    if (context.mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChatScreen(conversation: conversation),
-        ),
-      );
-    }
-  }
-
-  void _createXiaozhiConversation(XiaozhiConfig config) async {
-    final conversation = await Provider.of<ConversationProvider>(
-      context,
-      listen: false,
-    ).createConversation(
-      title: '与 ${config.name} 的对话',
-      type: ConversationType.xiaozhi,
-      configId: config.id,
-    );
-
-    if (context.mounted) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-          builder: (context) => ChatScreen(conversation: conversation),
-        ),
-      );
-    }
-  }
+  //   if (context.mounted) {
+  //     Navigator.pushReplacement(
+  //       context,
+  //       MaterialPageRoute(
+  //         builder: (context) => ChatScreen(conversation: conversation),
+  //       ),
+  //     );
+  //   }
+  // }
 }

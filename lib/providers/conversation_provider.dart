@@ -109,11 +109,12 @@ class ConversationProvider extends ChangeNotifier {
 
   Future<Conversation> createConversation({
     required String title,
+    required String agentId,
     required ConversationType type,
     String configId = '',
   }) async {
     final uuid = const Uuid();
-    final conversationId = uuid.v4();
+    final conversationId = agentId;
     // 如果username为空 或者字符串长度为0，读取存储
     if (userName == null || userName!.isEmpty) {
       final prefs = await SharedPreferences.getInstance();
