@@ -192,7 +192,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _xiaozhiService = XiaozhiService(
       websocketUrl: xiaozhiConfig.websocketUrl,
       macAddress: xiaozhiConfig.macAddress,
-      userName: widget.conversation.userNmae,
+      userName: widget.conversation.userName,
       agentID: widget.conversation.agentId,
       agentName: widget.conversation.agentName,
       accessToken: "",

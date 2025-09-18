@@ -76,7 +76,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
     _xiaozhiService = XiaozhiService(
       websocketUrl: widget.xiaozhiConfig.websocketUrl,
       macAddress: widget.xiaozhiConfig.macAddress,
-      userName: widget.conversation.userNmae,
+      userName: widget.conversation.userName,
       agentID: widget.conversation.agentId,
       agentName: widget.conversation.agentName,
       accessToken: "",

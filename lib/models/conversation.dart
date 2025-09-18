@@ -2,7 +2,7 @@ enum ConversationType { dify, xiaozhi }
 
 // agent对话的数据结构
 class Conversation {
-  final String userNmae;
+  final String userName;
   final String agentId; // agent_id
   final String agentName; // 与agent_name的对话
   final ConversationType type;
@@ -14,7 +14,7 @@ class Conversation {
 
   Conversation({
     // 构造函数
-    required this.userNmae,
+    required this.userName,
     required this.agentId,
     required this.agentName,
     required this.type,
@@ -28,7 +28,7 @@ class Conversation {
   // 下面是几种 常用方法：
   factory Conversation.fromJson(Map<String, dynamic> json) {
     return Conversation(
-      userNmae: json['userNmae'],
+      userName: json['userName'],
       agentId: json['agentId'],
       agentName: json['agentName'],
       type: ConversationType.values.byName(json['type']),
@@ -42,7 +42,7 @@ class Conversation {
 
   Map<String, dynamic> toJson() {
     return {
-      'userNmae': userNmae,
+      'userName': userName,
       'agentId': agentId,
       'agentName': agentName,
       'type': type.name,
@@ -64,7 +64,7 @@ class Conversation {
     bool? isPinned,
   }) {
     return Conversation(
-      userNmae: userNmae,
+      userName: userName,
       agentId: agentId,
       agentName: title ?? this.agentName,
       type: type ?? this.type,

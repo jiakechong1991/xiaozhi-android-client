@@ -123,7 +123,7 @@ class ConversationProvider extends ChangeNotifier {
     // print("@@@@@@@@@userName:");
     // print(userName);
     final newConversation = Conversation(
-      userNmae: userName!,
+      userName: userName!,
       agentId: conversationId,
       agentName: title,
       type: type,
