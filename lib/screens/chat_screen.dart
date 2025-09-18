@@ -167,12 +167,14 @@ class _ChatScreenState extends State<ChatScreen> {
     _connectionCheckTimer?.cancel();
     _autoReconnectTimer?.cancel();
     _waveAnimationTimer?.cancel();
-
+    print("我要准备销毁小智service了");
     // 在销毁前确保停止所有音频播放
     if (_xiaozhiService != null) {
       _xiaozhiService!.stopPlayback();
       _xiaozhiService!.disconnect();
+      print("我要done1销毁小智service了");
     }
+    print("我要done2销毁小智service了");
 
     super.dispose();
   }
@@ -353,10 +355,11 @@ class _ChatScreenState extends State<ChatScreen> {
               _xiaozhiService!.stopPlayback();
             }
             // 导航到home界面
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (context) => HomeScreen()),
-            );
+            Navigator.pop(context);
+            // Navigator.push(
+            //   context,
+            //   MaterialPageRoute(builder: (context) => HomeScreen()),
+            // );
           },
         ),
         title:
