@@ -1,6 +1,6 @@
 import 'package:get/get.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
-
+import 'package:ai_assistant/services/token_storage.dart';
 /* 
 使用 .obs 包装变量（如 String.obs, int.obs, List.obs）
 修改值时用 .value = xxx
@@ -20,14 +20,20 @@ class TokenController extends GetxController {
   /// 删除token
   void delete() => token.value = '';
 
-  // /// 使用 jwt_decoder 官方库判断 access token 是否过期
-  // Future<bool> isAccessTokenExpired() async {
-  //   final accessToken = await TokenStorage.getAccessToken();
-  //   if (accessToken == null || accessToken.isEmpty) {
-  //     return true; // 无 token 视为过期
-  //   }
+  Future<void> loadToken() async {
+    final accessToken = await TokenStorage.getAccessToken();
+    if (accessToken != null && accessToken.isNotEmpty) {
+      set(accessToken); // 自动触发 UI 更新
+      print('Token loaded from storage: ${accessToken.substring(0, 20)}...');
+    } else {
+      print('No token found in storage');
+    }
+  }
 
-  //   // 核心：一行代码判断是否过期
-  //   return JwtDecoder.isExpired(accessToken);
-  // }
+  // /// 使用 jwt_decoder 官方库判断 access token 是否过期
+  Future<bool> isAccessTokenExpired() async {
+    final accessToken = await TokenStorage.getAccessToken();
+    if (accessToken == null || accessToken.isEmpty) return true;
+    return JwtDecoder.isExpired(accessToken);
+  }
 }

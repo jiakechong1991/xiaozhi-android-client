@@ -104,7 +104,11 @@ void main() async {
 
   // 初始化配置管理
   final configProvider = ConfigProvider();
-  Get.put(TokenController());
+
+  final tokenController = TokenController();
+  await tokenController.loadToken(); // 异步加载，阻塞直到完成
+  // 将 TokenController 注册为单例（GetX 需要）
+  Get.put(tokenController);
   Get.put(ApiService()); // ApiService 无异步构造函数时
 
   /*
