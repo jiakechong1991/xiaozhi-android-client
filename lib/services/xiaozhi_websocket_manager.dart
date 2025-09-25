@@ -96,8 +96,10 @@ class XiaozhiWebSocketManager {
       Uri uri = Uri.parse(url);
 
       print('$TAG: 正在连接 $url');
-      print('$TAG: 设备ID: $_deviceId');
-      print('$TAG: Token启用: $_enableToken');
+      // print('$TAG: 设备ID: $_deviceId');
+      // print('$TAG: Token启用: $_enableToken');
+      // print('$TAG: _userName: $_userName');
+      // print('$TAG: _agentID: $_agentID');
 
       if (_enableToken) {
         print('$TAG: 使用Token: $_accessToken');

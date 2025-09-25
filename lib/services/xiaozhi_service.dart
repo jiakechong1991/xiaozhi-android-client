@@ -41,9 +41,6 @@ class XiaozhiService {
   static const String TAG = "XiaozhiService";
   static const String DEFAULT_SERVER = "wss://ws.xiaozhi.ai";
 
-  // 单例实例
-  static XiaozhiService? _instance;
-
   final String websocketUrl; // WebSocket服务器 URL
   final String macAddress; // 设备MAC地址
   final String userName; // 用户名称
@@ -62,30 +59,7 @@ class XiaozhiService {
   bool _hasStartedCall = false;
   MessageListener? _messageListener;
 
-  /// 工厂构造函数，实现单例模式
-  factory XiaozhiService({
-    required String websocketUrl,
-    required String macAddress,
-    required String userName,
-    required String agentID,
-    required String agentName,
-    required String accessToken,
-    String? sessionId,
-  }) {
-    _instance ??= XiaozhiService._internal(
-      websocketUrl: websocketUrl,
-      macAddress: macAddress,
-      accessToken: accessToken,
-      userName: userName,
-      agentID: agentID,
-      agentName: agentName,
-      sessionId: sessionId,
-    );
-    return _instance!;
-  }
-
-  /// 内部构造函数
-  XiaozhiService._internal({
+  XiaozhiService({
     required this.websocketUrl,
     required this.macAddress,
     required this.userName,
@@ -97,9 +71,6 @@ class XiaozhiService {
     _sessionId = sessionId;
     _init();
   }
-
-  /// 获取实例
-  static XiaozhiService? get instance => _instance;
 
   /// 切换到语音通话模式
   Future<void> switchToVoiceCallMode() async {
@@ -195,7 +166,7 @@ class XiaozhiService {
     if (_isConnected) return;
 
     try {
-      print('$TAG: 开始连接服务器...');
+      print('$TAG: 开始连接服务器. $agentID. ...$agentName.. .$userName...');
 
       // 创建WebSocket管理器
       _webSocketManager = XiaozhiWebSocketManager(
@@ -331,10 +302,10 @@ class XiaozhiService {
       await AudioUtil.initRecorder();
       await AudioUtil.initPlayer();
 
-      print('$TAG: 正在连接 $websocketUrl');
-      print('$TAG: 设备ID: $macAddress');
-      print('$TAG: Token启用: true');
-      print('$TAG: 使用Token: $accessToken');
+      // print('$TAG: 1正在连接 $websocketUrl');
+      // print('$TAG: 1设备ID: $macAddress');
+      // print('$TAG: 1Token启用: true');
+      // print('$TAG: 1使用Token: $accessToken');
 
       // 使用 WebSocketManager 连接
       _webSocketManager = XiaozhiWebSocketManager(

@@ -172,17 +172,20 @@ class _ChatScreenState extends State<ChatScreen> {
     if (_xiaozhiService != null) {
       _xiaozhiService!.stopPlayback();
       _xiaozhiService!.disconnect();
+      _xiaozhiService!.dispose();
       print("我要done1销毁小智service了");
     }
     print("我要done2销毁小智service了");
-
     super.dispose();
   }
 
   // 初始化小智服务
   Future<void> _initXiaozhiService() async {
     final configProvider = Provider.of<ConfigProvider>(context, listen: false);
-    print('configId from conversation: ${widget.conversation.configId}');
+    print('agentName from conversation: ${widget.conversation.agentName}');
+    print('userName from conversation: ${widget.conversation.userName}');
+    print('agentId from conversation: ${widget.conversation.agentId}');
+
     print(
       '可用的 xiaozhi_server configs: ${configProvider.xiaozhiConfigs.map((c) => c.id)}',
     );
