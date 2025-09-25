@@ -6,6 +6,7 @@ import 'package:uuid/uuid.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/message.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:ai_assistant/services/api_service.dart';
 
 // 这个对应 多agent的对话列表，[每个agent是一个对话项]
 class ConversationProvider extends ChangeNotifier {
@@ -31,26 +32,89 @@ class ConversationProvider extends ChangeNotifier {
   }
 
   Future<void> _loadConversations() async {
+    bool hasReadServer = false;
     final prefs = await SharedPreferences.getInstance();
     // Load 多agent的对话列表
+    // Step 1: 尝试从本地加载会话列表
     final conversationsJson = prefs.getStringList('conversations') ?? [];
-    _conversations =
-        conversationsJson
-            .map((json) => Conversation.fromJson(jsonDecode(json)))
-            .toList();
+    if (conversationsJson.isEmpty) {
+      // 本地无会话，从服务器获取 agent 列表
+      try {
+        final apiService = ApiService(); // 假设 ApiService 可直接实例化，或通过依赖注入传入
+        final agentListResponse = await apiService.getAgentList();
+        final agents = agentListResponse['agents'] as List<dynamic>? ?? [];
+
+        _conversations =
+            agents.map((agent) {
+              final agentId = agent['agent_id'] as String;
+              final title = agent['name'] as String;
+
+              // 如果 username 为空，尝试从本地读取
+              if (userName == null || userName!.isEmpty) {
+                userName = prefs.getString("saved_username");
+              }
+
+              return Conversation(
+                userName: userName ?? 'User',
+                agentId: agentId,
+                agentName: title,
+                lastMessageTime: DateTime.now(),
+                lastMessage: '',
+              );
+            }).toList();
+        hasReadServer = true;
+      } catch (e, stackTrace) {
+        print('从服务器加载 agent 列表失败: $e');
+        print('堆栈: $stackTrace');
+        // 即使失败，也继续（可能用户离线），_conversations 保持为空
+      }
+    } else {
+      // 本地有数据，正常解析
+      _conversations =
+          conversationsJson
+              .map((json) => Conversation.fromJson(jsonDecode(json)))
+              .toList();
+    }
 
     // Load messages for each conversation
+    // Step 2: 为每个会话加载消息（本地优先，缺失则从服务器拉取）
     for (final conversation in _conversations) {
       final messagesJson =
           prefs.getStringList('messages_${conversation.agentId}') ?? [];
+      if (messagesJson.isEmpty) {
+        // 本地无消息，尝试从服务器拉取最近 20 条
+        try {
+          final apiService = ApiService();
+          final msgResponse = await apiService.getMessageList(
+            conversation.agentId,
+            20,
+          );
+          final messagesData = msgResponse['messages'] as List<dynamic>? ?? [];
 
-      try {
+          final remoteMessages =
+              messagesData.map((msgJson) {
+                // 假设服务器返回的 message 格式与 Message.fromJson 兼容
+                // 如果字段名不同，你可能需要做适配（例如 msg_id → id）
+                return Message.fromJson(msgJson as Map<String, dynamic>);
+              }).toList();
+
+          _messages[conversation.agentId] = remoteMessages;
+          hasReadServer = true;
+        } catch (e, stackTrace) {
+          print('从服务器加载消息失败 (agent: ${conversation.agentId}): $e');
+          print('堆栈: $stackTrace');
+          _messages[conversation.agentId] = [];
+        }
+      } else {
         _messages[conversation.agentId] =
             messagesJson.map((json) {
               final decoded = jsonDecode(json);
               return Message.fromJson(decoded);
             }).toList();
+      }
 
+      ////后续流程
+      try {
         // 打印图片消息的信息
         for (final message in _messages[conversation.agentId] ?? []) {
           if (message.isImage) {
@@ -77,6 +141,8 @@ class ConversationProvider extends ChangeNotifier {
         _messages[conversation.agentId] = [];
       }
     }
+    // 如果请求了server，最后就要保存一下对话信息，避免下次继续为空
+    if (hasReadServer) await _saveConversations();
 
     notifyListeners();
   }
@@ -364,61 +430,6 @@ class ConversationProvider extends ChangeNotifier {
       notifyListeners();
     } else {
       print('警告：在会话 $conversationId 中找不到用户消息');
-    }
-  }
-
-  Future<void> updateMessage({
-    required String messageId,
-    required String content,
-  }) async {
-    // 查找包含该消息的会话
-    String? targetConversationId;
-    int messageIndex = -1;
-
-    for (final entry in _messages.entries) {
-      final index = entry.value.indexWhere(
-        (message) => message.messageId == messageId,
-      );
-      if (index != -1) {
-        targetConversationId = entry.key;
-        messageIndex = index;
-        break;
-      }
-    }
-
-    if (targetConversationId != null && messageIndex != -1) {
-      // 更新消息内容
-      final oldMessage = _messages[targetConversationId]![messageIndex];
-      final updatedMessage = Message(
-        messageId: oldMessage.messageId,
-        conversationId: oldMessage.conversationId,
-        role: oldMessage.role,
-        content: content,
-        timestamp: oldMessage.timestamp,
-        isRead: oldMessage.isRead,
-        isImage: oldMessage.isImage,
-        imageLocalPath: oldMessage.imageLocalPath,
-        fileId: oldMessage.fileId,
-      );
-
-      _messages[targetConversationId]![messageIndex] = updatedMessage;
-
-      // 更新会话的最后一条消息
-      final conversationIndex = _conversations.indexWhere(
-        (conversation) => conversation.agentId == targetConversationId,
-      );
-
-      if (conversationIndex != -1) {
-        final updatedConversation = _conversations[conversationIndex].copyWith(
-          lastMessage: content,
-        );
-        _conversations[conversationIndex] = updatedConversation;
-      }
-
-      await _saveConversations();
-      notifyListeners();
-    } else {
-      print('警告：找不到消息 $messageId');
     }
   }
 

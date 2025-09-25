@@ -5,8 +5,8 @@ class Conversation {
   final String userName;
   final String agentId; // agent_id
   final String agentName; // 与agent_name的对话
-  final ConversationType type;
-  final String configId; // server类型 现在固定是Xiaozhi
+  final ConversationType type; // 没用，固定是ConversationType.xiaozhi
+  final String configId; // server类型 现在固定是Xiaozhi[0], 这是描述服务器配置的
   final DateTime lastMessageTime;
   final String lastMessage; // 最后一条消息
   final int unreadCount;
@@ -17,7 +17,7 @@ class Conversation {
     required this.userName,
     required this.agentId,
     required this.agentName,
-    required this.type,
+    this.type = ConversationType.xiaozhi,
     this.configId = '',
     required this.lastMessageTime,
     required this.lastMessage,

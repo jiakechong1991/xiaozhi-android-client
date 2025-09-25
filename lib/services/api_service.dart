@@ -166,6 +166,29 @@ class ApiService {
     }
   }
 
+  // 👇 获取用户的agent列表
+  Future<Map<String, dynamic>> getAgentList() async {
+    final response = await _dio.get('/api/agents/');
+    if (response.statusCode == 200) {
+      return response.data as Map<String, dynamic>;
+    } else {
+      throw Exception('获取agent列表信息失败');
+    }
+  }
+
+  // 👇 获取 指定agent的最近N条消息的列表
+  Future<Map<String, dynamic>> getMessageList(String agentId, int limit) async {
+    final response = await _dio.get(
+      '/api/msg/query',
+      queryParameters: {'agent_id': agentId, 'limit': limit},
+    );
+    if (response.statusCode == 200) {
+      return response.data as Map<String, dynamic>;
+    } else {
+      throw Exception('获取agent($agentId)的msg信息列表 失败');
+    }
+  }
+
   // 👇 通用 GET 请求
   Future<dynamic> get(String path) async {
     final response = await _dio.get(path);
