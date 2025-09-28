@@ -18,7 +18,7 @@ class Conversation {
     required this.agentId,
     required this.agentName,
     this.type = ConversationType.xiaozhi,
-    this.configId = '',
+    this.configId = '0',
     required this.lastMessageTime,
     required this.lastMessage,
     this.unreadCount = 0,
