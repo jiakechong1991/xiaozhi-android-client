@@ -114,8 +114,9 @@ class ApiService {
     String agent_name,
     String sex,
     String birthday,
-    String signature,
-    String hobby,
+    String character_setting, // 角色介绍
+    String age, // 年龄
+    String voices,
   ) async {
     final response = await _dio.post(
       '/api/agents/',
@@ -123,8 +124,9 @@ class ApiService {
         'agent_name': agent_name,
         'sex': sex,
         'birthday': birthday,
-        'signature': signature,
-        'hobby': hobby,
+        'character_setting': character_setting,
+        'age': age,
+        'voices': voices,
       },
     );
 

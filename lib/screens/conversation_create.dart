@@ -10,6 +10,7 @@ import 'package:ai_assistant/controllers/agent_create_controller.dart';
 import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'dart:convert';
+import 'package:flutter/services.dart'; // 需要导入这个包
 
 class ConversationTypeCreate extends StatefulWidget {
   const ConversationTypeCreate({super.key});
@@ -122,34 +123,20 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
               const SizedBox(height: 15),
 
               const Text(
-                '可选性别a：',
+                '年龄：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              Obx(
-                () => DropdownButtonFormField<String>(
-                  value: createAgentController.sex.value,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    // 可选：添加 label 或 hint
-                    // labelText: '性别',
-                  ),
-                  items: [
-                    DropdownMenuItem<String>(value: 'm', child: Text('男')),
-                    DropdownMenuItem<String>(value: 'f', child: Text('女')),
-                  ],
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      createAgentController.sex.value =
-                          newValue; // ✅ 同步到 controller
-                    }
-                  },
-                  // 可选：添加验证
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '请选择性别';
-                    }
-                    return null;
-                  },
+              TextField(
+                controller: createAgentController.ageController,
+                keyboardType: TextInputType.number, // 只显示数字键盘
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly, // 只允许数字
+                  // 可选：限制最大长度，比如年龄最大为3位数
+                  LengthLimitingTextInputFormatter(3),
+                ],
+                decoration: InputDecoration(
+                  hintText: '请输入年龄',
+                  border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 15),
@@ -169,26 +156,80 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
               const SizedBox(height: 15),
 
               const Text(
-                '职业：',
+                '可选性别a：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              TextField(
-                controller: createAgentController.signatureController,
-                decoration: InputDecoration(
-                  hintText: '请输入职业',
-                  border: OutlineInputBorder(),
+              Obx(
+                () => DropdownButtonFormField<String>(
+                  value: createAgentController.sex.value,
+                  decoration: InputDecoration(
+                    border: OutlineInputBorder(),
+                    // 可选：添加 label 或 hint
+                    // labelText: '性别',
+                  ),
+                  items: [
+                    DropdownMenuItem<String>(value: 'm', child: Text('男')),
+                    DropdownMenuItem<String>(value: 'f', child: Text('女')),
+                  ],
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      createAgentController.onSexChanged(
+                        newValue,
+                      ); //更新sex 并自动更新 voices
+                    }
+                  },
+                  // 可选：添加验证
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '请选择性别';
+                    }
+                    return null;
+                  },
                 ),
               ),
               const SizedBox(height: 15),
 
               const Text(
-                '性格：',
+                '可选声音:',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              Obx(
+                () => DropdownButtonFormField<String>(
+                  value: createAgentController.voices.value,
+                  decoration: InputDecoration(border: OutlineInputBorder()),
+                  items:
+                      createAgentController.availableVoices
+                          .map(
+                            (voice) => DropdownMenuItem<String>(
+                              value: voice['value'],
+                              child: Text(voice['label']!),
+                            ),
+                          )
+                          .toList(),
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      createAgentController.voices.value =
+                          newValue; // ✅ 同步到 controller
+                    }
+                  },
+                  // 可选：添加验证
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '请选择音色';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+
+              const Text(
+                '角色设定：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentController.hobbyController,
+                controller: createAgentController.characterSettingController,
                 decoration: InputDecoration(
-                  hintText: '请输入性格',
+                  hintText: '请输入角色介绍',
                   border: OutlineInputBorder(),
                 ),
               ),

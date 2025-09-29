@@ -16,23 +16,51 @@ class CreateAgentController extends GetxController {
   // 表单控制器
   final agentNameController = TextEditingController();
   final birthdayController = TextEditingController();
-  final signatureController = TextEditingController();
-  final hobbyController = TextEditingController();
+  final characterSettingController = TextEditingController();
+  final ageController = TextEditingController();
   var sex = 'f'.obs;
+  var voices = "Chinese (Mandarin)_Soft_Girl".obs;
+
+  // 音色映射：按性别分组
+  static const Map<String, List<Map<String, String>>> _voiceOptions = {
+    'f': [
+      {'value': 'Chinese (Mandarin)_Soft_Girl', 'label': '柔和少女'},
+      {'value': 'Chinese (Mandarin)_BashfulGirl', 'label': '害羞少女'},
+    ],
+    'm': [
+      {'value': 'Chinese (Mandarin)_Pure-hearted_Boy', 'label': '纯真男孩'},
+      {'value': 'Chinese (Mandarin)_Stubborn_Friend', 'label': '倔强男友'},
+    ],
+  };
+
+  // 根据当前性别获取可用音色列表
+  List<Map<String, String>> get availableVoices {
+    return _voiceOptions[sex.value] ?? _voiceOptions['f']!;
+  }
+
+  // 当性别改变时，自动更新 voices 为该性别下的第一个选项
+  void onSexChanged(String newSex) {
+    if (newSex != sex.value) {
+      sex.value = newSex;
+      final firstVoice = availableVoices.first['value']!;
+      voices.value = firstVoice;
+    }
+  }
 
   @override
   void onClose() {
     agentNameController.dispose();
     birthdayController.dispose();
-    signatureController.dispose();
-    hobbyController.dispose();
+    characterSettingController.dispose();
+    ageController.dispose();
     super.onClose();
   }
 
   Future<void> create_agent() async {
     print(">>> create_agent 按钮被点击，开始创建agent");
-    if (agentNameController.text.isEmpty || hobbyController.text.isEmpty) {
-      errorMessage.value = "用户名或性格不能为空";
+    if (agentNameController.text.isEmpty ||
+        characterSettingController.text.isEmpty) {
+      errorMessage.value = "用户名或设定不能为空";
       return;
     }
     if (sex.value.isEmpty) {
@@ -48,8 +76,9 @@ class CreateAgentController extends GetxController {
         agentNameController.text,
         sex.value,
         birthdayController.text,
-        signatureController.text,
-        hobbyController.text,
+        characterSettingController.text,
+        ageController.text,
+        voices.value,
       );
       print("创建agent成功,要返回聊天界面了， 这里先用log代替");
       //回到 聊天界面
