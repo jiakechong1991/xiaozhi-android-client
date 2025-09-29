@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:ai_assistant/providers/conversation_provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/providers/config_provider.dart';
+import 'package:image_picker/image_picker.dart';
 
 class CreateAgentController extends GetxController {
   final ApiService _api = Get.find<ApiService>();

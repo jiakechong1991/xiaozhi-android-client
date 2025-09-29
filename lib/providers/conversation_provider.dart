@@ -24,8 +24,12 @@ class ConversationProvider extends ChangeNotifier {
   List<Conversation> get pinnedConversations =>
       _conversations.where((conv) => conv.isPinned).toList();
   // 非置顶的agent会话
-  List<Conversation> get unpinnedConversations =>
-      _conversations.where((conv) => !conv.isPinned).toList();
+  List<Conversation> get unpinnedConversations {
+    final unpinned_ = _conversations.where((conv) => !conv.isPinned).toList();
+    // 按 lastMessageTime 倒序排序：最新消息在前
+    unpinned_.sort((a, b) => b.lastMessageTime.compareTo(a.lastMessageTime));
+    return unpinned_;
+  }
 
   ConversationProvider() {
     _loadConversations();

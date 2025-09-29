@@ -27,7 +27,7 @@ dependencies:
   http_parser: ^4.0.2  # http解析库
   web_socket_channel: ^2.4.0  # websocket管理库
   intl: ^0.19.0  # 国际化库
-  image_picker: ^1.0.7  # 从相册/相机 选择图片/视频
+  image_picker: ^1.2.0  # 从相册/相机 选择图片/视频
   fl_chart: ^0.66.2  # 可视化，绘图库
   get: ^4.7.2  # get风格库
   jwt_decoder: ^2.0.1  # jwt解析库
