@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:ai_assistant/providers/conversation_provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/providers/config_provider.dart';
+import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
 class CreateAgentController extends GetxController {
@@ -22,6 +23,8 @@ class CreateAgentController extends GetxController {
   var sex = 'f'.obs;
   var voices = "Chinese (Mandarin)_Soft_Girl".obs;
 
+  // 👇 新增：头像图片文件（可选）
+  var avatarFile = Rx<File?>(null);
   // 音色映射：按性别分组
   static const Map<String, List<Map<String, String>>> _voiceOptions = {
     'f': [
@@ -33,6 +36,28 @@ class CreateAgentController extends GetxController {
       {'value': 'Chinese (Mandarin)_Stubborn_Friend', 'label': '倔强男友'},
     ],
   };
+
+  // 更新头像
+  void setAvatar(File? file) {
+    avatarFile.value = file;
+    update(); // 触发 Obx 刷新 UI
+  }
+
+  // 从相册或相机选择图片
+  Future<void> pickImage(ImageSource source) async {
+    final ImagePicker picker = ImagePicker();
+    final XFile? image = await picker.pickImage(source: source);
+
+    if (image != null) {
+      setAvatar(File(image.path));
+    }
+  }
+
+  // 清除头像
+  void clearAvatar() {
+    avatarFile.value = null;
+    update();
+  }
 
   // 根据当前性别获取可用音色列表
   List<Map<String, String>> get availableVoices {
@@ -80,6 +105,7 @@ class CreateAgentController extends GetxController {
         characterSettingController.text,
         ageController.text,
         voices.value,
+        avatarFile.value, // 👈 新增
       );
       print("创建agent成功,要返回聊天界面了， 这里先用log代替");
       //回到 聊天界面

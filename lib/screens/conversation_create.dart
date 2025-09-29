@@ -11,6 +11,8 @@ import 'package:http/http.dart' as http;
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'package:flutter/services.dart'; // 需要导入这个包
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class ConversationTypeCreate extends StatefulWidget {
   const ConversationTypeCreate({super.key});
@@ -33,6 +35,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
 
   @override
   Widget build(BuildContext context) {
+    print("新建角色了，进入build页面");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -104,6 +107,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
               ],
             ),
           ),
+          _buildAvatarSection(),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           const SizedBox(height: 16),
           Column(
@@ -281,6 +285,87 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ),
+    );
+  }
+
+  Widget _buildAvatarSection() {
+    return Obx(
+      () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '头像：',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: () {
+              // 弹出选择菜单：拍照 or 相册
+              _showImagePickerDialog(context);
+            },
+            child: Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade300, width: 1),
+              ),
+              child:
+                  createAgentController.avatarFile.value == null
+                      ? const Icon(
+                        Icons.add_a_photo,
+                        size: 32,
+                        color: Colors.grey,
+                      )
+                      : ClipOval(
+                        child: Image.file(
+                          createAgentController.avatarFile.value!,
+                          fit: BoxFit.cover,
+                          width: 80,
+                          height: 80,
+                        ),
+                      ),
+            ),
+          ),
+          const SizedBox(height: 15),
+        ],
+      ),
+    );
+  }
+
+  void _showImagePickerDialog(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (BuildContext context) {
+        return SafeArea(
+          child: Wrap(
+            children: [
+              ListTile(
+                leading: const Icon(Icons.photo_library),
+                title: const Text('从相册选择'),
+                onTap: () {
+                  Navigator.pop(context);
+                  createAgentController.pickImage(ImageSource.gallery);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.camera_alt),
+                title: const Text('拍照'),
+                onTap: () {
+                  Navigator.pop(context);
+                  createAgentController.pickImage(ImageSource.camera);
+                },
+              ),
+              ListTile(
+                leading: const Icon(Icons.cancel),
+                title: const Text('取消'),
+                textColor: Colors.red,
+                onTap: () => Navigator.pop(context),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 }

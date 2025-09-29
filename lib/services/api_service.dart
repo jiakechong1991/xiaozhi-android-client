@@ -1,9 +1,11 @@
 // lib/services/api_service.dart
 import 'dart:convert';
 import 'package:dio/dio.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:ai_assistant/services/token_storage.dart'; // 替换为你的包名
 import 'package:ai_assistant/state/token.dart'; // 你的 TokenController
+import 'dart:io';
+import 'package:path/path.dart' as path;
 
 class ApiService {
   final Dio _dio = Dio();
@@ -117,17 +119,36 @@ class ApiService {
     String character_setting, // 角色介绍
     String age, // 年龄
     String voices,
+    File? avatarFile,
   ) async {
+    final formData = FormData();
+
+    // 添加文本字段
+    formData.fields.addAll([
+      MapEntry('agent_name', agent_name),
+      MapEntry('sex', sex),
+      MapEntry('birthday', birthday),
+      MapEntry('character_setting', character_setting),
+      MapEntry('age', age),
+      MapEntry('voices', voices),
+    ]);
+
+    if (avatarFile != null) {
+      final filename = path.basename(avatarFile.path); // ✅ 动态获取
+      formData.files.add(
+        MapEntry(
+          'avatar',
+          await MultipartFile.fromFile(avatarFile.path, filename: filename),
+        ),
+      );
+    }
+
     final response = await _dio.post(
       '/api/agents/',
-      data: {
-        'agent_name': agent_name,
-        'sex': sex,
-        'birthday': birthday,
-        'character_setting': character_setting,
-        'age': age,
-        'voices': voices,
-      },
+      data: formData,
+      options: Options(
+        contentType: "multipart/form-data", // 显式指定（dio 通常自动设）
+      ),
     );
 
     if (response.statusCode == 201) {
