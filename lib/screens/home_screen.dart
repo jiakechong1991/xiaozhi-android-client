@@ -24,6 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // 当前选中的底部导航栏索引
   final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
+  late Worker _tokenWorker;
 
   void _checkToken(String token) {
     if (token.isEmpty) {
@@ -45,7 +46,7 @@ class _HomeScreenState extends State<HomeScreen> {
     _checkToken(TokenController.to.token.value);
 
     // 👇 监听后续变化
-    _tokenWorker = ever(TokenController.to.token, _checkToken(token));
+    _tokenWorker = ever(TokenController.to.token, _checkToken);
   }
 
   @override
