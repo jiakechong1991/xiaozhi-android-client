@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
@@ -9,16 +10,18 @@ import 'package:path_provider/path_provider.dart';
 import 'package:ai_assistant/services/api_service.dart';
 
 // 这个对应 多agent的对话列表，[每个agent是一个对话项]
-class ConversationProvider extends ChangeNotifier {
+class ConversationController extends GetxController {
   String? userName;
-  List<Conversation> _conversations = []; // [conversation1, conversation2, ...]
-  Map<String, List<Message>> _messages =
-      {}; // {agentId, [message1, message2, ...]}
+  var _conversations =
+      <Conversation>[].obs; // [conversation1, conversation2, ...]
+  var _messages =
+      <String, List<Message>>{}.obs; // {agentId:[message1, message2, ...]}
 
   // 保存最后删除的会话及其消息，用于撤销删除
   Conversation? _lastDeletedConversation;
   List<Message>? _lastDeletedMessages;
 
+  ///封装的快捷方法
   List<Conversation> get conversations => _conversations;
   // 置顶的agent会话
   List<Conversation> get pinnedConversations =>
@@ -31,7 +34,8 @@ class ConversationProvider extends ChangeNotifier {
     return unpinned_;
   }
 
-  ConversationProvider() {
+  ConversationController() {
+    print("---调用ConversationController的构造函数了---");
     _loadConversations();
   }
 
@@ -49,7 +53,7 @@ class ConversationProvider extends ChangeNotifier {
         final apiService = ApiService(); // 假设 ApiService 可直接实例化，或通过依赖注入传入
         final agents = await apiService.getAgentList();
 
-        _conversations =
+        _conversations.value =
             agents.map((agent) {
               final agentId = (agent['id'] as dynamic).toString();
               final title = agent['agent_name'] as String;
@@ -74,7 +78,7 @@ class ConversationProvider extends ChangeNotifier {
       }
     } else {
       // 本地有数据，正常解析
-      _conversations =
+      _conversations.value =
           conversationsJson
               .map((json) => Conversation.fromJson(jsonDecode(json)))
               .toList();
@@ -161,8 +165,6 @@ class ConversationProvider extends ChangeNotifier {
     }
     // 如果请求了server，最后就要保存一下对话信息，避免下次继续为空
     // if (hasReadServer) await _saveConversations();
-
-    notifyListeners();
   }
 
   Future<void> _saveConversations() async {
@@ -222,7 +224,6 @@ class ConversationProvider extends ChangeNotifier {
     _messages[newConversation.agentId] = [];
 
     await _saveConversations();
-    notifyListeners();
 
     print('ConversationProvider: 创建新会话，ID = $conversationId');
     return newConversation;
@@ -256,7 +257,6 @@ class ConversationProvider extends ChangeNotifier {
       _messages.remove(id);
 
       await _saveConversations();
-      notifyListeners();
     }
   }
 
@@ -293,7 +293,6 @@ class ConversationProvider extends ChangeNotifier {
       _lastDeletedMessages = null;
 
       await _saveConversations();
-      notifyListeners();
     }
   }
 
@@ -308,7 +307,6 @@ class ConversationProvider extends ChangeNotifier {
       _conversations[index] = updatedConversation;
 
       await _saveConversations();
-      notifyListeners();
     }
   }
 
@@ -382,7 +380,6 @@ class ConversationProvider extends ChangeNotifier {
     }
 
     await _saveConversations();
-    notifyListeners();
   }
 
   // 更新最后一条用户消息，用于图片上传后更新fileId等信息
@@ -445,7 +442,6 @@ class ConversationProvider extends ChangeNotifier {
       }
 
       await _saveConversations();
-      notifyListeners();
     } else {
       print('警告：在会话 $conversationId 中找不到用户消息');
     }
@@ -481,7 +477,6 @@ class ConversationProvider extends ChangeNotifier {
       }
 
       await _saveConversations();
-      notifyListeners();
     }
   }
 }

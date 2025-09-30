@@ -3,7 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/services/api_service.dart';
 import 'package:provider/provider.dart';
-import 'package:ai_assistant/providers/conversation_provider.dart';
+import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/providers/config_provider.dart';
 import 'dart:io';
@@ -14,6 +14,7 @@ class CreateAgentController extends GetxController {
 
   final isLoading = false.obs; // 用于显示 loading
   final errorMessage = ''.obs; // 用于显示错误信息
+  final conversationController_ins = Get.find<ConversationController>();
 
   // 表单控制器
   final agentNameController = TextEditingController();
@@ -126,10 +127,7 @@ class CreateAgentController extends GetxController {
       print('✅ sex: ${xiaozhiConfigs.first.id!}');
       print('=================================');
 
-      final conversation = await Provider.of<ConversationProvider>(
-        context,
-        listen: false,
-      ).createConversation(
+      final conversation = await conversationController_ins.createConversation(
         title: '与 ${agentName} 的对话',
         agentId: agentId!,
         type: ConversationType.xiaozhi,

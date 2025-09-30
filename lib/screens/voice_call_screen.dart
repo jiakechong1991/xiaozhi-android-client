@@ -1,10 +1,11 @@
+import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/message.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
-import 'package:ai_assistant/providers/conversation_provider.dart';
+import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/services/xiaozhi_service.dart';
 import 'dart:async';
 import 'dart:io';
@@ -25,7 +26,9 @@ class VoiceCallScreen extends StatefulWidget {
 
 class _VoiceCallScreenState extends State<VoiceCallScreen>
     with SingleTickerProviderStateMixin {
+  final conversationController_ins = Get.find<ConversationController>();
   late XiaozhiService _xiaozhiService;
+
   bool _isConnected = false;
   bool _isSpeaking = false;
   String _statusText = '正在连接...';
@@ -153,7 +156,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
       _startCallTimer();
 
       // 添加会话消息
-      Provider.of<ConversationProvider>(context, listen: false).addMessage(
+      conversationController_ins.addMessage(
         conversationId: widget.conversation.agentId,
         role: MessageRole.assistant,
         content: '语音通话已开始',

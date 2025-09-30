@@ -1,3 +1,4 @@
+import 'package:get/get.dart';
 import 'package:ai_assistant/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +10,7 @@ import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/message.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/models/dify_config.dart';
-import 'package:ai_assistant/providers/conversation_provider.dart';
+import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/providers/config_provider.dart';
 import 'package:ai_assistant/services/dify_service.dart';
 import 'package:ai_assistant/services/xiaozhi_service.dart';
@@ -30,6 +31,7 @@ class ChatScreen extends StatefulWidget {
 
 // 对话page的主体：
 class _ChatScreenState extends State<ChatScreen> {
+  final conversationController_ins = Get.find<ConversationController>();
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
@@ -82,10 +84,9 @@ class _ChatScreenState extends State<ChatScreen> {
       );
 
       // 编辑该会话ID已读
-      Provider.of<ConversationProvider>(
-        context,
-        listen: false, // 本widget本次不监听数据变换，进而重绘制UI
-      ).markConversationAsRead(widget.conversation.agentId);
+      conversationController_ins.markConversationAsRead(
+        widget.conversation.agentId,
+      );
 
       // 如果是小智对话，初始化服务
       if (widget.conversation.type == ConversationType.xiaozhi) {
@@ -218,11 +219,6 @@ class _ChatScreenState extends State<ChatScreen> {
   void _handleXiaozhiMessage(XiaozhiServiceEvent event) {
     if (!mounted) return;
 
-    final conversationProvider = Provider.of<ConversationProvider>(
-      context,
-      listen: false,
-    );
-
     if (event.type == XiaozhiServiceEventType.textMessage) {
       // 直接使用文本内容
       String content = event.data as String;
@@ -230,7 +226,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       // 忽略空消息
       if (content.isNotEmpty) {
-        conversationProvider.addMessage(
+        conversationController_ins.addMessage(
           conversationId: widget.conversation.agentId,
           role: MessageRole.assistant,
           content: content,
@@ -245,7 +241,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (content.isNotEmpty && _isVoiceInputMode) {
         // 语音消息可能有延迟，使用Future.microtask确保UI已更新
         Future.microtask(() {
-          conversationProvider.addMessage(
+          conversationController_ins.addMessage(
             conversationId: widget.conversation.agentId,
             role: MessageRole.user,
             content: content,
@@ -657,63 +653,63 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageList() {
     // 绘制消息列表
-    return Consumer<ConversationProvider>(
-      builder: (context, provider, child) {
-        // 获得该agent的所有消息
-        final messages = provider.getMessages(widget.conversation.agentId);
+    return Obx(() {
+      // 获得该agent的所有消息
+      final messages = conversationController_ins.getMessages(
+        widget.conversation.agentId,
+      );
 
-        if (messages.isEmpty) {
-          return Center(
-            child: Text(
-              '开始新对话',
-              style: TextStyle(color: Colors.grey.shade400, fontSize: 16),
+      if (messages.isEmpty) {
+        return Center(
+          child: Text(
+            '开始新对话',
+            style: TextStyle(color: Colors.grey.shade400, fontSize: 16),
+          ),
+        );
+      }
+      // ListView经常用于构建 长列表/聊天界面 等动态内容，是懒加载方式，只构建当前可见的列表部分
+      return ListView.builder(
+        controller: _scrollController, // 滚动控制器
+        padding: const EdgeInsets.all(16), // 列表item的内边距，给所有 item 外围留出空白
+        reverse: true, // 新消息在下面，而非上面
+        itemCount: messages.length + (_isLoading ? 1 : 0), // item列表 总数
+        cacheExtent: 1000.0, // 预加载范围：上下各预渲染 1000 像素范围内的 item，提升滚动流畅性
+        addRepaintBoundaries: true,
+        addAutomaticKeepAlives: true,
+        physics: const ClampingScrollPhysics(), // 滚动效果（到边界就停，不回弹）
+        itemBuilder: (context, index) {
+          // 根据index动态构建item
+          if (_isLoading && index == 0) {
+            return MessageBubble(
+              message: Message(
+                messageId: 'loading',
+                conversationId: '',
+                role: MessageRole.assistant,
+                content: '思考中...',
+                timestamp: DateTime.now(),
+              ),
+              isThinking: true,
+              conversationType: widget.conversation.type,
+            );
+          }
+
+          final adjustedIndex = _isLoading ? index - 1 : index;
+          // 获得对应的msg
+          final message = messages[messages.length - 1 - adjustedIndex];
+
+          return RepaintBoundary(
+            // 通知flutter,它包含的widget，是需要经常 重新绘制的，提升性能用
+            child: MessageBubble(
+              key: ValueKey(
+                message.messageId,
+              ), //从message.id初始化一个key，作为 listView比较多个item的id_key
+              message: message,
+              conversationType: widget.conversation.type,
             ),
           );
-        }
-        // ListView经常用于构建 长列表/聊天界面 等动态内容，是懒加载方式，只构建当前可见的列表部分
-        return ListView.builder(
-          controller: _scrollController, // 滚动控制器
-          padding: const EdgeInsets.all(16), // 列表item的内边距，给所有 item 外围留出空白
-          reverse: true, // 新消息在下面，而非上面
-          itemCount: messages.length + (_isLoading ? 1 : 0), // item列表 总数
-          cacheExtent: 1000.0, // 预加载范围：上下各预渲染 1000 像素范围内的 item，提升滚动流畅性
-          addRepaintBoundaries: true,
-          addAutomaticKeepAlives: true,
-          physics: const ClampingScrollPhysics(), // 滚动效果（到边界就停，不回弹）
-          itemBuilder: (context, index) {
-            // 根据index动态构建item
-            if (_isLoading && index == 0) {
-              return MessageBubble(
-                message: Message(
-                  messageId: 'loading',
-                  conversationId: '',
-                  role: MessageRole.assistant,
-                  content: '思考中...',
-                  timestamp: DateTime.now(),
-                ),
-                isThinking: true,
-                conversationType: widget.conversation.type,
-              );
-            }
-
-            final adjustedIndex = _isLoading ? index - 1 : index;
-            // 获得对应的msg
-            final message = messages[messages.length - 1 - adjustedIndex];
-
-            return RepaintBoundary(
-              // 通知flutter,它包含的widget，是需要经常 重新绘制的，提升性能用
-              child: MessageBubble(
-                key: ValueKey(
-                  message.messageId,
-                ), //从message.id初始化一个key，作为 listView比较多个item的id_key
-                message: message,
-                conversationType: widget.conversation.type,
-              ),
-            );
-          },
-        );
-      },
-    );
+        },
+      );
+    });
   }
 
   Widget _buildInputArea() {
@@ -1134,11 +1130,6 @@ class _ChatScreenState extends State<ChatScreen> {
     // 给用户一个清晰的提示
     _showCustomSnackbar('正在开始新对话...');
 
-    final conversationProvider = Provider.of<ConversationProvider>(
-      context,
-      listen: false,
-    );
-
     if (_difyService != null) {
       // 使用会话的ID作为sessionId，确保与发送消息时使用相同的标识符
       final sessionId = widget.conversation.agentId;
@@ -1147,7 +1138,7 @@ class _ChatScreenState extends State<ChatScreen> {
       await _difyService!.clearConversation(sessionId);
 
       // 添加系统消息表明这是一个新对话
-      await conversationProvider.addMessage(
+      await conversationController_ins.addMessage(
         conversationId: widget.conversation.agentId,
         role: MessageRole.system,
         content: '--- 开始新对话 ---',
@@ -1166,13 +1157,8 @@ class _ChatScreenState extends State<ChatScreen> {
 
     _textController.clear();
 
-    final conversationProvider = Provider.of<ConversationProvider>(
-      context,
-      listen: false,
-    );
-
     // Add user message
-    await conversationProvider.addMessage(
+    await conversationController_ins.addMessage(
       conversationId: widget.conversation.agentId,
       role: MessageRole.user,
       content: message,
@@ -1210,7 +1196,7 @@ class _ChatScreenState extends State<ChatScreen> {
         if (!mounted) return; // 再次检查组件是否还在widget树中
 
         // 添加助手回复
-        await conversationProvider.addMessage(
+        await conversationController_ins.addMessage(
           conversationId: widget.conversation.agentId,
           role: MessageRole.assistant,
           content: response,
@@ -1242,7 +1228,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (!mounted) return;
 
       // Add error message
-      await conversationProvider.addMessage(
+      await conversationController_ins.addMessage(
         conversationId: widget.conversation.agentId,
         role: MessageRole.assistant,
         content: '发生错误: ${e.toString()}',

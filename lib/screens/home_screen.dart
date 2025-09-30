@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
-import 'package:ai_assistant/providers/conversation_provider.dart';
+import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
 import 'package:ai_assistant/screens/settings_screen.dart';
@@ -25,6 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // 当前选中的底部导航栏索引
   final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
   late Worker _tokenWorker;
+  final conversationController_ins = Get.find<ConversationController>();
 
   void _checkToken(String token) {
     if (token.isEmpty) {
@@ -395,181 +396,166 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   Widget _buildBody() {
-    // Messages tab
-    // 这是fluter中 “状态管理+动态UI构建”的 典型用法：
-    // Consumer 是 provider 包提供的组件，作用是监听 ConversationProvider 中的数据变化
-    // 当 ConversationProvider 中的对话数据（新增 / 删除 / 置顶状态改变）发生变化并
-    //      调用 notifyListeners() 时，builder 方法会重新执行，UI 随之刷新
-    return Consumer<ConversationProvider>(
-      // builder回调的三个参数：
-      //    context：当前上下文，
-      //    provider：ConversationProvider 实例，用于获取对话数据（核心）
-      //    child：可选的 “静态子组件”（这里未使用，用于优化性能）
-      builder: (context, provider, child) {
-        final pinnedConversations = provider.pinnedConversations; // 获取置顶对话
-        final unpinnedConversations = provider.unpinnedConversations; // 获取未置顶对话
+    return Obx(
+      () => ListView(
+        // 滚动容器
+        padding: EdgeInsets.only(
+          // 填充留白
+          // 16是基础留白 ，MediaQuery.of(context).padding.bottom是
+          // 设备底部安全区域（如全面屏的底部刘海 / 导航栏高度），避免对话项被设备边缘遮挡
+          bottom: 16 + MediaQuery.of(context).padding.bottom,
+        ),
+        children: [
+          // 这个列表是支持 条件判断的，动态确定显示哪些组件
 
-        return ListView(
-          // 滚动容器
-          padding: EdgeInsets.only(
-            // 填充留白
-            // 16是基础留白 ，MediaQuery.of(context).padding.bottom是
-            // 设备底部安全区域（如全面屏的底部刘海 / 导航栏高度），避免对话项被设备边缘遮挡
-            bottom: 16 + MediaQuery.of(context).padding.bottom,
-          ),
-          children: [
-            // 这个列表是支持 条件判断的，动态确定显示哪些组件
-
-            // 置顶对话的区域
-            if (pinnedConversations.isNotEmpty) ...[
-              // ... 将后面list的元素平铺到外层list中
-              const Padding(
-                padding: EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 8,
-                  bottom: 8,
-                ),
-                child: Text(
-                  '置顶对话',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                    fontSize: 15,
-                    shadows: [
-                      Shadow(
-                        color: Color(0x40000000),
-                        blurRadius: 0.5,
-                        offset: Offset(0, 0.5),
-                      ),
-                    ],
-                  ),
+          // 置顶对话的区域
+          if (conversationController_ins.pinnedConversations.isNotEmpty) ...[
+            // ... 将后面list的元素平铺到外层list中
+            const Padding(
+              padding: EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
+              child: Text(
+                '置顶对话',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                  fontSize: 15,
+                  shadows: [
+                    Shadow(
+                      color: Color(0x40000000),
+                      blurRadius: 0.5,
+                      offset: Offset(0, 0.5),
+                    ),
+                  ],
                 ),
               ),
-              // 集合展开语法... ，将list中的元素逐个展开，添加到外层list中
-              // 将pinnedConversations中的元素，逐个作为conversation，然后调用
-              //    _buildConversationTile(conversation)方法，返回一个组件，然后添加到列表中
-              ...pinnedConversations.map(
-                (conversation) => _buildConversationTile(conversation),
-              ),
-            ],
-            // 非置顶对话的区域
-            if (unpinnedConversations.isNotEmpty) ...[
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: pinnedConversations.isEmpty ? 8 : 16,
-                  bottom: 8,
-                ),
-                child: const Text(
-                  '全部对话',
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                    fontSize: 15,
-                    shadows: [
-                      Shadow(
-                        color: Color(0x40000000),
-                        blurRadius: 0.5,
-                        offset: Offset(0, 0.5),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              ...unpinnedConversations.map(
-                (conversation) => _buildConversationTile(conversation),
-              ),
-            ],
-            // 如果为空，显示的区域
-            if (pinnedConversations.isEmpty && unpinnedConversations.isEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(64.0),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        padding: const EdgeInsets.all(24),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.05),
-                              blurRadius: 10,
-                              spreadRadius: 0,
-                              offset: const Offset(0, 5),
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.chat_bubble_outline, // 对话图标
-                          size: 48,
-                          color: Colors.grey.shade300,
-                        ),
-                      ),
-                      const SizedBox(height: 24),
-                      Text(
-                        '没有对话',
-                        style: TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.grey.shade500,
-                          shadows: const [
-                            Shadow(
-                              color: Color(0x40000000),
-                              blurRadius: 0.5,
-                              offset: Offset(0, 0.5),
-                            ),
-                          ],
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 8,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20),
-                          boxShadow: [
-                            BoxShadow(
-                              color: Colors.black.withOpacity(0.08),
-                              blurRadius: 5,
-                              spreadRadius: 0,
-                              offset: const Offset(0, 2),
-                            ),
-                          ],
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              Icons.add_circle_outline,
-                              size: 18,
-                              color: Colors.grey.shade400,
-                            ),
-                            const SizedBox(width: 8),
-                            Text(
-                              '点击 + 创建新对话',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey.shade500,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
+            ),
+            // 集合展开语法... ，将list中的元素逐个展开，添加到外层list中
+            // 将pinnedConversations中的元素，逐个作为conversation，然后调用
+            //    _buildConversationTile(conversation)方法，返回一个组件，然后添加到列表中
+            ...conversationController_ins.pinnedConversations.map(
+              (conversation) => _buildConversationTile(conversation),
+            ),
           ],
-        );
-      },
+          // 非置顶对话的区域
+          if (conversationController_ins.unpinnedConversations.isNotEmpty) ...[
+            Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top:
+                    conversationController_ins.pinnedConversations.isEmpty
+                        ? 8
+                        : 16,
+                bottom: 8,
+              ),
+              child: const Text(
+                '全部对话',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                  fontSize: 15,
+                  shadows: [
+                    Shadow(
+                      color: Color(0x40000000),
+                      blurRadius: 0.5,
+                      offset: Offset(0, 0.5),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ...conversationController_ins.unpinnedConversations.map(
+              (conversation) => _buildConversationTile(conversation),
+            ),
+          ],
+          // 如果为空，显示的区域
+          if (conversationController_ins.pinnedConversations.isEmpty &&
+              conversationController_ins.unpinnedConversations.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(64.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.chat_bubble_outline, // 对话图标
+                        size: 48,
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      '没有对话',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade500,
+                        shadows: const [
+                          Shadow(
+                            color: Color(0x40000000),
+                            blurRadius: 0.5,
+                            offset: Offset(0, 0.5),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 5,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.add_circle_outline,
+                            size: 18,
+                            color: Colors.grey.shade400,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '点击 + 创建新对话',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 
@@ -580,10 +566,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // 滑动删除的回调函数
       onDelete: () {
         // 删除对话
-        Provider.of<ConversationProvider>(
-          context,
-          listen: false,
-        ).deleteConversation(conversation.agentId);
+        conversationController_ins.deleteConversation(conversation.agentId);
 
         // 显示撤销消息
         ScaffoldMessenger.of(context).clearSnackBars();
@@ -602,10 +585,7 @@ class _HomeScreenState extends State<HomeScreen> {
               textColor: Colors.white,
               onPressed: () {
                 // 恢复被删除的对话
-                Provider.of<ConversationProvider>(
-                  context,
-                  listen: false,
-                ).restoreLastDeletedConversation();
+                conversationController_ins.restoreLastDeletedConversation();
               },
             ),
           ),
@@ -731,11 +711,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       onTap: () {
+                        conversationController_ins.togglePinConversation(
+                          conversation.agentId,
+                        );
                         Navigator.pop(context);
-                        Provider.of<ConversationProvider>(
-                          context,
-                          listen: false,
-                        ).togglePinConversation(conversation.agentId);
                       },
                     ),
                   ),
@@ -801,12 +780,10 @@ class _HomeScreenState extends State<HomeScreen> {
                         // 关闭对话框, pop(context)会将当前页面从堆栈中移除，相当于关闭这个页面/弹窗。
                         //     将之后的栈顶 弹窗/页面 显示出俩
                         Navigator.pop(context);
-                        // 从全局状态中获取 ConversationProvider 实例
-                        Provider.of<ConversationProvider>(
-                          context,
-                          listen: false, // 只获取实例并调用方法，不监听状态变化，
-                          // 这个ListTile-widget就不要 在更新自己的UI了。因为此刻仅关注数据变化，不关注UI变换
-                        ).deleteConversation(conversation.agentId); //从数据源中移除该对话
+                        //从数据源中移除该对话
+                        conversationController_ins.deleteConversation(
+                          conversation.agentId,
+                        );
                         // 显示一个 SnackBar，告知用户对话已删除
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(

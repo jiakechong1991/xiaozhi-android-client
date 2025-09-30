@@ -1,10 +1,11 @@
+import 'package:ai_assistant/screens/conversation_create.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:ai_assistant/providers/theme_provider.dart';
 import 'package:ai_assistant/providers/config_provider.dart';
-import 'package:ai_assistant/providers/conversation_provider.dart';
+import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/screens/home_screen.dart';
 import 'package:ai_assistant/screens/settings_screen.dart';
 import 'package:ai_assistant/screens/test_screen.dart';
@@ -110,9 +111,11 @@ void main() async {
   // 将 TokenController 注册为单例（GetX 需要）
   Get.put(tokenController);
   Get.put(ApiService()); // ApiService 无异步构造函数时
+  // Get.lazyPut<ConversationController>(() => ConversationController());
+  Get.lazyPut(() => ConversationController());
 
   /*
-  flutter
+  flutters
    */
   runApp(
     MultiProvider(
@@ -125,7 +128,6 @@ void main() async {
         // 使用 value 方法直接提供一个已存在的 configProvider 实例（而不是创建新实例）
         // 这种方式通常用于共享已经初始化好的对象
         ChangeNotifierProvider.value(value: configProvider),
-        ChangeNotifierProvider(create: (_) => ConversationProvider()),
       ],
       child: const MyApp(),
     ),
