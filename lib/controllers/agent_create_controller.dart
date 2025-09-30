@@ -23,8 +23,6 @@ class CreateAgentController extends GetxController {
   var sex = 'f'.obs;
   var voices = "Chinese (Mandarin)_Soft_Girl".obs;
 
-  // 👇 新增：头像图片文件（可选）
-  var avatarFile = Rx<File?>(null);
   // 音色映射：按性别分组
   static const Map<String, List<Map<String, String>>> _voiceOptions = {
     'f': [
@@ -37,10 +35,12 @@ class CreateAgentController extends GetxController {
     ],
   };
 
+  // 👇 新增：头像图片文件（可选）
+  var avatarFile = Rx<File?>(null);
   // 更新头像
   void setAvatar(File? file) {
     avatarFile.value = file;
-    update(); // 触发 Obx 刷新 UI
+    // update(); // 触发 Obx 刷新 UI
   }
 
   // 从相册或相机选择图片
@@ -56,7 +56,7 @@ class CreateAgentController extends GetxController {
   // 清除头像
   void clearAvatar() {
     avatarFile.value = null;
-    update();
+    // update();
   }
 
   // 根据当前性别获取可用音色列表
