@@ -45,14 +45,13 @@ class _HomeScreenState extends State<HomeScreen> {
     _checkToken(TokenController.to.token.value);
 
     // 👇 监听后续变化
-    ever(TokenController.to.token, (token) {
-      _checkToken(token);
-    });
+    _tokenWorker = ever(TokenController.to.token, _checkToken(token));
   }
 
   @override
   void dispose() {
     _searchFocusNode.dispose(); // 释放焦点管理器
+    _tokenWorker.dispose();
     super.dispose(); // 一种内存释放？
   }
 
