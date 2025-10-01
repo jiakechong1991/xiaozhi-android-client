@@ -5,7 +5,7 @@ import 'package:ai_assistant/services/api_service.dart';
 import 'package:provider/provider.dart';
 import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
-import 'package:ai_assistant/providers/config_provider.dart';
+import 'package:ai_assistant/controllers/config_controller.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 
@@ -15,7 +15,7 @@ class CreateAgentController extends GetxController {
   final isLoading = false.obs; // 用于显示 loading
   final errorMessage = ''.obs; // 用于显示错误信息
   final conversationController_ins = Get.find<ConversationController>();
-
+  final configControllerINs = Get.find<ConfigController>();
   // 表单控制器
   final agentNameController = TextEditingController();
   final birthdayController = TextEditingController();
@@ -118,8 +118,7 @@ class CreateAgentController extends GetxController {
       if (context == null) {
         throw Exception('Context is not available');
       }
-      final xiaozhiConfigs =
-          Provider.of<ConfigProvider>(context, listen: false).xiaozhiConfigs;
+      final xiaozhiConfigs = configControllerINs.xiaozhiConfigs;
 
       print('=== 调试：创建 Agent 的入参 ===');
       print('✅ agentName: "${agentName}"');

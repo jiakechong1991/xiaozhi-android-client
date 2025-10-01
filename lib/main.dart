@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:ai_assistant/providers/theme_provider.dart';
-import 'package:ai_assistant/providers/config_provider.dart';
+import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/screens/home_screen.dart';
 import 'package:ai_assistant/screens/settings_screen.dart';
@@ -104,7 +104,7 @@ void main() async {
   }
 
   // 初始化配置管理
-  final configProvider = ConfigProvider();
+  Get.put(ConfigController());
 
   final tokenController = TokenController();
   await tokenController.loadToken(); // 异步加载，阻塞直到完成
@@ -127,7 +127,6 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         // 使用 value 方法直接提供一个已存在的 configProvider 实例（而不是创建新实例）
         // 这种方式通常用于共享已经初始化好的对象
-        ChangeNotifierProvider.value(value: configProvider),
       ],
       child: const MyApp(),
     ),

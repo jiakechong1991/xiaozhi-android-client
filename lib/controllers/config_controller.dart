@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:get/get.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -8,7 +9,7 @@ import 'package:uuid/uuid.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/models/dify_config.dart';
 
-class ConfigProvider extends ChangeNotifier {
+class ConfigController extends GetxController {
   // 创建一个默认的XiaozhiConfig
   List<XiaozhiConfig> _xiaozhiConfigs = [];
   List<DifyConfig> _difyConfigs = [];
@@ -20,7 +21,7 @@ class ConfigProvider extends ChangeNotifier {
       _difyConfigs.isNotEmpty ? _difyConfigs.first : null;
   bool get isLoaded => _isLoaded;
 
-  ConfigProvider() {
+  ConfigController() {
     _loadConfigs();
   }
 
@@ -28,7 +29,10 @@ class ConfigProvider extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
 
     // Load Xiaozhi configs
-    final xiaozhiConfigsJson = prefs.getStringList('xiaozhiConfigs') ?? ['''
+    final xiaozhiConfigsJson =
+        prefs.getStringList('xiaozhiConfigs') ??
+        [
+          '''
     {
       "id": "0",
       "name": "default",
@@ -36,7 +40,8 @@ class ConfigProvider extends ChangeNotifier {
       "macAddress": "b4:3a:45:a2:0f:7c",
       "token": "test-token"
     }
-    '''];
+    ''',
+        ];
     _xiaozhiConfigs =
         xiaozhiConfigsJson
             .map((json) => XiaozhiConfig.fromJson(jsonDecode(json)))
@@ -69,7 +74,6 @@ class ConfigProvider extends ChangeNotifier {
     }
 
     _isLoaded = true;
-    notifyListeners();
   }
 
   Future<void> _saveConfigs() async {
@@ -104,7 +108,6 @@ class ConfigProvider extends ChangeNotifier {
 
     _xiaozhiConfigs.add(newConfig);
     await _saveConfigs();
-    notifyListeners();
   }
 
   Future<void> updateXiaozhiConfig(XiaozhiConfig updatedConfig) async {
@@ -114,14 +117,12 @@ class ConfigProvider extends ChangeNotifier {
     if (index != -1) {
       _xiaozhiConfigs[index] = updatedConfig;
       await _saveConfigs();
-      notifyListeners();
     }
   }
 
   Future<void> deleteXiaozhiConfig(String id) async {
     _xiaozhiConfigs.removeWhere((config) => config.id == id);
     await _saveConfigs();
-    notifyListeners();
   }
 
   // 添加Dify配置
@@ -135,7 +136,6 @@ class ConfigProvider extends ChangeNotifier {
 
     _difyConfigs.add(newConfig);
     await _saveConfigs();
-    notifyListeners();
   }
 
   // 更新Dify配置
@@ -146,7 +146,6 @@ class ConfigProvider extends ChangeNotifier {
     if (index != -1) {
       _difyConfigs[index] = updatedConfig;
       await _saveConfigs();
-      notifyListeners();
     }
   }
 
@@ -154,7 +153,6 @@ class ConfigProvider extends ChangeNotifier {
   Future<void> deleteDifyConfig(String id) async {
     _difyConfigs.removeWhere((config) => config.id == id);
     await _saveConfigs();
-    notifyListeners();
   }
 
   // 向后兼容的旧方法，设置第一个Dify配置

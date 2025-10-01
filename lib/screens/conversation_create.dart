@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ai_assistant/providers/config_provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/models/dify_config.dart';

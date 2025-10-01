@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:ai_assistant/providers/config_provider.dart';
+import 'package:get/get.dart';
+import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/services/dify_service.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -18,6 +19,7 @@ class TestScreenState extends State<TestScreen> {
   final _logs = <String>[];
   bool _isTesting = false;
   final ScrollController _scrollController = ScrollController();
+  final configControllerIns = Get.find<ConfigController>();
   static const String _conversationMapKey = 'dify_conversation_map';
 
   void _addLog(String log) {
@@ -42,9 +44,7 @@ class TestScreenState extends State<TestScreen> {
   }
 
   Future<void> _testConsistentSession() async {
-    final config = Provider.of<ConfigProvider>(context, listen: false);
-
-    if (config.difyConfig == null) {
+    if (configControllerIns.difyConfig == null) {
       _addLog('错误: Dify API配置未设置!');
       return;
     }
@@ -62,8 +62,8 @@ class TestScreenState extends State<TestScreen> {
       _addLog('使用会话ID: $sessionId');
 
       final difyService = await DifyService.create(
-        apiKey: config.difyConfig!.apiKey,
-        apiUrl: config.difyConfig!.apiUrl,
+        apiKey: configControllerIns.difyConfig!.apiKey,
+        apiUrl: configControllerIns.difyConfig!.apiUrl,
       );
 
       // 发送第一条消息
@@ -118,9 +118,7 @@ class TestScreenState extends State<TestScreen> {
   }
 
   Future<void> _testResetSession() async {
-    final config = Provider.of<ConfigProvider>(context, listen: false);
-
-    if (config.difyConfig == null) {
+    if (configControllerIns.difyConfig == null) {
       _addLog('错误: Dify API配置未设置!');
       return;
     }
@@ -138,8 +136,8 @@ class TestScreenState extends State<TestScreen> {
       _addLog('使用会话ID: $sessionId');
 
       final difyService = await DifyService.create(
-        apiKey: config.difyConfig!.apiKey,
-        apiUrl: config.difyConfig!.apiUrl,
+        apiKey: configControllerIns.difyConfig!.apiKey,
+        apiUrl: configControllerIns.difyConfig!.apiUrl,
       );
 
       // 先发送一条消息

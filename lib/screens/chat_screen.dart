@@ -11,7 +11,7 @@ import 'package:ai_assistant/models/message.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/models/dify_config.dart';
 import 'package:ai_assistant/controllers/conversation_controller.dart';
-import 'package:ai_assistant/providers/config_provider.dart';
+import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/services/dify_service.dart';
 import 'package:ai_assistant/services/xiaozhi_service.dart';
 import 'package:ai_assistant/widgets/message_bubble.dart';
@@ -32,6 +32,8 @@ class ChatScreen extends StatefulWidget {
 // 对话page的主体：
 class _ChatScreenState extends State<ChatScreen> {
   final conversationController_ins = Get.find<ConversationController>();
+  final configControllerIns = Get.find<ConfigController>();
+
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
@@ -181,15 +183,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // 初始化小智服务
   Future<void> _initXiaozhiService() async {
-    final configProvider = Provider.of<ConfigProvider>(context, listen: false);
     print('agentName from conversation: ${widget.conversation.agentName}');
     print('userName from conversation: ${widget.conversation.userName}');
     print('agentId from conversation: ${widget.conversation.agentId}');
 
     print(
-      '可用的 xiaozhi_server configs: ${configProvider.xiaozhiConfigs.map((c) => c.id)}',
+      '可用的 xiaozhi_server configs: ${configControllerIns.xiaozhiConfigs.map((c) => c.id)}',
     );
-    final xiaozhiConfig = configProvider.xiaozhiConfigs.firstWhere(
+    final xiaozhiConfig = configControllerIns.xiaozhiConfigs.firstWhere(
       (config) => config.id == widget.conversation.configId,
     );
 
@@ -257,22 +258,21 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // 初始化 DifyService
   Future<void> _initDifyService() async {
-    final configProvider = Provider.of<ConfigProvider>(context, listen: false);
     final String? configId = widget.conversation.configId;
     DifyConfig? difyConfig;
 
     if (configId != null && configId.isNotEmpty) {
       difyConfig =
-          configProvider.difyConfigs
+          configControllerIns.difyConfigs
               .where((config) => config.id == configId)
               .firstOrNull;
     }
 
     if (difyConfig == null) {
-      if (configProvider.difyConfigs.isEmpty) {
+      if (configControllerIns.difyConfigs.isEmpty) {
         throw Exception("未设置Dify配置，请先在设置中配置Dify API");
       }
-      difyConfig = configProvider.difyConfigs.first;
+      difyConfig = configControllerIns.difyConfigs.first;
     }
 
     _difyService = await DifyService.create(
@@ -360,157 +360,64 @@ class _ChatScreenState extends State<ChatScreen> {
             // );
           },
         ),
-        title:
-            widget.conversation.type == ConversationType.xiaozhi
-                ? Row(
-                  children: [
-                    Container(
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.grey.withOpacity(0.3),
-                            blurRadius: 8,
-                            spreadRadius: 0,
-                            offset: const Offset(0, 3),
-                          ),
-                        ],
-                      ),
-                      child: CircleAvatar(
-                        radius: 20,
-                        backgroundColor: Colors.grey.shade700,
-                        child: const Icon(
-                          Icons.mic,
-                          color: Colors.white,
-                          size: 22,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          widget.conversation.agentName, // 与xx的对话
-                          style: const TextStyle(
-                            color: Colors.black,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 18,
-                          ),
-                        ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 8,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.grey.shade200,
-                            borderRadius: BorderRadius.circular(10),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
-                                blurRadius: 1,
-                                spreadRadius: 0,
-                                offset: const Offset(0, 1),
-                              ),
-                            ],
-                          ),
-                          child: const Text(
-                            '语音',
-                            style: TextStyle(color: Colors.grey, fontSize: 12),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                )
-                : Consumer<ConfigProvider>(
-                  //Consumer组件，会监听 某个共享状态（比如 ConfigProvider），
-                  // 一旦状态变化，就会自动重新执行builder函数
-                  builder: (context, configProvider, child) {
-                    // 查找此会话对应的Dify配置
-                    final String? configId = widget.conversation.configId;
-                    String configName = widget.conversation.agentName;
-
-                    // 如果配置ID存在，则从中获取名称
-                    if (configId != null && configId.isNotEmpty) {
-                      final difyConfig =
-                          configProvider.difyConfigs
-                              .where((config) => config.id == configId)
-                              .firstOrNull;
-
-                      if (difyConfig != null) {
-                        configName = difyConfig.name;
-                      }
-                    }
-
-                    return Row(
-                      children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.blue.withOpacity(0.3),
-                                blurRadius: 8,
-                                spreadRadius: 0,
-                                offset: const Offset(0, 3),
-                              ),
-                            ],
-                          ),
-                          child: CircleAvatar(
-                            radius: 20,
-                            backgroundColor: Colors.blue.shade400,
-                            child: const Icon(
-                              Icons.chat_bubble_outline,
-                              color: Colors.white,
-                              size: 20,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              configName,
-                              style: const TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 2,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade50,
-                                borderRadius: BorderRadius.circular(10),
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: Colors.black.withOpacity(0.03),
-                                    blurRadius: 1,
-                                    spreadRadius: 0,
-                                    offset: const Offset(0, 1),
-                                  ),
-                                ],
-                              ),
-                              child: const Text(
-                                '文本',
-                                style: TextStyle(
-                                  color: Colors.blue,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ),
-                      ],
-                    );
-                  },
+        title: Row(
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.3),
+                    blurRadius: 8,
+                    spreadRadius: 0,
+                    offset: const Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.grey.shade700,
+                child: const Icon(Icons.mic, color: Colors.white, size: 22),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  widget.conversation.agentName, // 与xx的对话
+                  style: const TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
+                  ),
                 ),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 2,
+                  ),
+                  decoration: BoxDecoration(
+                    color: Colors.grey.shade200,
+                    borderRadius: BorderRadius.circular(10),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 1,
+                        spreadRadius: 0,
+                        offset: const Offset(0, 1),
+                      ),
+                    ],
+                  ),
+                  child: const Text(
+                    '语音',
+                    style: TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ),
       ),
       body: Column(
         children: [
@@ -526,8 +433,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // 构建小智 连接信息 区域
   Widget _buildXiaozhiInfo() {
-    final configProvider = Provider.of<ConfigProvider>(context);
-    final xiaozhiConfig = configProvider.xiaozhiConfigs.firstWhere(
+    final xiaozhiConfig = configControllerIns.xiaozhiConfigs.firstWhere(
       (config) => config.id == widget.conversation.configId,
       orElse:
           () => XiaozhiConfig(
@@ -1257,8 +1163,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _navigateToVoiceCall() {
-    final configProvider = Provider.of<ConfigProvider>(context, listen: false);
-    final xiaozhiConfig = configProvider.xiaozhiConfigs.firstWhere(
+    final xiaozhiConfig = configControllerIns.xiaozhiConfigs.firstWhere(
       (config) => config.id == widget.conversation.configId,
     );
 

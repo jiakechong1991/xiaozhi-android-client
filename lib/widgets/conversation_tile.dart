@@ -4,7 +4,8 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/models/dify_config.dart';
-import 'package:ai_assistant/providers/config_provider.dart';
+import 'package:get/get.dart';
+import 'package:ai_assistant/controllers/config_controller.dart';
 
 class ConversationTile extends StatelessWidget {
   final Conversation conversation;
@@ -20,6 +21,7 @@ class ConversationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final configControllerIns = Get.find<ConfigController>();
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
@@ -108,49 +110,30 @@ class ConversationTile extends StatelessWidget {
   }
 
   Widget _buildTypeTag(BuildContext context) {
-    final bool isDify = conversation.type == ConversationType.dify;
-    String label = isDify ? '文本' : '语音';
+    final configControllerIns = Get.find<ConfigController>();
+    String label = '语音';
 
     // 如果有配置ID且不为空，则显示配置名称
     if (conversation.configId.isNotEmpty) {
-      final configProvider = Provider.of<ConfigProvider>(
-        context,
-        listen: false,
-      );
-
-      if (isDify) {
-        // 尝试查找匹配的Dify配置
-        final matchingConfig =
-            configProvider.difyConfigs
-                .where((config) => config.id == conversation.configId)
-                .firstOrNull;
-        if (matchingConfig != null) {
-          label = '${matchingConfig.name}';
-        }
-      } else {
-        // 尝试查找匹配的小智配置
-        final matchingConfig =
-            configProvider.xiaozhiConfigs
-                .where((config) => config.id == conversation.configId)
-                .firstOrNull;
-        if (matchingConfig != null) {
-          label = '${matchingConfig.name}';
-        }
+      // 尝试查找匹配的小智配置
+      final matchingConfig =
+          configControllerIns.xiaozhiConfigs
+              .where((config) => config.id == conversation.configId)
+              .firstOrNull;
+      if (matchingConfig != null) {
+        label = '${matchingConfig.name}';
       }
     }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
       decoration: BoxDecoration(
-        color: isDify ? Colors.blue.shade50 : Colors.purple.shade50,
+        color: Colors.purple.shade50,
         borderRadius: BorderRadius.circular(4),
       ),
       child: Text(
         label,
-        style: TextStyle(
-          fontSize: 12,
-          color: isDify ? Colors.blue.shade600 : Colors.purple.shade600,
-        ),
+        style: TextStyle(fontSize: 12, color: Colors.purple.shade600),
       ),
     );
   }

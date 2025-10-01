@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:ai_assistant/providers/config_provider.dart';
+import 'package:get/get.dart';
+import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
@@ -10,7 +11,8 @@ class XiaozhiConfigSelectorScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final xiaozhiConfigs = Provider.of<ConfigProvider>(context).xiaozhiConfigs;
+    final configControllerIns = Get.find<ConfigController>();
+    final xiaozhiConfigs = configControllerIns.xiaozhiConfigs;
 
     return Scaffold(
       appBar: AppBar(title: const Text('选择小智服务')),
