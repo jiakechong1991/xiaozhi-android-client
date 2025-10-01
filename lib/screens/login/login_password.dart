@@ -18,13 +18,12 @@ class LoginPassword extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginPassword> {
-  // 初始化login控制器
-  final LoginController loginController = Get.put(LoginController());
-
   @override
   void dispose() {
     super.dispose();
   }
+
+  final loginControllerIns = Get.find<LoginController>();
 
   @override
   Widget build(BuildContext context) {
@@ -167,7 +166,7 @@ class _LoginState extends State<LoginPassword> {
               FilteringTextInputFormatter.allow(RegExp(r'^[a-zA-Z0-9]*$')),
             ],
             maxLength: 16,
-            controller: loginController.usernameController,
+            controller: loginControllerIns.usernameController,
             decoration: InputDecoration(
               counterText: "",
               hintText: "请输入英文数字的账户名称",
@@ -218,7 +217,7 @@ class _LoginState extends State<LoginPassword> {
             obscureText: true,
             enableSuggestions: false,
             autocorrect: false,
-            controller: loginController.passwordController,
+            controller: loginControllerIns.passwordController,
             decoration: InputDecoration(
               hintText: "请输入密码",
               contentPadding: const EdgeInsets.symmetric(
@@ -245,9 +244,9 @@ class _LoginState extends State<LoginPassword> {
     return Obx(
       () => InkWell(
         onTap:
-            loginController.isLoading.value
+            loginControllerIns.isLoading.value
                 ? null // 加载中禁用点击
-                : () => loginController.login(), // 触发登录,
+                : () => loginControllerIns.login(), // 触发登录,
         child: Container(
           margin: const EdgeInsets.only(top: 36),
           alignment: Alignment.center,

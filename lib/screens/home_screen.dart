@@ -5,6 +5,7 @@ import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
 import 'package:ai_assistant/screens/settings_screen.dart';
+import 'package:ai_assistant/screens/mine/index.dart';
 // import 'package:ai_assistant/screens/conversation_type_screen.dart';
 import 'package:ai_assistant/screens/conversation_create.dart';
 import 'package:ai_assistant/widgets/conversation_tile.dart';
@@ -260,7 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
     } else if (selectedIndexT == 1) {
       return const SafeArea(bottom: false, child: DiscoveryScreen());
     } else {
-      return const SafeArea(bottom: false, child: DiscoveryScreen());
+      return PageViewMine();
     }
   }
 

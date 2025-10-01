@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:ai_assistant/screens/base/ui/theme.dart';
 import 'package:ai_assistant/screens/base/ui/cell.dart';
 import 'package:get/get.dart';
+import 'package:ai_assistant/controllers/login_controller.dart';
 
 /// HACK: 设置
 
@@ -13,6 +14,7 @@ class Settings extends StatefulWidget {
 }
 
 class _SettingsState extends State<Settings> {
+  final loginControllerIns = Get.find<LoginController>();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,7 +36,7 @@ class _SettingsState extends State<Settings> {
               Cell(
                 '退出登录',
                 border: false,
-                onTap: () => Get.offAndToNamed('/login/verify-code'),
+                onTap: () => {loginControllerIns.logout()},
               ),
             ],
           ),

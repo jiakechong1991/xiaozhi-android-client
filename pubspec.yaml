@@ -35,6 +35,7 @@ dependencies:
   dio: ^5.9.0 # 一个更好用的http请求库
   flutter_easyloading: ^3.0.5  # 一个消息弹窗库
   cached_network_image: ^3.4.1  # 一个图片缓存库
+  dart_mock: ^2.0.1  # app端 假数据mock工具
 
   
   

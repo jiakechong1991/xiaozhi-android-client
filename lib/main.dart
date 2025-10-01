@@ -21,6 +21,7 @@ import 'dart:ui';
 import 'package:ai_assistant/utils/audio_util.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
+import 'package:ai_assistant/controllers/login_controller.dart';
 
 // 是否启用调试工具
 const bool enableDebugTools = true;
@@ -112,6 +113,7 @@ void main() async {
   Get.put(ApiService()); // ApiService 无异步构造函数时
   // Get.lazyPut<ConversationController>(() => ConversationController());
   Get.lazyPut(() => ConversationController());
+  Get.lazyPut(() => LoginController());
   Get.put(ThemeController());
 
   /*

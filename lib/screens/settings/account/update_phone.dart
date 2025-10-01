@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/screens/base/ui/theme.dart';
-import 'package:ai_assistant/screens/base/ui/cell.dart';
 import 'package:get/get.dart';
 
 /// HACK: 账号设置-验证当前手机号

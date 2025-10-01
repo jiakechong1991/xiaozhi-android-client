@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_dating_template/pages/home/community/page_view/like/mock.dart';
-import 'package:flutter_dating_template/pages/home/mine/mock.dart';
+import 'package:ai_assistant/mock_data/mock.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 import 'package:ai_assistant/screens/base/ui/tag.dart';
 import 'package:ai_assistant/screens/base/ui/theme.dart';

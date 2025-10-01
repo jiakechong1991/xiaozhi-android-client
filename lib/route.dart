@@ -9,6 +9,16 @@ import 'package:ai_assistant/screens/agreement/privacy.dart';
 import 'package:ai_assistant/screens/agreement/user.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
 
+import 'package:ai_assistant/screens/settings/index.dart';
+import 'package:ai_assistant/screens/settings/account/index.dart';
+import 'package:ai_assistant/screens/settings/account/update_phone.dart';
+import 'package:ai_assistant/screens/settings/account/update_phone2.dart';
+import 'package:ai_assistant/screens/settings/account/account_cancellation.dart';
+import 'package:ai_assistant/screens/settings/notification/index.dart';
+import 'package:ai_assistant/screens/settings/about/index.dart';
+import 'package:ai_assistant/screens/settings/backlist/index.dart';
+import 'package:ai_assistant/screens/settings/privacy/index.dart';
+
 List<GetPage<dynamic>> getRoutes = [
   GetPage(name: '/home', page: () => const HomeScreen()),
 
@@ -18,6 +28,31 @@ List<GetPage<dynamic>> getRoutes = [
   //GetPage(name: '/verify-code/:type', page: () => const VerifyCode()),
   //GetPage(name: '/password/reset', page: () => const PasswordReset()),
   //GetPage(name: '/password/update', page: () => const PasswordUpdate()),
+
+  // settting系列路由
+  GetPage(name: '/settings', page: () => const Settings()),
+  GetPage(name: '/settings/account', page: () => const SettingsAccount()),
+  GetPage(
+    name: '/settings/account/update-phone',
+    page: () => const AccountUpdatePhone(),
+  ),
+  GetPage(
+    name: '/settings/account/update-phone2',
+    page: () => const AccountUpdatePhone2(),
+  ),
+  // 注销账户
+  GetPage(
+    name: '/settings/account/cancellation',
+    page: () => const AccountCancellation(),
+  ),
+  GetPage(
+    name: '/settings/notification',
+    page: () => const SettingsNotification(),
+  ),
+  GetPage(name: '/settings/privacy', page: () => const SettingsPrivacy()),
+  GetPage(name: '/settings/backlist', page: () => const SettingsBacklist()),
+  GetPage(name: '/settings/about', page: () => const SettingsAbout()),
+
   // 登录注册时的安全协议
   GetPage(name: '/agreement/user', page: () => const AgreementUser()),
   GetPage(name: '/agreement/privacy', page: () => const AgreementPrivacy()),

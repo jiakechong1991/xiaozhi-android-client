@@ -145,6 +145,14 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "1.0.8"
+  dart_mock:
+    dependency: "direct main"
+    description:
+      name: dart_mock
+      sha256: cae912df8bea37436af5a256116a7b529aa4a1a1f22143df152030bfac76eba0
+      url: "https://pub.dev"
+    source: hosted
+    version: "2.0.1"
   dbus:
     dependency: transitive
     description:

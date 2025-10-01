@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:ai_assistant/screens/base/ui/theme.dart';
 import 'package:ai_assistant/screens/base/ui/cell.dart';
 import 'package:get/get.dart';
 

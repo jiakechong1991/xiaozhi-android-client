@@ -120,8 +120,6 @@ class ApiService {
       await _dio.post('/api/auth/logout/', data: {'refresh': refreshToken});
     } catch (e) {
       print("登出失败: $e");
-    } finally {
-      await _clearAndRedirect();
     }
   }
 
