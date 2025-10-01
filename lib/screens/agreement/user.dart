@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ai_assistant/screens/ui/theme.dart';
+import 'package:ai_assistant/screens/base/ui/theme.dart';
 
 class AgreementUser extends StatefulWidget {
   const AgreementUser({Key? key}) : super(key: key);

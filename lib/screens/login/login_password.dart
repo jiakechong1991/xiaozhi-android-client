@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 //import 'package:ai_assistant/state/token.dart';
-import 'package:ai_assistant/screens/ui/theme.dart';
+import 'package:ai_assistant/screens/base/ui/theme.dart';
 import 'package:ai_assistant/controllers/login_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';

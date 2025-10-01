@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 //import 'package:ai_assistant/state/token.dart';
-import 'package:ai_assistant/screens/ui/theme.dart';
+import 'package:ai_assistant/screens/base/ui/theme.dart';
 import 'dart:async';
 //import 'package:get/get.dart';
 

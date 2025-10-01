@@ -3,7 +3,6 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ai_assistant/models/message.dart';
-import 'package:provider/provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
 
 class MessageBubble extends StatelessWidget {

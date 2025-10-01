@@ -52,9 +52,8 @@ class _HomeScreenState extends State<HomeScreen> {
         extendBodyBehindAppBar: true,
         backgroundColor: const Color(0xFFF8F9FA), // 设置背景颜色
         appBar: // 顶部导航栏
-            _selectedIndex == 1
-                ? null
-                : AppBar(
+            _selectedIndex == 0
+                ? AppBar(
                   // 通常位于屏幕顶部，用于显示当前页面的标题和导航按钮，设置按钮等
                   title: const Text(
                     '消息哈哈1',
@@ -113,21 +112,12 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                     ),
                   ],
-                ),
-        body:
-            _selectedIndex == 1
-                ? const SafeArea(bottom: false, child: DiscoveryScreen())
-                : SafeArea(
-                  bottom: false,
-                  child: Column(
-                    children: [
-                      _buildSearchBar(),
-                      Expanded(child: _buildBody()),
-                    ],
-                  ),
-                ),
+                )
+                : null,
+        body: _buildBody(_selectedIndex),
         floatingActionButton: // 悬浮按钮
-            _selectedIndex == 0
+            _selectedIndex ==
+                    0 // 0是消息，只有这个有悬浮按钮
                 ? Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
@@ -150,15 +140,6 @@ class _HomeScreenState extends State<HomeScreen> {
                     // 这是一个圆形悬浮在界面上的按钮, 一般在右下角
                     onPressed: () {
                       // 如果点击这个按钮，将回调 这个函数
-                      // Navigator.push(
-                      //   // 切换到另一个页面
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     // 一种Material风格过渡动画的路由（页面）
-                      //     // 要跳转的目标页面（必须是 StatelessWidget 或 StatefulWidget）
-                      //     builder: (context) => const ConversationTypeCreate(),
-                      //   ),
-                      // );
                       Get.toNamed('/agent/create');
                     },
                     backgroundColor: Colors.black, // 背景颜色
@@ -235,68 +216,28 @@ class _HomeScreenState extends State<HomeScreen> {
                   items: [
                     // 底部导航栏的选项列表
                     BottomNavigationBarItem(
-                      icon: Material(
-                        color: Colors.transparent,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color:
-                                _selectedIndex == 0
-                                    ? Colors.grey.shade100
-                                    : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow:
-                                _selectedIndex == 0
-                                    ? [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 4,
-                                        spreadRadius: 0,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ]
-                                    : null,
-                          ),
-                          child: Icon(
-                            _selectedIndex == 0
-                                ? Icons.chat_bubble
-                                : Icons.chat_bubble_outline,
-                          ),
-                        ),
+                      icon: _buildBottomNavigationBarItem(
+                        _selectedIndex == 0,
+                        Icons.chat_bubble,
+                        Icons.chat_bubble_outline,
                       ),
-                      label: '消息',
+                      label: "消息",
                     ),
                     BottomNavigationBarItem(
-                      icon: Material(
-                        color: Colors.transparent,
-                        child: Container(
-                          padding: const EdgeInsets.all(8),
-                          decoration: BoxDecoration(
-                            color:
-                                _selectedIndex == 1
-                                    ? Colors.grey.shade100
-                                    : Colors.transparent,
-                            borderRadius: BorderRadius.circular(12),
-                            boxShadow:
-                                _selectedIndex == 1
-                                    ? [
-                                      BoxShadow(
-                                        color: Colors.black.withOpacity(0.05),
-                                        blurRadius: 4,
-                                        spreadRadius: 0,
-                                        offset: const Offset(0, 2),
-                                      ),
-                                    ]
-                                    : null,
-                          ),
-                          child: Icon(
-                            _selectedIndex == 1
-                                ? Icons.search
-                                : Icons.search_outlined,
-                          ),
-                        ),
+                      icon: _buildBottomNavigationBarItem(
+                        _selectedIndex == 1,
+                        Icons.search,
+                        Icons.search_outlined,
                       ),
-                      label: '社区',
+                      label: "社区",
+                    ),
+                    BottomNavigationBarItem(
+                      icon: _buildBottomNavigationBarItem(
+                        _selectedIndex == 2,
+                        Icons.person,
+                        Icons.person_outline,
+                      ),
+                      label: "我的",
                     ),
                   ],
                 ),
@@ -304,6 +245,50 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildBody(int selectedIndexT) {
+    if (selectedIndexT == 0) {
+      return SafeArea(
+        bottom: false,
+        child: Column(
+          children: [_buildSearchBar(), Expanded(child: _buildMsgPageBody())],
+        ),
+      );
+    } else if (selectedIndexT == 1) {
+      return const SafeArea(bottom: false, child: DiscoveryScreen());
+    } else {
+      return const SafeArea(bottom: false, child: DiscoveryScreen());
+    }
+  }
+
+  Widget _buildBottomNavigationBarItem(
+    bool _selected,
+    IconData selecetedIcon,
+    IconData unselecetedIcon,
+  ) {
+    return Material(
+      color: Colors.transparent,
+      child: Container(
+        padding: const EdgeInsets.all(8),
+        decoration: BoxDecoration(
+          color: _selected ? Colors.grey.shade100 : Colors.transparent,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow:
+              _selected
+                  ? [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 4,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 2),
+                    ),
+                  ]
+                  : null,
+        ),
+        child: Icon(_selected ? selecetedIcon : unselecetedIcon),
       ),
     );
   }
@@ -375,7 +360,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildBody() {
+  Widget _buildMsgPageBody() {
     return Obx(
       () => ListView(
         // 滚动容器
