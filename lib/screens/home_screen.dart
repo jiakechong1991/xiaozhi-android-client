@@ -24,7 +24,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // 当前选中的底部导航栏索引
   final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
-  final conversationController_ins = Get.find<ConversationController>();
+  final conversationControllerIns = Get.find<ConversationController>();
 
   @override
   void initState() {
@@ -389,7 +389,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // 这个列表是支持 条件判断的，动态确定显示哪些组件
 
           // 置顶对话的区域
-          if (conversationController_ins.pinnedConversations.isNotEmpty) ...[
+          if (conversationControllerIns.pinnedConversations.isNotEmpty) ...[
             // ... 将后面list的元素平铺到外层list中
             const Padding(
               padding: EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
@@ -412,18 +412,18 @@ class _HomeScreenState extends State<HomeScreen> {
             // 集合展开语法... ，将list中的元素逐个展开，添加到外层list中
             // 将pinnedConversations中的元素，逐个作为conversation，然后调用
             //    _buildConversationTile(conversation)方法，返回一个组件，然后添加到列表中
-            ...conversationController_ins.pinnedConversations.map(
+            ...conversationControllerIns.pinnedConversations.map(
               (conversation) => _buildConversationTile(conversation),
             ),
           ],
           // 非置顶对话的区域
-          if (conversationController_ins.unpinnedConversations.isNotEmpty) ...[
+          if (conversationControllerIns.unpinnedConversations.isNotEmpty) ...[
             Padding(
               padding: EdgeInsets.only(
                 left: 20,
                 right: 20,
                 top:
-                    conversationController_ins.pinnedConversations.isEmpty
+                    conversationControllerIns.pinnedConversations.isEmpty
                         ? 8
                         : 16,
                 bottom: 8,
@@ -444,13 +444,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            ...conversationController_ins.unpinnedConversations.map(
+            ...conversationControllerIns.unpinnedConversations.map(
               (conversation) => _buildConversationTile(conversation),
             ),
           ],
           // 如果为空，显示的区域
-          if (conversationController_ins.pinnedConversations.isEmpty &&
-              conversationController_ins.unpinnedConversations.isEmpty)
+          if (conversationControllerIns.pinnedConversations.isEmpty &&
+              conversationControllerIns.unpinnedConversations.isEmpty)
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(64.0),
@@ -546,7 +546,7 @@ class _HomeScreenState extends State<HomeScreen> {
       // 滑动删除的回调函数
       onDelete: () {
         // 删除对话
-        conversationController_ins.deleteConversation(conversation.agentId);
+        conversationControllerIns.deleteConversation(conversation.agentId);
 
         // 显示撤销消息
         ScaffoldMessenger.of(context).clearSnackBars();
@@ -565,7 +565,7 @@ class _HomeScreenState extends State<HomeScreen> {
               textColor: Colors.white,
               onPressed: () {
                 // 恢复被删除的对话
-                conversationController_ins.restoreLastDeletedConversation();
+                conversationControllerIns.restoreLastDeletedConversation();
               },
             ),
           ),
@@ -691,7 +691,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       onTap: () {
-                        conversationController_ins.togglePinConversation(
+                        conversationControllerIns.togglePinConversation(
                           conversation.agentId,
                         );
                         Navigator.pop(context);
@@ -761,7 +761,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         //     将之后的栈顶 弹窗/页面 显示出俩
                         Navigator.pop(context);
                         //从数据源中移除该对话
-                        conversationController_ins.deleteConversation(
+                        conversationControllerIns.deleteConversation(
                           conversation.agentId,
                         );
                         // 显示一个 SnackBar，告知用户对话已删除

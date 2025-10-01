@@ -14,7 +14,7 @@ class CreateAgentController extends GetxController {
 
   final isLoading = false.obs; // 用于显示 loading
   final errorMessage = ''.obs; // 用于显示错误信息
-  final conversationController_ins = Get.find<ConversationController>();
+  final conversationControllerIns = Get.find<ConversationController>();
   final configControllerINs = Get.find<ConfigController>();
   // 表单控制器
   final agentNameController = TextEditingController();
@@ -126,7 +126,7 @@ class CreateAgentController extends GetxController {
       print('✅ sex: ${xiaozhiConfigs.first.id!}');
       print('=================================');
 
-      final conversation = await conversationController_ins.createConversation(
+      final conversation = await conversationControllerIns.createConversation(
         title: '与 ${agentName} 的对话',
         agentId: agentId!,
         type: ConversationType.xiaozhi,

@@ -26,7 +26,7 @@ class VoiceCallScreen extends StatefulWidget {
 
 class _VoiceCallScreenState extends State<VoiceCallScreen>
     with SingleTickerProviderStateMixin {
-  final conversationController_ins = Get.find<ConversationController>();
+  final conversationControllerIns = Get.find<ConversationController>();
   late XiaozhiService _xiaozhiService;
 
   bool _isConnected = false;
@@ -156,7 +156,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
       _startCallTimer();
 
       // 添加会话消息
-      conversationController_ins.addMessage(
+      conversationControllerIns.addMessage(
         conversationId: widget.conversation.agentId,
         role: MessageRole.assistant,
         content: '语音通话已开始',

@@ -29,7 +29,7 @@ class ChatScreen extends StatefulWidget {
 
 // 对话page的主体：
 class _ChatScreenState extends State<ChatScreen> {
-  final conversationController_ins = Get.find<ConversationController>();
+  final conversationControllerIns = Get.find<ConversationController>();
   final configControllerIns = Get.find<ConfigController>();
 
   final TextEditingController _textController = TextEditingController();
@@ -83,7 +83,7 @@ class _ChatScreenState extends State<ChatScreen> {
       );
 
       // 编辑该会话ID已读
-      conversationController_ins.markConversationAsRead(
+      conversationControllerIns.markConversationAsRead(
         widget.conversation.agentId,
       );
 
@@ -221,7 +221,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       // 忽略空消息
       if (content.isNotEmpty) {
-        conversationController_ins.addMessage(
+        conversationControllerIns.addMessage(
           conversationId: widget.conversation.agentId,
           role: MessageRole.assistant,
           content: content,
@@ -236,7 +236,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (content.isNotEmpty && _isVoiceInputMode) {
         // 语音消息可能有延迟，使用Future.microtask确保UI已更新
         Future.microtask(() {
-          conversationController_ins.addMessage(
+          conversationControllerIns.addMessage(
             conversationId: widget.conversation.agentId,
             role: MessageRole.user,
             content: content,
@@ -524,7 +524,7 @@ class _ChatScreenState extends State<ChatScreen> {
     // 绘制消息列表
     return Obx(() {
       // 获得该agent的所有消息
-      final messages = conversationController_ins.getMessages(
+      final messages = conversationControllerIns.getMessages(
         widget.conversation.agentId,
       );
 
@@ -1003,7 +1003,7 @@ class _ChatScreenState extends State<ChatScreen> {
     _textController.clear();
 
     // Add user message
-    await conversationController_ins.addMessage(
+    await conversationControllerIns.addMessage(
       conversationId: widget.conversation.agentId,
       role: MessageRole.user,
       content: message,
@@ -1043,7 +1043,7 @@ class _ChatScreenState extends State<ChatScreen> {
       if (!mounted) return;
 
       // Add error message
-      await conversationController_ins.addMessage(
+      await conversationControllerIns.addMessage(
         conversationId: widget.conversation.agentId,
         role: MessageRole.assistant,
         content: '发生错误: ${e.toString()}',
