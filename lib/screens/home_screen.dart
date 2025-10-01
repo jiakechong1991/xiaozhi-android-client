@@ -24,36 +24,16 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // 当前选中的底部导航栏索引
   final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
-  late Worker _tokenWorker;
   final conversationController_ins = Get.find<ConversationController>();
-
-  void _checkToken(String token) {
-    if (token.isEmpty) {
-      print("token为空,跳转到登录页面");
-      // 延迟到下一帧，避免在 initState 中直接导航的潜在问题
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        Get.toNamed('/login/password');
-      });
-    } else {
-      print("token有效，留在当前页面");
-      // 不跳转，留在首页
-    }
-  }
 
   @override
   void initState() {
     super.initState();
-    // 👇 立即检查当前 token 状态
-    _checkToken(TokenController.to.token.value);
-
-    // 👇 监听后续变化
-    _tokenWorker = ever(TokenController.to.token, _checkToken);
   }
 
   @override
   void dispose() {
     _searchFocusNode.dispose(); // 释放焦点管理器
-    _tokenWorker.dispose();
     super.dispose(); // 一种内存释放？
   }
 

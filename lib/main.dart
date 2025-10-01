@@ -160,7 +160,7 @@ class MyApp extends StatelessWidget {
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
       themeMode: ThemeControllerIns.themeMode,
-      initialRoute: '/home',
+      initialRoute: _getInitialRoute(), // 让函数动态确定初始页面
       //在 GetMaterialApp 中，你应该使用 getPages 来定义路由表 —— 它是 GetX 专属、功能更强、更推荐的方式
       getPages: getRoutes,
       // 添加平滑滚动设置
@@ -178,5 +178,11 @@ class MyApp extends StatelessWidget {
         },
       ),
     );
+  }
+
+  String _getInitialRoute() {
+    return TokenController.to.token.value.isNotEmpty
+        ? '/home'
+        : '/login/password'; // 登录页面
   }
 }
