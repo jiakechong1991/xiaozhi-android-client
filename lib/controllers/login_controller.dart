@@ -51,11 +51,22 @@ class LoginController extends GetxController {
       // 保存用户名，方便输入
       final prefs = await SharedPreferences.getInstance();
       await prefs.setString('saved_username', usernameController.text);
+
       Get.offAllNamed('/home');
     } catch (e) {
       errorMessage.value = e.toString().replaceAll("Exception: ", "");
     } finally {
       isLoading.value = false;
+    }
+  }
+
+  Future<void> logout() async {
+    print(">>> 退出按钮被点击，开始退出流程");
+
+    try {
+      await _api.logout();
+    } catch (e) {
+      print("logout失败");
     }
   }
 }

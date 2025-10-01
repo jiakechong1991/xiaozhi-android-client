@@ -111,6 +111,20 @@ class ApiService {
     }
   }
 
+  // 👇 登出接口
+  Future<void> logout() async {
+    final refreshToken = await TokenStorage.getRefreshToken();
+    if (refreshToken == null) return;
+
+    try {
+      await _dio.post('/api/auth/logout/', data: {'refresh': refreshToken});
+    } catch (e) {
+      print("登出失败: $e");
+    } finally {
+      await _clearAndRedirect();
+    }
+  }
+
   // 👇 create_agent接口
   Future<Map<String, dynamic>> create_agent(
     String agent_name,
@@ -162,20 +176,6 @@ class ApiService {
       final data = response.data as Map<String, dynamic>;
       print(data);
       throw Exception('创建agent失败: ${response.statusMessage}');
-    }
-  }
-
-  // 👇 登出接口
-  Future<void> logout() async {
-    final refreshToken = await TokenStorage.getRefreshToken();
-    if (refreshToken == null) return;
-
-    try {
-      await _dio.post('/api/auth/logout/', data: {'refresh': refreshToken});
-    } catch (e) {
-      print("登出失败: $e");
-    } finally {
-      await _clearAndRedirect();
     }
   }
 
