@@ -3,7 +3,6 @@ import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
-import 'package:ai_assistant/models/dify_config.dart';
 import 'package:get/get.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 

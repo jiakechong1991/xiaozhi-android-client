@@ -9,10 +9,8 @@ import 'package:provider/provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/message.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
-import 'package:ai_assistant/models/dify_config.dart';
 import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
-import 'package:ai_assistant/services/dify_service.dart';
 import 'package:ai_assistant/services/xiaozhi_service.dart';
 import 'package:ai_assistant/widgets/message_bubble.dart';
 import 'package:ai_assistant/screens/voice_call_screen.dart';
@@ -38,7 +36,6 @@ class _ChatScreenState extends State<ChatScreen> {
   final ScrollController _scrollController = ScrollController();
   bool _isLoading = false;
   XiaozhiService? _xiaozhiService; // 保持XiaozhiService实例
-  DifyService? _difyService; // 保持DifyService实例
 
   Timer? _connectionCheckTimer; // 添加定时器检查连接状态
   Timer? _autoReconnectTimer; // 自动重连定时器
@@ -122,9 +119,6 @@ class _ChatScreenState extends State<ChatScreen> {
         setState(() {
           _isVoiceInputMode = true;
         });
-      } else if (widget.conversation.type == ConversationType.dify) {
-        // 初始化 DifyService
-        _initDifyService();
       }
     });
   }
@@ -256,31 +250,6 @@ class _ChatScreenState extends State<ChatScreen> {
     }
   }
 
-  // 初始化 DifyService
-  Future<void> _initDifyService() async {
-    final String? configId = widget.conversation.configId;
-    DifyConfig? difyConfig;
-
-    if (configId != null && configId.isNotEmpty) {
-      difyConfig =
-          configControllerIns.difyConfigs
-              .where((config) => config.id == configId)
-              .firstOrNull;
-    }
-
-    if (difyConfig == null) {
-      if (configControllerIns.difyConfigs.isEmpty) {
-        throw Exception("未设置Dify配置，请先在设置中配置Dify API");
-      }
-      difyConfig = configControllerIns.difyConfigs.first;
-    }
-
-    _difyService = await DifyService.create(
-      apiKey: difyConfig.apiKey,
-      apiUrl: difyConfig.apiUrl,
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     // 确保状态栏设置正确
@@ -307,12 +276,6 @@ class _ChatScreenState extends State<ChatScreen> {
           statusBarBrightness: Brightness.light,
         ),
         actions: [
-          if (widget.conversation.type == ConversationType.dify)
-            IconButton(
-              icon: const Icon(Icons.refresh, color: Colors.black, size: 24),
-              tooltip: '开始新对话',
-              onPressed: _resetConversation,
-            ),
           if (widget.conversation.type == ConversationType.xiaozhi)
             Container(
               margin: const EdgeInsets.only(right: 12),
@@ -1032,30 +995,6 @@ class _ChatScreenState extends State<ChatScreen> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  void _resetConversation() async {
-    // 给用户一个清晰的提示
-    _showCustomSnackbar('正在开始新对话...');
-
-    if (_difyService != null) {
-      // 使用会话的ID作为sessionId，确保与发送消息时使用相同的标识符
-      final sessionId = widget.conversation.agentId;
-
-      // 清除当前会话的conversation_id
-      await _difyService!.clearConversation(sessionId);
-
-      // 添加系统消息表明这是一个新对话
-      await conversationController_ins.addMessage(
-        conversationId: widget.conversation.agentId,
-        role: MessageRole.system,
-        content: '--- 开始新对话 ---',
-      );
-
-      _showCustomSnackbar('已开始新对话');
-    } else {
-      _showCustomSnackbar('Dify配置未设置，无法重置对话');
-    }
-  }
-
   // 向着服务器发送msg
   void _sendMessage() async {
     final message = _textController.text.trim(); // 获取输入框中的文本
@@ -1079,55 +1018,25 @@ class _ChatScreenState extends State<ChatScreen> {
     _scrollToBottom();
 
     try {
-      if (widget.conversation.type == ConversationType.dify) {
-        if (_difyService == null) {
-          await _initDifyService();
+      // 确保服务已连接
+      if (_xiaozhiService == null) {
+        await _initXiaozhiService();
+      } else if (!_xiaozhiService!.isConnected) {
+        // 如果未连接，尝试重新连接
+        print('聊天屏幕: 服务未连接，尝试重新连接');
+        await _xiaozhiService!.connect();
+
+        // 如果重连失败，提示用户
+        if (!_xiaozhiService!.isConnected) {
+          throw Exception("无法连接到小智服务，请检查网络或服务配置");
         }
 
-        if (_difyService == null) {
-          throw Exception("未设置Dify配置，请先在设置中配置Dify API");
-        }
-
-        // 使用会话的ID作为sessionId，使每次请求保持相同的对话上下文
-        final sessionId = widget.conversation.agentId;
-
-        // 使用阻塞式响应
-        final response = await _difyService!.sendMessage(
-          message,
-          sessionId: sessionId, // 使用一致的会话ID
-          // 永远不要在普通消息中使用forceNewConversation，除非用户明确请求开始新对话
-          forceNewConversation: false,
-        );
-
-        if (!mounted) return; // 再次检查组件是否还在widget树中
-
-        // 添加助手回复
-        await conversationController_ins.addMessage(
-          conversationId: widget.conversation.agentId,
-          role: MessageRole.assistant,
-          content: response,
-        );
-      } else {
-        // 确保服务已连接
-        if (_xiaozhiService == null) {
-          await _initXiaozhiService();
-        } else if (!_xiaozhiService!.isConnected) {
-          // 如果未连接，尝试重新连接
-          print('聊天屏幕: 服务未连接，尝试重新连接');
-          await _xiaozhiService!.connect();
-
-          // 如果重连失败，提示用户
-          if (!_xiaozhiService!.isConnected) {
-            throw Exception("无法连接到小智服务，请检查网络或服务配置");
-          }
-
-          // 刷新UI显示连接状态
-          setState(() {});
-        }
-
-        // 向着服务器发送msg消息
-        await _xiaozhiService!.sendTextMessage(message);
+        // 刷新UI显示连接状态
+        setState(() {});
       }
+
+      // 向着服务器发送msg消息
+      await _xiaozhiService!.sendTextMessage(message);
     } catch (e) {
       print('聊天屏幕: 发送消息错误: $e');
 

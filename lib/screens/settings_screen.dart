@@ -4,9 +4,7 @@ import 'dart:math' as math;
 import 'package:provider/provider.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
-import 'package:ai_assistant/models/dify_config.dart';
 import 'package:ai_assistant/widgets/settings_section.dart';
-import 'package:ai_assistant/services/dify_service.dart';
 import 'package:get/get.dart';
 
 // 引入main.dart中定义的常量
@@ -24,11 +22,6 @@ class _SettingsScreenState extends State<SettingsScreen>
   // 移除单个Dify配置控制器
   // final _difyApiKeyController = TextEditingController();
   // final _difyApiUrlController = TextEditingController();
-
-  // 添加新Dify配置的控制器
-  final _newDifyNameController = TextEditingController();
-  final _newDifyApiKeyController = TextEditingController();
-  final _newDifyApiUrlController = TextEditingController();
 
   late TabController _tabController;
   int _currentTabIndex = 0;
@@ -55,10 +48,6 @@ class _SettingsScreenState extends State<SettingsScreen>
   @override
   void dispose() {
     // 释放控制器资源
-    _newDifyNameController.dispose();
-    _newDifyApiKeyController.dispose();
-    _newDifyApiUrlController.dispose();
-
     _tabController.dispose();
     super.dispose();
   }

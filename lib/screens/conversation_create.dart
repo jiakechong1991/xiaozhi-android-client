@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
-import 'package:ai_assistant/models/dify_config.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
 import 'package:ai_assistant/controllers/agent_create_controller.dart';
 import 'package:http/http.dart' as http;

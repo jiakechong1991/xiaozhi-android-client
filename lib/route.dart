@@ -5,14 +5,12 @@ import 'package:ai_assistant/screens/login/register.dart';
 import 'package:ai_assistant/screens/conversation_create.dart';
 import 'package:ai_assistant/models/conversation.dart';
 
-import 'package:ai_assistant/screens/test_screen.dart';
 import 'package:ai_assistant/screens/agreement/privacy.dart';
 import 'package:ai_assistant/screens/agreement/user.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
 
 List<GetPage<dynamic>> getRoutes = [
   GetPage(name: '/home', page: () => const HomeScreen()),
-  GetPage(name: '/test', page: () => const TestScreen()),
 
   // 登录注册权限相关
   GetPage(name: '/login/password', page: () => const LoginPassword()),
