@@ -22,13 +22,10 @@ class ConfigController extends GetxController {
   }
 
   Future<void> _loadConfigs() async {
-    final prefs = await SharedPreferences.getInstance();
-
     // Load Xiaozhi configs
-    final xiaozhiConfigsJson =
-        prefs.getStringList('xiaozhiConfigs') ??
-        [
-          '''
+    final macAddress = await _getDeviceMacAddress();
+    final xiaozhiConfigsJson = [
+      '''
     {
       "id": "0",
       "name": "default",
@@ -37,7 +34,7 @@ class ConfigController extends GetxController {
       "token": "test-token"
     }
     ''',
-        ];
+    ];
     _xiaozhiConfigs =
         xiaozhiConfigsJson
             .map((json) => XiaozhiConfig.fromJson(jsonDecode(json)))
@@ -47,49 +44,14 @@ class ConfigController extends GetxController {
     _isLoaded = true;
   }
 
-  Future<void> _saveConfigs() async {
-    final prefs = await SharedPreferences.getInstance();
+  // Future<void> _saveConfigs() async {
+  //   final prefs = await SharedPreferences.getInstance();
 
-    // Save Xiaozhi configs
-    final xiaozhiConfigsJson =
-        _xiaozhiConfigs.map((config) => jsonEncode(config.toJson())).toList();
-    await prefs.setStringList('xiaozhiConfigs', xiaozhiConfigsJson);
-  }
-
-  Future<void> addXiaozhiConfig(
-    String name,
-    String websocketUrl, {
-    String? customMacAddress,
-  }) async {
-    // 如果提供了自定义MAC地址，直接使用；否则使用设备ID生成
-    final macAddress = customMacAddress ?? await _getDeviceMacAddress();
-
-    final newConfig = XiaozhiConfig(
-      id: DateTime.now().millisecondsSinceEpoch.toString(),
-      name: name,
-      websocketUrl: websocketUrl,
-      macAddress: macAddress,
-      token: 'test-token',
-    );
-
-    _xiaozhiConfigs.add(newConfig);
-    await _saveConfigs();
-  }
-
-  Future<void> updateXiaozhiConfig(XiaozhiConfig updatedConfig) async {
-    final index = _xiaozhiConfigs.indexWhere(
-      (config) => config.id == updatedConfig.id,
-    );
-    if (index != -1) {
-      _xiaozhiConfigs[index] = updatedConfig;
-      await _saveConfigs();
-    }
-  }
-
-  Future<void> deleteXiaozhiConfig(String id) async {
-    _xiaozhiConfigs.removeWhere((config) => config.id == id);
-    await _saveConfigs();
-  }
+  //   // Save Xiaozhi configs
+  //   final xiaozhiConfigsJson =
+  //       _xiaozhiConfigs.map((config) => jsonEncode(config.toJson())).toList();
+  //   await prefs.setStringList('xiaozhiConfigs', xiaozhiConfigsJson);
+  // }
 
   // 简化版的设备ID获取方法，不依赖上下文
   Future<String> _getSimpleDeviceId() async {
@@ -112,11 +74,6 @@ class ConfigController extends GetxController {
       }
     } catch (e) {
       // 出现任何错误，使用时间戳
-      deviceId = DateTime.now().millisecondsSinceEpoch.toString();
-    }
-
-    // 如果ID为空，使用时间戳
-    if (deviceId.isEmpty) {
       deviceId = DateTime.now().millisecondsSinceEpoch.toString();
     }
 
