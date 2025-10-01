@@ -19,10 +19,6 @@ class SettingsScreen extends StatefulWidget {
 
 class _SettingsScreenState extends State<SettingsScreen>
     with SingleTickerProviderStateMixin {
-  // 移除单个Dify配置控制器
-  // final _difyApiKeyController = TextEditingController();
-  // final _difyApiUrlController = TextEditingController();
-
   late TabController _tabController;
   int _currentTabIndex = 0;
   final configControllerIns = Get.find<ConfigController>();
@@ -139,11 +135,7 @@ class _SettingsScreenState extends State<SettingsScreen>
             fontWeight: FontWeight.w500,
             fontSize: 16,
           ),
-          tabs: const [
-            Tab(text: '通用'),
-            // Tab(text: 'Dify配置'),
-            Tab(text: '小智服务'),
-          ],
+          tabs: const [Tab(text: '通用'), Tab(text: '小智服务')],
         ),
       ),
     );

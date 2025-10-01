@@ -98,16 +98,10 @@ class MessageBubble extends StatelessWidget {
       return const SizedBox(width: 32, height: 32);
     }
 
-    final isDify = conversationType == ConversationType.dify;
-
     return CircleAvatar(
       radius: 16,
-      backgroundColor: isDify ? Colors.blue.shade400 : Colors.grey.shade700,
-      child: Icon(
-        isDify ? Icons.chat_bubble_outline : Icons.mic,
-        size: isDify ? 16 : 18,
-        color: Colors.white,
-      ),
+      backgroundColor: Colors.grey.shade700,
+      child: Icon(Icons.mic, size: 18, color: Colors.white),
     );
   }
 

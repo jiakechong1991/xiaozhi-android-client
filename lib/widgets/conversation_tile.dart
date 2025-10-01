@@ -138,23 +138,11 @@ class ConversationTile extends StatelessWidget {
   }
 
   Widget _buildAvatar() {
-    if (conversation.type == ConversationType.dify) {
-      return CircleAvatar(
-        radius: 24,
-        backgroundColor: Colors.blue.shade400,
-        child: const Icon(
-          Icons.chat_bubble_outline,
-          color: Colors.white,
-          size: 24,
-        ),
-      );
-    } else {
-      return CircleAvatar(
-        radius: 24,
-        backgroundColor: Colors.purple.shade400,
-        child: const Icon(Icons.mic, color: Colors.white, size: 24),
-      );
-    }
+    return CircleAvatar(
+      radius: 24,
+      backgroundColor: Colors.purple.shade400,
+      child: const Icon(Icons.mic, color: Colors.white, size: 24),
+    );
   }
 
   String _formatTime(DateTime dateTime) {
