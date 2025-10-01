@@ -1,7 +1,7 @@
+import 'package:ai_assistant/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:provider/provider.dart';
-import 'package:ai_assistant/providers/theme_provider.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/models/dify_config.dart';
@@ -33,6 +33,7 @@ class _SettingsScreenState extends State<SettingsScreen>
   late TabController _tabController;
   int _currentTabIndex = 0;
   final configControllerIns = Get.find<ConfigController>();
+  final themeControllerIns = Get.find<ThemeController>();
 
   @override
   void initState() {
@@ -171,49 +172,47 @@ class _SettingsScreenState extends State<SettingsScreen>
               subtitle: '调整应用的外观设置',
               child: Column(
                 children: [
-                  Consumer<ThemeProvider>(
-                    builder: (context, themeProvider, child) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 20,
-                        ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Row(
-                              children: [
-                                Container(
-                                  width: 24,
-                                  height: 24,
-                                  child: const Icon(
-                                    Icons.dark_mode,
-                                    color: Colors.black,
-                                    size: 22,
-                                  ),
+                  Obx(
+                    () => Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 20,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                width: 24,
+                                height: 24,
+                                child: const Icon(
+                                  Icons.dark_mode,
+                                  color: Colors.black,
+                                  size: 22,
                                 ),
-                                const SizedBox(width: 12),
-                                const Text(
-                                  '深色模式',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                              ),
+                              const SizedBox(width: 12),
+                              const Text(
+                                '深色模式',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.w500,
                                 ),
-                              ],
-                            ),
-                            Switch.adaptive(
-                              value: themeProvider.isDarkMode,
-                              onChanged: (value) {
-                                themeProvider.toggleTheme();
-                              },
-                              activeColor: Colors.black,
-                              inactiveTrackColor: const Color(0xFFE0E0E0),
-                            ),
-                          ],
-                        ),
-                      );
-                    },
+                              ),
+                            ],
+                          ),
+                          Switch.adaptive(
+                            value: themeControllerIns.isDarkMode,
+                            onChanged: (value) {
+                              themeControllerIns.toggleTheme();
+                            },
+                            activeColor: Colors.black,
+                            inactiveTrackColor: const Color(0xFFE0E0E0),
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ],
               ),

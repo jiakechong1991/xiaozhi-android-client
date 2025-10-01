@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:timeago/timeago.dart' as timeago;
-import 'package:ai_assistant/providers/theme_provider.dart';
+import 'package:ai_assistant/controllers/theme_controller.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/screens/home_screen.dart';
@@ -113,24 +113,12 @@ void main() async {
   Get.put(ApiService()); // ApiService 无异步构造函数时
   // Get.lazyPut<ConversationController>(() => ConversationController());
   Get.lazyPut(() => ConversationController());
+  Get.put(ThemeController());
 
   /*
   flutters
    */
-  runApp(
-    MultiProvider(
-      providers: [
-        // (_) => ThemeProvider() 这是匿名函数语法， _ 表示这个参数后面不用，所以用占位符替换
-        // 因为 create 回调函数实际上会接收一个 BuildContext 参数（用于访问上下文），
-        // 但在这里我们暂时不需要使用它，所以用 _ 来占位
-        // =>：箭头符号，用于简化函数体的写法，相当于 { return ...; }
-        ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        // 使用 value 方法直接提供一个已存在的 configProvider 实例（而不是创建新实例）
-        // 这种方式通常用于共享已经初始化好的对象
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 // 设置系统UI沉浸式效果
@@ -164,7 +152,7 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final themeProvider = Provider.of<ThemeProvider>(context);
+    final ThemeControllerIns = Get.find<ThemeController>();
 
     return GetMaterialApp(
       //
@@ -172,7 +160,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
-      themeMode: themeProvider.themeMode,
+      themeMode: ThemeControllerIns.themeMode,
       initialRoute: '/home',
       //在 GetMaterialApp 中，你应该使用 getPages 来定义路由表 —— 它是 GetX 专属、功能更强、更推荐的方式
       getPages: getRoutes,
