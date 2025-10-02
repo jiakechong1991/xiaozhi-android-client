@@ -111,12 +111,11 @@ void main() async {
   // 将 TokenController 注册为单例（GetX 需要）
   Get.put(tokenController);
   Get.put(ApiService()); // ApiService 无异步构造函数时
-  // Get.lazyPut<ConversationController>(() => ConversationController());
-  Get.lazyPut(() => ConversationController());
+  Get.lazyPut(() => ConversationController(), fenix: true);
   Get.put(ThemeController());
-  // Get.put(LoginController());
   //LoginController中有页面操作，必须延迟初始化
-  Get.lazyPut(() => LoginController(), fenix: true);
+  Get.put(LoginController());
+  // Get.lazyPut(() => LoginController(), fenix: true);
 
   /*
   flutters

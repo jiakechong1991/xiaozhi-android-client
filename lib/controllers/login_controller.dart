@@ -23,10 +23,9 @@ class LoginController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _loadSavedUsername(); // 初始化时加载保存的用户名
   }
 
-  Future<void> _loadSavedUsername() async {
+  Future<void> loadSavedUsername() async {
     final prefs = await SharedPreferences.getInstance();
     final savedUsername = prefs.getString('saved_username');
     if (savedUsername != null && savedUsername.isNotEmpty) {

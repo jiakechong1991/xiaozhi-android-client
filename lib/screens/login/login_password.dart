@@ -18,12 +18,21 @@ class LoginPassword extends StatefulWidget {
 }
 
 class _LoginState extends State<LoginPassword> {
+  final loginControllerIns = Get.find<LoginController>();
+
+  @override
+  void initState() {
+    super.initState(); // 必须调用 super.initState()
+
+    // 在这里添加你的初始化代码
+    loginControllerIns.loadSavedUsername();
+    loginControllerIns.passwordController.clear();
+  }
+
   @override
   void dispose() {
     super.dispose();
   }
-
-  final loginControllerIns = Get.find<LoginController>();
 
   @override
   Widget build(BuildContext context) {
