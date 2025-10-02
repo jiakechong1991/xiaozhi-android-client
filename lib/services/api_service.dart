@@ -51,31 +51,31 @@ class ApiService {
   // 👇 刷新 token 的私有方法
   Future<Map<String, dynamic>?> _refreshToken() async {
     final refreshToken = await TokenStorage.getRefreshToken();
-    if (refreshToken == null) return null;
+    if (refreshToken == null) throw Exception('refresh token 为空');
 
+    print("refreshToken:");
+    print(refreshToken);
     try {
       final response = await _dio.post(
-        '/api/auth/refresh/', // 通常是这个路径，根据你的 simplejwt 配置调整
+        '/api/auth/refresh/',
         data: {'refresh': refreshToken},
       );
-
       if (response.statusCode == 200) {
         final data = response.data as Map<String, dynamic>;
         final newAccessToken = data['access'];
-        final newRefreshToken =
-            data['refresh'] ?? refreshToken; // 有些后端不返回新的 refresh
-
+        final newRefreshToken = data['refresh'] ?? refreshToken;
         // 保存新 token
         await TokenStorage.saveTokens(newAccessToken, newRefreshToken);
         // 同步更新 GetX 状态（触发 UI 监听）
         TokenController.to.set(newAccessToken);
-
         return data;
+      } else {
+        throw Exception('Refresh token 失败, status ${response.statusCode}');
       }
-    } catch (e) {
-      print("刷新 token 失败: $e");
+    } on DioException catch (e) {
+      // 网络错误、超时等也抛出异常
+      throw Exception('Refresh token request failed: ${e.message}');
     }
-    return null;
   }
 
   // 👇 清除 token 并跳转登录
@@ -113,13 +113,24 @@ class ApiService {
 
   // 👇 登出接口
   Future<void> logout() async {
-    final refreshToken = await TokenStorage.getRefreshToken();
-    if (refreshToken == null) return;
-
     try {
-      await _dio.post('/api/auth/logout/', data: {'refresh': refreshToken});
-    } catch (e) {
-      print("登出失败: $e");
+      final refreshToken = await TokenStorage.getRefreshToken();
+      if (refreshToken == null) throw Exception('refresh token 为空');
+      final response = await _dio.post(
+        '/api/auth/logout/',
+        data: {'refresh': refreshToken},
+      );
+      if (response.statusCode == 200) {
+        print("服务器账户退出成功");
+      } else {
+        throw Exception('服务端退出 失败, status ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      // 网络错误、超时等也抛出异常
+      throw Exception('请求服务端失败, status: ${e.message}');
+    } finally {
+      // 不管什么情况，一定要清除token
+      _clearAndRedirect();
     }
   }
 
@@ -223,6 +234,4 @@ class ApiService {
     final response = await _dio.post(path, data: data);
     return response.data;
   }
-
-  // 👇 你可以继续扩展 put, delete 等...
 }

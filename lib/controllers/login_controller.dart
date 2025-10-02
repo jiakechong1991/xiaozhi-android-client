@@ -65,7 +65,6 @@ class LoginController extends GetxController {
 
     try {
       await _api.logout();
-      Get.offAllNamed('/login/password'); // 强制重定向，清空栈
     } catch (e) {
       print("logout失败");
     }
