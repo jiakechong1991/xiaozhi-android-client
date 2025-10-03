@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-//import 'package:ai_assistant/state/token.dart';
+import 'package:ai_assistant/controllers/register_controller.dart';
 import 'package:ai_assistant/screens/base/ui/theme.dart';
 import 'dart:async';
 import 'package:get/get.dart';
@@ -17,15 +17,11 @@ class _RegisterState extends State<LoginRegister> {
   // 倒计时相关
   int _countdown = 0;
   Timer? _timer;
-
-  // 验证码输入控制器
-  final TextEditingController _verificationCodeController =
-      TextEditingController();
+  final registerCtlIns = Get.find<RegisterController>();
 
   @override
   void dispose() {
     _timer?.cancel(); // 防止内存泄漏
-    _verificationCodeController.dispose();
     super.dispose();
   }
 
@@ -48,7 +44,7 @@ class _RegisterState extends State<LoginRegister> {
                 children: [
                   buildUsername(), // 这是手机号输入框，共用组件，所以共用了
                   buildPassWord(),
-                  // buildVerificationCode(), 临时关闭验证码空间，以后再弄
+                  buildVerificationCode(), // 临时关闭验证码空间，以后再弄
                   rigisterButton(),
                   Container(
                     margin: const EdgeInsets.only(top: 16),
@@ -170,9 +166,10 @@ class _RegisterState extends State<LoginRegister> {
           child: TextField(
             keyboardType: TextInputType.phone,
             maxLength: 11,
+            controller: registerCtlIns.userNameCtl,
             decoration: InputDecoration(
               counterText: "",
-              hintText: "请输入手机号码",
+              hintText: "请输入账户名称",
               contentPadding: const EdgeInsets.symmetric(
                 vertical: 0,
                 horizontal: 16,
@@ -192,7 +189,7 @@ class _RegisterState extends State<LoginRegister> {
     );
   }
 
-  /// 密码登录
+  /// 密码输入框
   Column buildPassWord() {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -218,6 +215,7 @@ class _RegisterState extends State<LoginRegister> {
           child: TextField(
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
+            controller: registerCtlIns.passwordCtl,
             enableSuggestions: false,
             autocorrect: false,
             decoration: InputDecoration(
@@ -243,6 +241,7 @@ class _RegisterState extends State<LoginRegister> {
           child: TextField(
             keyboardType: TextInputType.visiblePassword,
             obscureText: true,
+            controller: registerCtlIns.password2Ctl,
             enableSuggestions: false,
             autocorrect: false,
             decoration: InputDecoration(
@@ -266,7 +265,6 @@ class _RegisterState extends State<LoginRegister> {
     );
   }
 
-  /// 验证码输入组件
   /// 验证码输入组件（输入框和按钮同行）
   Widget buildVerificationCode() {
     return Column(
@@ -284,6 +282,30 @@ class _RegisterState extends State<LoginRegister> {
             ),
           ),
         ),
+        Container(
+          margin: const EdgeInsets.only(top: 12),
+          height: 50,
+          child: TextField(
+            keyboardType: TextInputType.phone,
+            maxLength: 11,
+            controller: registerCtlIns.phoneCtl,
+            decoration: InputDecoration(
+              hintText: "请输入手机号码",
+              contentPadding: const EdgeInsets.symmetric(
+                vertical: 0,
+                horizontal: 16,
+              ),
+              enabledBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: WcaoTheme.outline, width: 2),
+              ),
+              focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(8),
+                borderSide: BorderSide(color: WcaoTheme.primaryFocus, width: 2),
+              ),
+            ),
+          ),
+        ),
         // 输入框 + 获取验证码按钮 同行
         Container(
           margin: const EdgeInsets.only(top: 8),
@@ -292,7 +314,7 @@ class _RegisterState extends State<LoginRegister> {
               // 验证码输入框（占满剩余空间）
               Expanded(
                 child: TextField(
-                  controller: _verificationCodeController,
+                  controller: registerCtlIns.verificationCodeCtl,
                   keyboardType: TextInputType.number,
                   maxLength: 6,
                   decoration: InputDecoration(
@@ -381,6 +403,7 @@ class _RegisterState extends State<LoginRegister> {
       _countdown = 60;
     });
 
+    registerCtlIns.getVerificationCode();
     _timer?.cancel(); // 取消之前的定时器（安全起见）
     _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_countdown == 0) {
@@ -397,7 +420,7 @@ class _RegisterState extends State<LoginRegister> {
   InkWell rigisterButton() {
     return InkWell(
       onTap: () {
-        Get.offAllNamed('/user/update_profile');
+        registerCtlIns.registerUser();
       },
       child: Container(
         margin: const EdgeInsets.only(top: 36),

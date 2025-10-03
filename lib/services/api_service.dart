@@ -42,7 +42,11 @@ class ApiService {
               await _clearAndRedirect();
             }
           }
-          return handler.next(error);
+          if (error.response != null) {
+            handler.resolve(error.response!);
+          } else {
+            handler.next(error);
+          }
         },
       ),
     );
@@ -94,9 +98,9 @@ class ApiService {
       '/api/auth/login/',
       data: {'username': username, 'password': password},
     );
+    final data = response.data as Map<String, dynamic>;
 
     if (response.statusCode == 200) {
-      final data = response.data as Map<String, dynamic>;
       final accessToken = data['access'];
       final refreshToken = data['refresh'];
 
@@ -104,10 +108,12 @@ class ApiService {
       await TokenStorage.saveTokens(accessToken, refreshToken);
       // 更新 GetX 状态
       TokenController.to.set(accessToken);
-
+      data["code"] = 0;
       return data;
     } else {
-      throw Exception('登录失败: ${response.statusMessage}');
+      data["message"] = "账户或者密码错误";
+      data["code"] = -1;
+      return data;
     }
   }
 
@@ -202,7 +208,52 @@ class ApiService {
     }
   }
 
-  // 更新用户信息
+  // 注册创建用户
+  Future<Map<String, dynamic>> registerUser(
+    String userName,
+    String phone,
+    String password,
+    String password2,
+    String veryCode, // 验证码
+  ) async {
+    try {
+      final response = await _dio.post(
+        '/api/accounts/register/',
+        data: {
+          'username': userName,
+          'phone': phone,
+          'password': password,
+          "password_confirm": password2,
+          "code": veryCode,
+        },
+      );
+      final data = response.data as Map<String, dynamic>;
+      return data;
+    } catch (e) {
+      return {"message": "网络错误", "code": -1};
+    }
+  }
+
+  // 获取验证码
+  Future<Map<String, dynamic>> sendCode(String phone) async {
+    try {
+      final response = await _dio.post(
+        '/api/accounts/send_code/',
+        data: {'phone': phone},
+      );
+
+      if (response.statusCode == 200) {
+        final data = response.data as Map<String, dynamic>;
+        return data;
+      } else {
+        throw Exception('验证码获取失败: ${response.statusMessage}');
+      }
+    } catch (e) {
+      throw Exception('验证码获取失败');
+    }
+  }
+
+  // 更新用户profile信息
   Future<Map<String, dynamic>> updateUserProfile(
     String userName,
     String sex,

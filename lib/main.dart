@@ -24,7 +24,9 @@ import 'package:get/get.dart';
 import 'package:ai_assistant/controllers/login_controller.dart';
 import 'package:ai_assistant/controllers/user_controller.dart';
 import 'package:ai_assistant/controllers/agent_create_controller.dart';
+import 'package:ai_assistant/controllers/register_controller.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 
 // 是否启用调试工具
 const bool enableDebugTools = true;
@@ -118,9 +120,11 @@ void main() async {
   await Get.putAsync<WcaoUtils>(() => WcaoUtils().init());
 
   Get.put(ApiService()); // ApiService 无异步构造函数时
+  Get.put(ThemeController());
+
+  Get.lazyPut(() => RegisterController(), fenix: true);
   Get.lazyPut(() => ConversationController(), fenix: true);
   Get.lazyPut(() => UserController(), fenix: true);
-  Get.put(ThemeController());
   //LoginController中有页面操作，必须延迟初始化
   Get.put(LoginController());
   Get.lazyPut(() => CreateAgentController(), fenix: true);
@@ -174,6 +178,7 @@ class MyApp extends StatelessWidget {
       initialRoute: _getInitialRoute(), // 让函数动态确定初始页面
       //在 GetMaterialApp 中，你应该使用 getPages 来定义路由表 —— 它是 GetX 专属、功能更强、更推荐的方式
       getPages: getRoutes,
+      builder: EasyLoading.init(),
       // 添加平滑滚动设置
       scrollBehavior: const MaterialScrollBehavior().copyWith(
         // 启用物理滚动

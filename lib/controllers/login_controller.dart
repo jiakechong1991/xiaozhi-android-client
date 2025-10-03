@@ -3,6 +3,7 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/services/api_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:ai_assistant/screens/base/kit/index.dart';
 
 class LoginController extends GetxController {
   final ApiService _api = Get.find<ApiService>();
@@ -46,14 +47,21 @@ class LoginController extends GetxController {
     errorMessage.value = '';
 
     try {
-      await _api.login(usernameController.text, passwordController.text);
-      // 保存用户名，方便输入
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.setString('saved_username', usernameController.text);
+      final response = await _api.login(
+        usernameController.text,
+        passwordController.text,
+      );
 
-      Get.offAllNamed('/home');
+      if (response["code"] != 0) {
+        WcaoUtils.toast("登录失败: ${response['message']}");
+      } else {
+        // 保存用户名，方便输入
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('saved_username', usernameController.text);
+        Get.offAllNamed('/home');
+      }
     } catch (e) {
-      errorMessage.value = e.toString().replaceAll("Exception: ", "");
+      print("登录错误了");
     } finally {
       isLoading.value = false;
     }
