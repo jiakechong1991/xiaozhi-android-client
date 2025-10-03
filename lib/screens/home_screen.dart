@@ -252,6 +252,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBody(int selectedIndexT) {
     if (selectedIndexT == 0) {
+      //消息页面
       return SafeArea(
         bottom: false,
         child: Column(

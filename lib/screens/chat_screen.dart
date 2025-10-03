@@ -1,11 +1,9 @@
 import 'package:get/get.dart';
-import 'package:ai_assistant/screens/home_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'dart:math' as math;
 import 'dart:math';
 import 'dart:io';
-import 'package:provider/provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/message.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
@@ -14,9 +12,7 @@ import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/services/xiaozhi_service.dart';
 import 'package:ai_assistant/widgets/message_bubble.dart';
 import 'package:ai_assistant/screens/voice_call_screen.dart';
-import 'dart:convert';
 import 'dart:async';
-import 'package:path_provider/path_provider.dart';
 
 class ChatScreen extends StatefulWidget {
   final Conversation conversation; //  agent_conversation,代表一个agent的对话
@@ -276,36 +272,35 @@ class _ChatScreenState extends State<ChatScreen> {
           statusBarBrightness: Brightness.light,
         ),
         actions: [
-          if (widget.conversation.type == ConversationType.xiaozhi)
-            Container(
-              margin: const EdgeInsets.only(right: 12),
-              decoration: BoxDecoration(
-                color: Colors.transparent,
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: _navigateToVoiceCall,
                 borderRadius: BorderRadius.circular(12),
-              ),
-              child: Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(12),
-                child: InkWell(
-                  onTap: _navigateToVoiceCall,
-                  borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 8,
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                    child: Container(
-                      padding: const EdgeInsets.all(4),
-                      decoration: BoxDecoration(
-                        color: Colors.grey.shade300,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Icon(Icons.phone, color: Colors.black, size: 16),
-                    ),
+                    child: Icon(Icons.phone, color: Colors.black, size: 16),
                   ),
                 ),
               ),
             ),
+          ),
         ],
         // 前面的导航返回按钮
         leading: IconButton(
@@ -315,12 +310,8 @@ class _ChatScreenState extends State<ChatScreen> {
             if (_xiaozhiService != null) {
               _xiaozhiService!.stopPlayback();
             }
-            // 导航到home界面
-            Navigator.pop(context);
-            // Navigator.push(
-            //   context,
-            //   MaterialPageRoute(builder: (context) => HomeScreen()),
-            // );
+            // 导航到home界面（上一页）
+            Get.back();
           },
         ),
         title: Row(

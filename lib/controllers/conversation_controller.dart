@@ -12,10 +12,11 @@ import 'package:ai_assistant/services/api_service.dart';
 // 这个对应 多agent的对话列表，[每个agent是一个对话项]
 class ConversationController extends GetxController {
   String? userName;
-  var _conversations =
+  final _conversations =
       <Conversation>[].obs; // [conversation1, conversation2, ...]
-  var _messages =
+  final _messages =
       <String, List<Message>>{}.obs; // {agentId:[message1, message2, ...]}
+  final ApiService _api = Get.find<ApiService>();
 
   // 保存最后删除的会话及其消息，用于撤销删除
   Conversation? _lastDeletedConversation;
@@ -50,8 +51,7 @@ class ConversationController extends GetxController {
     if (conversationsJson.isEmpty) {
       // 本地无会话，从服务器获取 agent 列表
       try {
-        final apiService = ApiService(); // 假设 ApiService 可直接实例化，或通过依赖注入传入
-        final agents = await apiService.getAgentList();
+        final agents = await _api.getAgentList();
 
         _conversations.value =
             agents.map((agent) {
@@ -95,8 +95,7 @@ class ConversationController extends GetxController {
       if (messagesJson.isEmpty) {
         // 本地无消息，尝试从服务器拉取最近 20 条
         try {
-          final apiService = ApiService();
-          final messagesData = await apiService.getMessageList(
+          final messagesData = await _api.getMessageList(
             conversation.agentId,
             20,
           );
@@ -236,6 +235,8 @@ class ConversationController extends GetxController {
     );
 
     if (conversationIndex != -1) {
+      // 找到确实存在这个agent_id
+
       // 保存最后删除的会话和消息用于恢复
       _lastDeletedConversation = _conversations[conversationIndex];
       _lastDeletedMessages = _messages[id]?.toList();
@@ -255,6 +256,9 @@ class ConversationController extends GetxController {
       // 从列表中移除
       _conversations.removeAt(conversationIndex);
       _messages.remove(id);
+
+      // 在服务端标记删除
+      _api.deleteAgent(id);
 
       await _saveConversations();
     }

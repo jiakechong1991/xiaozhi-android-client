@@ -99,7 +99,7 @@ class CreateAgentController extends GetxController {
     errorMessage.value = '';
 
     try {
-      final responseData = await _api.create_agent(
+      final responseData = await _api.createAgent(
         agentNameController.text,
         sex.value,
         birthdayController.text,

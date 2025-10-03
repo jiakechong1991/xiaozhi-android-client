@@ -135,7 +135,7 @@ class ApiService {
   }
 
   // 👇 create_agent接口
-  Future<Map<String, dynamic>> create_agent(
+  Future<Map<String, dynamic>> createAgent(
     String agent_name,
     String sex,
     String birthday,
@@ -185,6 +185,20 @@ class ApiService {
       final data = response.data as Map<String, dynamic>;
       print(data);
       throw Exception('创建agent失败: ${response.statusMessage}');
+    }
+  }
+
+  Future<bool> deleteAgent(String agentId) async {
+    try {
+      final response = await _dio.delete('/api/agents/$agentId/');
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('删除Agent失败: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('删除Agent失败: 网络连接失败');
     }
   }
 
