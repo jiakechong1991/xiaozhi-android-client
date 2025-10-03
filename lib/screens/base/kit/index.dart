@@ -43,7 +43,6 @@ class WcaoUtils {
 
   Future<File?> downloadAndCache(String url) async {
     try {
-      print("----调用了downloadAndCache");
       final cached = await _getCachedFile(url);
       if (cached != null) {
         return cached; // 已缓存，直接返回

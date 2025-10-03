@@ -49,12 +49,11 @@ class CreateAgentController extends GetxController {
   }
 
   Future<void> getDefaultAvatar() async {
-    print("----开始异步获取头像图片");
     final randomUrl = WcaoUtils.getRandomImage();
+    // final randomUrl = await _api.randomAvatarImg(sex.value);
     File? imageFile = await wcaoUtilsIns.downloadAndCache(randomUrl);
     if (imageFile != null) {
       setAvatar(File(imageFile.path));
-      print("----异步设置头像完成");
     }
   }
 

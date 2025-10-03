@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart'; // 需要导入这个包
 import 'package:image_picker/image_picker.dart';
-import 'package:ai_assistant/screens/base/kit/index.dart';
 import 'package:ai_assistant/controllers/user_controller.dart';
 
 class UserprofileCreate extends StatefulWidget {
@@ -14,6 +13,12 @@ class UserprofileCreate extends StatefulWidget {
 
 class _UserprofileCreateState extends State<UserprofileCreate> {
   final userControllerIns = Get.find<UserController>();
+
+  @override
+  void initState() {
+    super.initState();
+    userControllerIns.getDefaultAvatar(); // ✅ 在 initState 中调用
+  }
 
   @override
   void dispose() {

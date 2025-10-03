@@ -252,6 +252,27 @@ class ApiService {
     }
   }
 
+  // 👇 获取随机的头像图片
+  Future<String> randomAvatarImg(String sex) async {
+    try {
+      final refreshToken = await TokenStorage.getRefreshToken();
+      if (refreshToken == null) throw Exception('refresh token 为空');
+      final response = await _dio.post(
+        '/api/auth/logout/',
+        data: {'refresh': refreshToken},
+      );
+      if (response.statusCode == 200) {
+        print("服务器账户退出成功");
+        return "";
+      } else {
+        throw Exception('服务端退出 失败, status ${response.statusCode}');
+      }
+    } on DioException catch (e) {
+      // 网络错误、超时等也抛出异常
+      throw Exception('请求服务端失败, status: ${e.message}');
+    }
+  }
+
   // 👇 获取用户信息
   Future<Map<String, dynamic>> getProfile() async {
     final response = await _dio.get('/api/accounts/profile/');

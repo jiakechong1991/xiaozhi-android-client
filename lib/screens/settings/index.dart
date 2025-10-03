@@ -25,6 +25,7 @@ class _SettingsState extends State<Settings> {
           child: Column(
             children: [
               Cell('账号安全', onTap: () => Get.toNamed('/settings/account')),
+              Cell('修改我的信息', onTap: () => Get.toNamed('/user/update_profile')),
               Cell('消息通知', onTap: () => Get.toNamed('/settings/notification')),
               Cell('隐私设置', onTap: () => Get.toNamed('/settings/privacy')),
               Cell(

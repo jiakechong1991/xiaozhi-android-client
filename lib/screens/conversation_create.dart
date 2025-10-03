@@ -3,7 +3,6 @@ import 'package:ai_assistant/controllers/agent_create_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart'; // 需要导入这个包
 import 'package:image_picker/image_picker.dart';
-import 'package:ai_assistant/screens/base/kit/index.dart';
 
 class ConversationTypeCreate extends StatefulWidget {
   const ConversationTypeCreate({super.key});
@@ -16,6 +15,12 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
   final createAgentControllerIns = Get.find<CreateAgentController>();
 
   @override
+  void initState() {
+    super.initState();
+    createAgentControllerIns.getDefaultAvatar(); // ✅ 在 initState 中调用
+  }
+
+  @override
   void dispose() {
     super.dispose();
   }
@@ -23,7 +28,6 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
   @override
   Widget build(BuildContext context) {
     print("新建角色了，进入build页面");
-    createAgentControllerIns.getDefaultAvatar();
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
