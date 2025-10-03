@@ -237,30 +237,28 @@ class ConversationController extends GetxController {
     if (conversationIndex != -1) {
       // 找到确实存在这个agent_id
 
-      // 保存最后删除的会话和消息用于恢复
-      _lastDeletedConversation = _conversations[conversationIndex];
-      _lastDeletedMessages = _messages[id]?.toList();
-
-      // 清理图片文件
       try {
+        // 在服务端标记删除
+        _api.deleteAgent(id);
+        // 清理图片文件
         final appDir = await getApplicationDocumentsDirectory();
         final conversationDir = Directory('${appDir.path}/conversations/$id');
         if (await conversationDir.exists()) {
           await conversationDir.delete(recursive: true);
           print('已清理会话相关的图片文件: ${conversationDir.path}');
         }
+
+        // 保存最后删除的会话和消息用于恢复
+        _lastDeletedConversation = _conversations[conversationIndex];
+        _lastDeletedMessages = _messages[id]?.toList();
+        // 从列表中移除
+        _conversations.removeAt(conversationIndex);
+        _messages.remove(id);
+
+        await _saveConversations();
       } catch (e) {
-        print('清理图片文件失败: $e');
+        print("agent删除失败");
       }
-
-      // 从列表中移除
-      _conversations.removeAt(conversationIndex);
-      _messages.remove(id);
-
-      // 在服务端标记删除
-      _api.deleteAgent(id);
-
-      await _saveConversations();
     }
   }
 
