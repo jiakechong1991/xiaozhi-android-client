@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:ai_assistant/models/message.dart';
 import 'package:ai_assistant/models/conversation.dart';
+import 'package:ai_assistant/screens/base/kit/index.dart';
 
 class MessageBubble extends StatelessWidget {
   final Message message;
@@ -100,7 +101,7 @@ class MessageBubble extends StatelessWidget {
     return CircleAvatar(
       radius: 16,
       backgroundColor: Colors.grey.shade700,
-      child: Icon(Icons.mic, size: 18, color: Colors.white),
+      child: WcaoUtils.imageCache(WcaoUtils.getRandomImage()),
     );
   }
 

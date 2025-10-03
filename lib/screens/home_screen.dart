@@ -536,27 +536,27 @@ class _HomeScreenState extends State<HomeScreen> {
         conversationControllerIns.deleteConversation(conversation.agentId);
 
         // 显示撤销消息
-        ScaffoldMessenger.of(context).clearSnackBars();
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('${conversation.agentName} 已删除'),
-            backgroundColor: Colors.grey.shade800,
-            behavior: SnackBarBehavior.floating,
-            duration: const Duration(seconds: 3),
-            margin: EdgeInsets.only(bottom: 70, left: 20, right: 20),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(10),
-            ),
-            action: SnackBarAction(
-              label: '撤销',
-              textColor: Colors.white,
-              onPressed: () {
-                // 恢复被删除的对话
-                conversationControllerIns.restoreLastDeletedConversation();
-              },
-            ),
-          ),
-        );
+        // ScaffoldMessenger.of(context).clearSnackBars();
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text('${conversation.agentName} 已删除'),
+        //     backgroundColor: Colors.grey.shade800,
+        //     behavior: SnackBarBehavior.floating,
+        //     duration: const Duration(seconds: 3),
+        //     margin: EdgeInsets.only(bottom: 70, left: 20, right: 20),
+        //     shape: RoundedRectangleBorder(
+        //       borderRadius: BorderRadius.circular(10),
+        //     ),
+        //     action: SnackBarAction(
+        //       label: '撤销',
+        //       textColor: Colors.white,
+        //       onPressed: () {
+        //         // 恢复被删除的对话
+        //         conversationControllerIns.restoreLastDeletedConversation();
+        //       },
+        //     ),
+        //   ),
+        // );
       },
       // 点击的回调函数
       onTap: () {

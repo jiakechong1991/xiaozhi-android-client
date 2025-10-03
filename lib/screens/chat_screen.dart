@@ -13,6 +13,7 @@ import 'package:ai_assistant/services/xiaozhi_service.dart';
 import 'package:ai_assistant/widgets/message_bubble.dart';
 import 'package:ai_assistant/screens/voice_call_screen.dart';
 import 'dart:async';
+import 'package:ai_assistant/screens/base/kit/index.dart';
 
 class ChatScreen extends StatefulWidget {
   final Conversation conversation; //  agent_conversation,代表一个agent的对话
@@ -331,7 +332,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: CircleAvatar(
                 radius: 20,
                 backgroundColor: Colors.grey.shade700,
-                child: const Icon(Icons.mic, color: Colors.white, size: 22),
+                child: WcaoUtils.imageCache(WcaoUtils.getRandomImage()),
               ),
             ),
             const SizedBox(width: 12),
@@ -363,10 +364,6 @@ class _ChatScreenState extends State<ChatScreen> {
                       ),
                     ],
                   ),
-                  child: const Text(
-                    '语音',
-                    style: TextStyle(color: Colors.grey, fontSize: 12),
-                  ),
                 ),
               ],
             ),
@@ -376,8 +373,7 @@ class _ChatScreenState extends State<ChatScreen> {
       body: Column(
         children: [
           // 页面的主要widget组件（他们会形成大的部分）
-          if (widget.conversation.type == ConversationType.xiaozhi)
-            _buildXiaozhiInfo(), // 上面部分 （小智连接信息）
+          _buildXiaozhiInfo(), // 上面部分 （小智连接信息）
           Expanded(child: _buildMessageList()), // 中间部分（消息列表）
           _buildInputArea(), // 下面部分（信息输入区域）
         ],

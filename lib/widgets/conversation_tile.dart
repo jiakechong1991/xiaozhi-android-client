@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import 'package:timeago/timeago.dart' as timeago;
 import 'package:ai_assistant/models/conversation.dart';
-import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:get/get.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
+import 'package:ai_assistant/screens/base/kit/index.dart';
 
 class ConversationTile extends StatelessWidget {
   final Conversation conversation;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
+  final configControllerIns = Get.find<ConfigController>();
 
-  const ConversationTile({
+  ConversationTile({
     super.key,
     required this.conversation,
     this.onTap,
@@ -20,7 +19,6 @@ class ConversationTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final configControllerIns = Get.find<ConfigController>();
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       decoration: BoxDecoration(
@@ -141,7 +139,7 @@ class ConversationTile extends StatelessWidget {
     return CircleAvatar(
       radius: 24,
       backgroundColor: Colors.purple.shade400,
-      child: const Icon(Icons.mic, color: Colors.white, size: 24),
+      child: WcaoUtils.imageCache(WcaoUtils.getRandomImage()),
     );
   }
 
