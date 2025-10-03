@@ -4,10 +4,69 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ai_assistant/screens/base/ui/theme.dart';
 import 'dart:math';
-
-const assetHost = 'https://rao.pics/r';
+import 'dart:io';
+import 'dart:convert';
+import 'package:path_provider/path_provider.dart';
+import 'package:http/http.dart' as http;
+import 'package:crypto/crypto.dart';
 
 class WcaoUtils {
+  late Directory _cacheDir;
+
+  Future<WcaoUtils> init() async {
+    _cacheDir = await getApplicationDocumentsDirectory();
+    // 可选：创建子目录如 avatars/
+    final avatarDir = Directory('${_cacheDir.path}/avatars');
+    if (!await avatarDir.exists()) {
+      await avatarDir.create(recursive: true);
+    }
+    _cacheDir = avatarDir;
+    return this;
+  }
+
+  String _generateFileName(String url) {
+    // 移除空格并生成 hash
+    final cleanUrl = url.trim();
+    final bytes = utf8.encode(cleanUrl);
+    final hash = md5.convert(bytes).toString();
+    return 'avatar_$hash.jpg'; // 或根据 URL 后缀判断格式
+  }
+
+  Future<File?> _getCachedFile(String url) async {
+    final fileName = _generateFileName(url);
+    final file = File('${_cacheDir.path}/$fileName');
+    if (await file.exists()) {
+      return file;
+    }
+    return null;
+  }
+
+  Future<File?> downloadAndCache(String url) async {
+    try {
+      print("----调用了downloadAndCache");
+      final cached = await _getCachedFile(url);
+      if (cached != null) {
+        return cached; // 已缓存，直接返回
+      }
+
+      final response = await http.get(Uri.parse(url.trim()));
+      if (response.statusCode == 200) {
+        final fileName = _generateFileName(url);
+        final file = File('${_cacheDir.path}/$fileName');
+        await file.writeAsBytes(response.bodyBytes);
+        return file;
+      } else {
+        print(
+          'Failed to download avatar: $url, status: ${response.statusCode}',
+        );
+        return null;
+      }
+    } catch (e) {
+      print('Error caching avatar: $e');
+      return null;
+    }
+  }
+
   /// toast
   static toast(String msg) async {
     await EasyLoading.showToast(msg); //显示短时间的文本提示
@@ -23,8 +82,7 @@ class WcaoUtils {
     EasyLoading.dismiss();
   }
 
-  /// https://pub.flutter-io.cn/packages/cached_network_image
-  /// 缓存图片
+  /// 展示图片(带缓存)，但是不保存成file,一般用于浏览图片
   static Widget imageCache(String url, {BoxFit? fit}) {
     return CachedNetworkImage(
       imageUrl: url,
@@ -39,7 +97,6 @@ class WcaoUtils {
   }
 
   static String getRandomImage() {
-    // return '$assetHost?t=${DateTime.now()}';
     List<String> images = [
       "https://pic.rmb.bdstatic.com/bjh/43eb2f1c813a02b30c609e9d7aaa54e9.jpeg",
       "https://q2.itc.cn/q_70/images03/20250225/e8117dd40aae4db5a64461f1ea0d16fc.jpeg",

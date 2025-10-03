@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:ai_assistant/models/xiaozhi_config.dart';
 //import 'package:ai_assistant/state/token.dart';
 import 'package:ai_assistant/screens/base/ui/theme.dart';
 import 'dart:async';
-//import 'package:get/get.dart';
+import 'package:get/get.dart';
 
 // HACK: 注册界面
 
@@ -398,8 +397,7 @@ class _RegisterState extends State<LoginRegister> {
   InkWell rigisterButton() {
     return InkWell(
       onTap: () {
-        //TokenController.to.set();
-        //Get.offAllNamed('/home');
+        Get.offAllNamed('/user/update_profile');
       },
       child: Container(
         margin: const EdgeInsets.only(top: 36),

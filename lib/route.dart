@@ -18,6 +18,7 @@ import 'package:ai_assistant/screens/settings/notification/index.dart';
 import 'package:ai_assistant/screens/settings/about/index.dart';
 import 'package:ai_assistant/screens/settings/backlist/index.dart';
 import 'package:ai_assistant/screens/settings/privacy/index.dart';
+import 'package:ai_assistant/screens/userprofile_create.dart';
 
 List<GetPage<dynamic>> getRoutes = [
   GetPage(name: '/home', page: () => const HomeScreen()),
@@ -25,6 +26,7 @@ List<GetPage<dynamic>> getRoutes = [
   // 登录注册权限相关
   GetPage(name: '/login/password', page: () => const LoginPassword()),
   GetPage(name: '/login/register', page: () => const LoginRegister()),
+  GetPage(name: '/user/update_profile', page: () => const UserprofileCreate()),
   //GetPage(name: '/verify-code/:type', page: () => const VerifyCode()),
   //GetPage(name: '/password/reset', page: () => const PasswordReset()),
   //GetPage(name: '/password/update', page: () => const PasswordUpdate()),

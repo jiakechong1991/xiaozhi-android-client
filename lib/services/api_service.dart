@@ -202,6 +202,56 @@ class ApiService {
     }
   }
 
+  // 更新用户信息
+  Future<Map<String, dynamic>> updateUserProfile(
+    String agent_name,
+    String sex,
+    String birthday,
+    String character_setting, // 角色介绍
+    String age, // 年龄
+    File avatarFile,
+  ) async {
+    final formData = FormData();
+
+    // 添加文本字段
+    formData.fields.addAll([
+      MapEntry('agent_name', agent_name),
+      MapEntry('sex', sex),
+      MapEntry('birthday', birthday),
+      MapEntry('character_setting', character_setting),
+      MapEntry('age', age),
+    ]);
+
+    final filename = path.basename(avatarFile.path); // ✅ 动态获取
+    formData.files.add(
+      MapEntry(
+        'avatar',
+        await MultipartFile.fromFile(avatarFile.path, filename: filename),
+      ),
+    );
+
+    final response = await _dio.post(
+      '/api/accounts/profile',
+      data: formData,
+      options: Options(
+        contentType: "multipart/form-data", // 显式指定（dio 通常自动设）
+      ),
+    );
+
+    if (response.statusCode == 201) {
+      print("更新user profile成功");
+      final data = response.data as Map<String, dynamic>;
+      // 打印data
+      print(data);
+      return data;
+    } else {
+      print("更新user profile失败---");
+      final data = response.data as Map<String, dynamic>;
+      print(data);
+      throw Exception('更新user profile失败: ${response.statusMessage}');
+    }
+  }
+
   // 👇 获取用户信息
   Future<Map<String, dynamic>> getProfile() async {
     final response = await _dio.get('/api/accounts/profile/');

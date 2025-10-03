@@ -22,6 +22,9 @@ import 'package:ai_assistant/utils/audio_util.dart';
 import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
 import 'package:ai_assistant/controllers/login_controller.dart';
+import 'package:ai_assistant/controllers/user_controller.dart';
+import 'package:ai_assistant/controllers/agent_create_controller.dart';
+import 'package:ai_assistant/screens/base/kit/index.dart';
 
 // 是否启用调试工具
 const bool enableDebugTools = true;
@@ -110,12 +113,17 @@ void main() async {
   await tokenController.loadToken(); // 异步加载，阻塞直到完成
   // 将 TokenController 注册为单例（GetX 需要）
   Get.put(tokenController);
+
+  // 初始化并注入全局服务
+  await Get.putAsync<WcaoUtils>(() => WcaoUtils().init());
+
   Get.put(ApiService()); // ApiService 无异步构造函数时
   Get.lazyPut(() => ConversationController(), fenix: true);
+  Get.lazyPut(() => UserController(), fenix: true);
   Get.put(ThemeController());
   //LoginController中有页面操作，必须延迟初始化
   Get.put(LoginController());
-  // Get.lazyPut(() => LoginController(), fenix: true);
+  Get.lazyPut(() => CreateAgentController(), fenix: true);
 
   /*
   flutters

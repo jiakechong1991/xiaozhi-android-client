@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
-import 'package:ai_assistant/controllers/agent_create_controller.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart'; // 需要导入这个包
 import 'package:image_picker/image_picker.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
+import 'package:ai_assistant/controllers/user_controller.dart';
 
-class ConversationTypeCreate extends StatefulWidget {
-  const ConversationTypeCreate({super.key});
+class UserprofileCreate extends StatefulWidget {
+  const UserprofileCreate({super.key});
 
   @override
-  State<ConversationTypeCreate> createState() => _ConversationTypeCreateState();
+  State<UserprofileCreate> createState() => _UserprofileCreateState();
 }
 
-class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
-  final createAgentControllerIns = Get.find<CreateAgentController>();
+class _UserprofileCreateState extends State<UserprofileCreate> {
+  final userControllerIns = Get.find<UserController>();
 
   @override
   void dispose() {
@@ -22,21 +22,15 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
 
   @override
   Widget build(BuildContext context) {
-    print("新建角色了，进入build页面");
-    createAgentControllerIns.getDefaultAvatar();
+    print("创建我的信息，进入build页面");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 1,
         toolbarHeight: 70,
-        leading: IconButton(
-          // 返回按钮
-          icon: const Icon(Icons.arrow_back, color: Colors.black, size: 26),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
         title: const Text(
-          '新建角色',
+          '填写我的信息',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -82,19 +76,6 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(20),
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       const Text(
-          //         '请填写角色基本信息',
-          //         style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          //       ),
-          //       const SizedBox(height: 6),
-          //     ],
-          //   ),
-          // ),
           _buildAvatarSection(),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           const SizedBox(height: 16),
@@ -106,7 +87,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentControllerIns.agentNameController,
+                controller: userControllerIns.agentNameController,
                 decoration: InputDecoration(
                   hintText: '请输入名字',
                   border: OutlineInputBorder(),
@@ -119,7 +100,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentControllerIns.ageController,
+                controller: userControllerIns.ageController,
                 keyboardType: TextInputType.number, // 只显示数字键盘
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly, // 只允许数字
@@ -138,7 +119,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentControllerIns.birthdayController,
+                controller: userControllerIns.birthdayController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   hintText: '请输入生日',
@@ -153,7 +134,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
               ),
               Obx(
                 () => DropdownButtonFormField<String>(
-                  value: createAgentControllerIns.sex.value,
+                  value: userControllerIns.sex.value,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     // 可选：添加 label 或 hint
@@ -165,7 +146,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                   ],
                   onChanged: (String? newValue) {
                     if (newValue != null) {
-                      createAgentControllerIns.onSexChanged(
+                      userControllerIns.onSexChanged(
                         newValue,
                       ); //更新sex 并自动更新 voices
                     }
@@ -182,44 +163,11 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
               const SizedBox(height: 15),
 
               const Text(
-                '可选声音:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              Obx(
-                () => DropdownButtonFormField<String>(
-                  value: createAgentControllerIns.voices.value,
-                  decoration: InputDecoration(border: OutlineInputBorder()),
-                  items:
-                      createAgentControllerIns.availableVoices
-                          .map(
-                            (voice) => DropdownMenuItem<String>(
-                              value: voice['value'],
-                              child: Text(voice['label']!),
-                            ),
-                          )
-                          .toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      createAgentControllerIns.voices.value =
-                          newValue; // ✅ 同步到 controller
-                    }
-                  },
-                  // 可选：添加验证
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '请选择音色';
-                    }
-                    return null;
-                  },
-                ),
-              ),
-
-              const Text(
                 '角色设定：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentControllerIns.characterSettingController,
+                controller: userControllerIns.characterSettingController,
                 decoration: InputDecoration(
                   hintText: '请输入角色介绍',
                   border: OutlineInputBorder(),
@@ -254,9 +202,9 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
       ),
       child: ElevatedButton(
         onPressed:
-            createAgentControllerIns.isLoading.value
+            userControllerIns.isLoading.value
                 ? null // 加载中禁用点击
-                : () => createAgentControllerIns.create_agent(), // 点击 创建角色按钮
+                : () => userControllerIns.update_user_profile(), // 点击 更新用户信息 按钮
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: Colors.black,
@@ -269,7 +217,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
           shadowColor: Colors.black.withOpacity(0.3),
         ),
         child: const Text(
-          '创建角色a',
+          '更新我的信息',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ),
@@ -299,7 +247,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 border: Border.all(color: Colors.grey.shade300, width: 1),
               ),
               child:
-                  createAgentControllerIns.avatarFile.value == null
+                  userControllerIns.avatarFile.value == null
                       ? Stack(
                         children: [
                           Container(
@@ -321,7 +269,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                         children: [
                           ClipOval(
                             child: Image.file(
-                              createAgentControllerIns.avatarFile.value!,
+                              userControllerIns.avatarFile.value!,
                               fit: BoxFit.cover,
                               width: 80,
                               height: 80,
@@ -349,7 +297,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 title: const Text('从相册选择'),
                 onTap: () {
                   Navigator.pop(context);
-                  createAgentControllerIns.pickImage(ImageSource.gallery);
+                  userControllerIns.pickImage(ImageSource.gallery);
                 },
               ),
               ListTile(
@@ -357,13 +305,13 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 title: const Text('拍照'),
                 onTap: () {
                   Navigator.pop(context);
-                  createAgentControllerIns.pickImage(ImageSource.camera);
+                  userControllerIns.pickImage(ImageSource.camera);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.cancel),
                 title: const Text('随机AI生成'),
-                onTap: () => createAgentControllerIns.getDefaultAvatar(),
+                onTap: () => userControllerIns.getDefaultAvatar(),
               ),
               ListTile(
                 leading: const Icon(Icons.cancel),

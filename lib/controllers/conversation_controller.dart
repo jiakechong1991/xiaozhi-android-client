@@ -48,11 +48,12 @@ class ConversationController extends GetxController {
     final conversationsJson = prefs.getStringList('conversations') ?? [];
     print("--------77777755555------------111----");
     print(conversationsJson);
-    if (conversationsJson.isEmpty) {
+    if (true || conversationsJson.isEmpty) {
       // 本地无会话，从服务器获取 agent 列表
       try {
         final agents = await _api.getAgentList();
-
+        print("从服务器拉去的agent列表");
+        print(agents);
         _conversations.value =
             agents.map((agent) {
               final agentId = (agent['id'] as dynamic).toString();
