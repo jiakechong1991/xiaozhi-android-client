@@ -21,7 +21,6 @@ class UserController extends GetxController {
   final agentNameController = TextEditingController();
   final birthdayController = TextEditingController();
   final characterSettingController = TextEditingController();
-  final ageController = TextEditingController();
   var sex = 'f'.obs;
 
   // 👇 新增：头像图片文件（可选）
@@ -62,7 +61,6 @@ class UserController extends GetxController {
     agentNameController.dispose();
     birthdayController.dispose();
     characterSettingController.dispose();
-    ageController.dispose();
     super.onClose();
   }
 
@@ -72,7 +70,7 @@ class UserController extends GetxController {
     }
   }
 
-  Future<void> update_user_profile() async {
+  Future<void> updateUserProfile() async {
     print(">>>按钮被点击，开始更新update_user_profile");
     if (agentNameController.text.isEmpty ||
         characterSettingController.text.isEmpty) {
@@ -93,7 +91,6 @@ class UserController extends GetxController {
         sex.value,
         birthdayController.text,
         characterSettingController.text,
-        ageController.text,
         avatarFile.value!, // 👈 新增
       );
       print("更新user profile 成功,要返回聊天界面了， 这里先用log代替");
@@ -104,9 +101,7 @@ class UserController extends GetxController {
       print("错误信息: $e");
       print("完整堆栈:");
       print(stackTrace); //
-      print("----");
       errorMessage.value = e.toString().replaceAll("Exception: ", "").trim();
-      print(errorMessage);
       // 打印错误信息
     } finally {
       isLoading.value = false;

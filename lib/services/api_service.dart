@@ -204,22 +204,20 @@ class ApiService {
 
   // 更新用户信息
   Future<Map<String, dynamic>> updateUserProfile(
-    String agent_name,
+    String userName,
     String sex,
     String birthday,
-    String character_setting, // 角色介绍
-    String age, // 年龄
+    String characterSetting, // 角色介绍
     File avatarFile,
   ) async {
     final formData = FormData();
 
     // 添加文本字段
     formData.fields.addAll([
-      MapEntry('agent_name', agent_name),
+      MapEntry('nickname', userName),
       MapEntry('sex', sex),
       MapEntry('birthday', birthday),
-      MapEntry('character_setting', character_setting),
-      MapEntry('age', age),
+      MapEntry('character_setting', characterSetting),
     ]);
 
     final filename = path.basename(avatarFile.path); // ✅ 动态获取
@@ -230,15 +228,15 @@ class ApiService {
       ),
     );
 
-    final response = await _dio.post(
-      '/api/accounts/profile',
+    final response = await _dio.patch(
+      '/api/accounts/profile/',
       data: formData,
       options: Options(
         contentType: "multipart/form-data", // 显式指定（dio 通常自动设）
       ),
     );
 
-    if (response.statusCode == 201) {
+    if (response.statusCode == 200) {
       print("更新user profile成功");
       final data = response.data as Map<String, dynamic>;
       // 打印data
@@ -246,8 +244,6 @@ class ApiService {
       return data;
     } else {
       print("更新user profile失败---");
-      final data = response.data as Map<String, dynamic>;
-      print(data);
       throw Exception('更新user profile失败: ${response.statusMessage}');
     }
   }

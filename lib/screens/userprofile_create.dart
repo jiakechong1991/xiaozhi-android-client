@@ -101,25 +101,6 @@ class _UserprofileCreateState extends State<UserprofileCreate> {
               const SizedBox(height: 15),
 
               const Text(
-                '年龄：',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              TextField(
-                controller: userControllerIns.ageController,
-                keyboardType: TextInputType.number, // 只显示数字键盘
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly, // 只允许数字
-                  // 可选：限制最大长度，比如年龄最大为3位数
-                  LengthLimitingTextInputFormatter(3),
-                ],
-                decoration: InputDecoration(
-                  hintText: '请输入年龄',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 15),
-
-              const Text(
                 '生日：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
@@ -168,13 +149,13 @@ class _UserprofileCreateState extends State<UserprofileCreate> {
               const SizedBox(height: 15),
 
               const Text(
-                '角色设定：',
+                '背景介绍：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
                 controller: userControllerIns.characterSettingController,
                 decoration: InputDecoration(
-                  hintText: '请输入角色介绍',
+                  hintText: '请输入我的介绍',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -209,7 +190,7 @@ class _UserprofileCreateState extends State<UserprofileCreate> {
         onPressed:
             userControllerIns.isLoading.value
                 ? null // 加载中禁用点击
-                : () => userControllerIns.update_user_profile(), // 点击 更新用户信息 按钮
+                : () => userControllerIns.updateUserProfile(), // 点击 更新用户信息 按钮
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: Colors.black,

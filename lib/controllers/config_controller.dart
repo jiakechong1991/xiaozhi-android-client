@@ -44,15 +44,6 @@ class ConfigController extends GetxController {
     _isLoaded = true;
   }
 
-  // Future<void> _saveConfigs() async {
-  //   final prefs = await SharedPreferences.getInstance();
-
-  //   // Save Xiaozhi configs
-  //   final xiaozhiConfigsJson =
-  //       _xiaozhiConfigs.map((config) => jsonEncode(config.toJson())).toList();
-  //   await prefs.setStringList('xiaozhiConfigs', xiaozhiConfigsJson);
-  // }
-
   // 简化版的设备ID获取方法，不依赖上下文
   Future<String> _getSimpleDeviceId() async {
     final deviceInfo = DeviceInfoPlugin();

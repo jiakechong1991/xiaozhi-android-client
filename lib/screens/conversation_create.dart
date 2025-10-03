@@ -17,7 +17,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
   @override
   void initState() {
     super.initState();
-    createAgentControllerIns.getDefaultAvatar(); // ✅ 在 initState 中调用
+    createAgentControllerIns.getDefaultAvatar();
   }
 
   @override
