@@ -1,7 +1,6 @@
 import 'package:get/get.dart';
 import 'dart:convert';
 import 'dart:io';
-import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:uuid/uuid.dart';
 import 'package:ai_assistant/models/conversation.dart';
@@ -60,6 +59,7 @@ class ConversationController extends GetxController {
               final title = agent['agent_name'] as String;
               final userName_ = agent["username"] as String;
               final defaultTimeStr = '1970-09-25T10:10:10+08:00';
+              final avatarImgUrl = _api.getFullUrl(agent["avatar"]);
               return Conversation(
                 userName: userName_,
                 agentId: agentId,
@@ -68,7 +68,8 @@ class ConversationController extends GetxController {
                 lastMessageTime: DateTime.parse(
                   (agent["last_active_at"] as String?) ?? defaultTimeStr,
                 ),
-                lastMessage: '你好啊',
+                lastMessage: agent["latest_msg_content"] ?? "",
+                avatorImgUrl: avatarImgUrl,
               );
             }).toList();
         hasReadServer = true;
@@ -93,7 +94,7 @@ class ConversationController extends GetxController {
 
       print("--------77777755555------------222----");
       print(messagesJson);
-      if (messagesJson.isEmpty) {
+      if (true || messagesJson.isEmpty) {
         // 本地无消息，尝试从服务器拉取最近 20 条
         try {
           final messagesData = await _api.getMessageList(
@@ -198,6 +199,7 @@ class ConversationController extends GetxController {
     required String agentId,
     required ConversationType type,
     String configId = '',
+    required avatarImgUrl,
   }) async {
     final uuid = const Uuid();
     final conversationId = agentId;
@@ -218,6 +220,7 @@ class ConversationController extends GetxController {
       lastMessage: '',
       unreadCount: 0,
       isPinned: false,
+      avatorImgUrl: avatarImgUrl,
     );
 
     _conversations.add(newConversation);

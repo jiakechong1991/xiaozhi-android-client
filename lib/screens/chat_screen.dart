@@ -332,7 +332,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: CircleAvatar(
                 radius: 20,
                 backgroundColor: Colors.grey.shade700,
-                child: WcaoUtils.imageCache(WcaoUtils.getRandomImage()),
+                child: WcaoUtils.imageCache(widget.conversation.avatorImgUrl),
               ),
             ),
             const SizedBox(width: 12),
@@ -546,6 +546,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ),
               isThinking: true,
               conversationType: widget.conversation.type,
+              avatarImgUrl: widget.conversation.avatorImgUrl,
             );
           }
 
@@ -561,6 +562,7 @@ class _ChatScreenState extends State<ChatScreen> {
               ), //从message.id初始化一个key，作为 listView比较多个item的id_key
               message: message,
               conversationType: widget.conversation.type,
+              avatarImgUrl: widget.conversation.avatorImgUrl,
             ),
           );
         },

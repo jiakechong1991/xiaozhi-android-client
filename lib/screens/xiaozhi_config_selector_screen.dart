@@ -1,10 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
 import 'package:get/get.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
-import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
-import 'package:ai_assistant/screens/chat_screen.dart';
 
 class XiaozhiConfigSelectorScreen extends StatelessWidget {
   const XiaozhiConfigSelectorScreen({super.key});

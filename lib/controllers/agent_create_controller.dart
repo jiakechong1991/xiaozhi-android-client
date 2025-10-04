@@ -6,9 +6,7 @@ import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:ai_assistant/screens/base/kit/index.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 
 class CreateAgentController extends GetxController {
@@ -131,12 +129,8 @@ class CreateAgentController extends GetxController {
       //回到 聊天界面
       String? agentId = responseData['id']?.toString();
       String agentName = responseData['agent_name'];
+      String avatarImgUrl = _api.getFullUrl(responseData["avatar"]);
 
-      // ✅ 使用 Get.context 获取 context
-      final context = Get.context;
-      if (context == null) {
-        throw Exception('Context is not available');
-      }
       final xiaozhiConfigs = configControllerINs.xiaozhiConfigs;
 
       print('=== 调试：创建 Agent 的入参 ===');
@@ -149,7 +143,8 @@ class CreateAgentController extends GetxController {
         title: '与 ${agentName} 的对话',
         agentId: agentId!,
         type: ConversationType.xiaozhi,
-        configId: xiaozhiConfigs.first.id!, // 默认使用第一个小智server
+        configId: xiaozhiConfigs.first.id, // 默认使用第一个小智server
+        avatarImgUrl: avatarImgUrl,
       );
       // 带参数跳转到聊天列表界面
       Get.offAllNamed('/agent/chatlist', arguments: conversation);

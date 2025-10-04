@@ -10,12 +10,14 @@ class MessageBubble extends StatelessWidget {
   final Message message;
   final bool isThinking;
   final ConversationType? conversationType;
+  final String avatarImgUrl;
 
   const MessageBubble({
     super.key,
     required this.message,
     this.isThinking = false,
     this.conversationType,
+    required this.avatarImgUrl,
   });
 
   @override
@@ -101,7 +103,7 @@ class MessageBubble extends StatelessWidget {
     return CircleAvatar(
       radius: 16,
       backgroundColor: Colors.grey.shade700,
-      child: WcaoUtils.imageCache(WcaoUtils.getRandomImage()),
+      child: WcaoUtils.imageCache(avatarImgUrl),
     );
   }
 

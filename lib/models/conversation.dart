@@ -11,6 +11,7 @@ class Conversation {
   final String lastMessage; // 最后一条消息
   final int unreadCount;
   final bool isPinned;
+  final String avatorImgUrl; // 头像图片
 
   Conversation({
     // 构造函数
@@ -23,6 +24,7 @@ class Conversation {
     required this.lastMessage,
     this.unreadCount = 0,
     this.isPinned = false,
+    required this.avatorImgUrl,
   });
 
   // 下面是几种 常用方法：
@@ -37,6 +39,7 @@ class Conversation {
       lastMessage: json['lastMessage'],
       unreadCount: json['unreadCount'] ?? 0,
       isPinned: json['isPinned'] ?? false,
+      avatorImgUrl: json["avatorImgUrl"] ?? "",
     );
   }
 
@@ -51,6 +54,7 @@ class Conversation {
       'lastMessage': lastMessage,
       'unreadCount': unreadCount,
       'isPinned': isPinned,
+      'avatarImgUrl': avatorImgUrl,
     };
   }
 
@@ -62,6 +66,7 @@ class Conversation {
     String? lastMessage,
     int? unreadCount,
     bool? isPinned,
+    String? avatarImgUrl,
   }) {
     return Conversation(
       userName: userName,
@@ -73,6 +78,7 @@ class Conversation {
       lastMessage: lastMessage ?? this.lastMessage,
       unreadCount: unreadCount ?? this.unreadCount,
       isPinned: isPinned ?? this.isPinned,
+      avatorImgUrl: avatorImgUrl,
     );
   }
 }

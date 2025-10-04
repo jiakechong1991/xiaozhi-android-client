@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 
+// home page的agent chat列表
 class ConversationTile extends StatelessWidget {
   final Conversation conversation;
   final VoidCallback? onTap;
@@ -139,7 +140,7 @@ class ConversationTile extends StatelessWidget {
     return CircleAvatar(
       radius: 24,
       backgroundColor: Colors.purple.shade400,
-      child: WcaoUtils.imageCache(WcaoUtils.getRandomImage()),
+      child: WcaoUtils.imageCache(conversation.avatorImgUrl),
     );
   }
 

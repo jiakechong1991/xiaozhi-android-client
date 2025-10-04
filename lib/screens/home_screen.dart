@@ -1,18 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:provider/provider.dart';
 import 'package:ai_assistant/controllers/conversation_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
 import 'package:ai_assistant/screens/settings_screen.dart';
 import 'package:ai_assistant/screens/mine/index.dart';
-// import 'package:ai_assistant/screens/conversation_type_screen.dart';
-import 'package:ai_assistant/screens/conversation_create.dart';
 import 'package:ai_assistant/widgets/conversation_tile.dart';
 import 'package:ai_assistant/widgets/slidable_delete_tile.dart';
 import 'package:ai_assistant/widgets/discovery_screen.dart';
-import 'package:ai_assistant/state/token.dart';
-import 'package:flutter/rendering.dart';
 import 'package:get/get.dart';
 
 class HomeScreen extends StatefulWidget {

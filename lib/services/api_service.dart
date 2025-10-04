@@ -52,6 +52,18 @@ class ApiService {
     );
   }
 
+  String getFullUrl(String? sourceUrl) {
+    // 为资源url补全http请求路径
+    if (sourceUrl == null || sourceUrl.isEmpty) {
+      return sourceUrl ?? '';
+    }
+    String outUrl = sourceUrl;
+    if (!sourceUrl.startsWith("http")) {
+      outUrl = baseUrl + sourceUrl;
+    }
+    return outUrl;
+  }
+
   // 👇 刷新 token 的私有方法
   Future<Map<String, dynamic>?> _refreshToken() async {
     final refreshToken = await TokenStorage.getRefreshToken();
@@ -334,8 +346,6 @@ class ApiService {
   Future<List<dynamic>> getAgentList() async {
     final response = await _dio.get('/api/agents/');
     if (response.statusCode == 200) {
-      print("-------88888-------------");
-      print(response.data);
       return response.data as List<dynamic>? ?? [];
     } else {
       throw Exception('获取agent列表信息失败');
