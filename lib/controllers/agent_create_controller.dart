@@ -147,7 +147,7 @@ class CreateAgentController extends GetxController {
         avatarImgUrl: avatarImgUrl,
       );
       // 带参数跳转到聊天列表界面
-      Get.offAllNamed('/agent/chatlist', arguments: conversation);
+      Get.offAndToNamed('/agent/chatlist', arguments: conversation);
       print(">>> 创建agent成功end");
     } catch (e, stackTrace) {
       print(">>> 创建agent失败");
