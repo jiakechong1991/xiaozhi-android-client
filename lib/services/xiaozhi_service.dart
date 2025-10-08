@@ -2,11 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
-import 'package:flutter_sound/flutter_sound.dart';
 import '../services/xiaozhi_websocket_manager.dart';
-import '../utils/device_util.dart';
 import '../utils/audio_util.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 

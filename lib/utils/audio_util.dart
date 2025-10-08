@@ -1,14 +1,11 @@
 import 'dart:async';
 import 'dart:io';
 import 'dart:typed_data';
-import 'dart:collection';
 import 'package:record/record.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'package:opus_dart/opus_dart.dart';
 import 'package:just_audio/just_audio.dart' as ja;
 import 'package:audio_session/audio_session.dart';
-import 'package:collection/collection.dart';
 import 'package:flutter_pcm_player/flutter_pcm_player.dart';
 
 /// 音频工具类，用于处理Opus音频编解码和录制播放
@@ -198,7 +195,7 @@ class AudioUtil {
 
   /// 释放资源
   static Future<void> dispose() async {
-    _audioStreamController.close();
+    // _audioStreamController.close();
     print('$TAG: 资源已释放');
   }
 
@@ -246,8 +243,13 @@ class AudioUtil {
             if (data.isNotEmpty && data.length % 2 == 0) {
               final opusData = await encodeToOpus(data);
               if (opusData != null) {
+                // print('$TAG: 编码后 Opus 数据长度: ${opusData.length} bytes');
                 _audioStreamController.add(opusData);
+              } else {
+                print('$TAG: Opus 编码返回 null！');
               }
+            } else {
+              print('$TAG: 无效 PCM 数据: empty or odd length (${data.length})');
             }
           },
           onError: (error) {
