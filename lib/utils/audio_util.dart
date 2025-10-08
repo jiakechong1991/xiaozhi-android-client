@@ -195,7 +195,7 @@ class AudioUtil {
 
   /// 释放资源
   static Future<void> dispose() async {
-    // _audioStreamController.close();
+    _audioStreamController.close();
     print('$TAG: 资源已释放');
   }
 

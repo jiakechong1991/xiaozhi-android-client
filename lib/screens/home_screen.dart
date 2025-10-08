@@ -8,6 +8,7 @@ import 'package:ai_assistant/widgets/conversation_tile.dart';
 import 'package:ai_assistant/widgets/slidable_delete_tile.dart';
 import 'package:ai_assistant/widgets/discovery_screen.dart';
 import 'package:get/get.dart';
+import 'package:ai_assistant/utils/audio_util.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -29,6 +30,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void dispose() {
     _searchFocusNode.dispose(); // 释放焦点管理器
+    AudioUtil.dispose();
     super.dispose(); // 一种内存释放？
   }
 

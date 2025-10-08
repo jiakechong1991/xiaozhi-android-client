@@ -702,7 +702,7 @@ class XiaozhiService {
   /// 释放资源
   Future<void> dispose() async {
     await disconnect();
-    await AudioUtil.dispose();
+    // await AudioUtil.dispose();
     _listeners.clear();
     print('$TAG: 资源已释放');
   }
