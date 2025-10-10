@@ -38,6 +38,7 @@ dependencies:
   dart_mock: ^2.0.1  # app端 假数据mock工具
   flutter_launcher_icons: ^0.14.4  # app图标自动制作
   flutter_native_splash: ^2.4.6 # 启动图片控制工具
+  launcher_name: ^1.0.2  # 控制app的名称
 
   
   
@@ -66,6 +67,9 @@ dev_dependencies:  # 额外的开发依赖，仅仅在开发阶段用，正式�
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
+
+launcher_name:
+  default: "小狮陪伴"
 
 flutter_native_splash:
   # 启动背景色（可选）
