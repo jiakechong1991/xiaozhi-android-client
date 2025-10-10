@@ -4,11 +4,13 @@ import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
 import 'package:ai_assistant/screens/settings_screen.dart';
 import 'package:ai_assistant/screens/mine/index.dart';
+import 'package:ai_assistant/screens/base/kit/index.dart';
 import 'package:ai_assistant/widgets/conversation_tile.dart';
 import 'package:ai_assistant/widgets/slidable_delete_tile.dart';
 import 'package:ai_assistant/widgets/discovery_screen.dart';
 import 'package:get/get.dart';
 import 'package:ai_assistant/utils/audio_util.dart';
+import 'package:ai_assistant/controllers/check_profile_controller.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -22,9 +24,41 @@ class _HomeScreenState extends State<HomeScreen> {
   final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
   final conversationControllerIns = Get.find<ConversationController>();
 
+  // 添加一个标记，防止重复跳转
+  bool _hasCheckedProfile = false;
+
+  Future<void> _checkUserProfile() async {
+    // 防止重复执行
+    if (_hasCheckedProfile) return;
+
+    final checkProfileControllerIns =
+        Get.find<CheckProfileController>(); // 或 Get.find，取决于你是否已注册
+    await checkProfileControllerIns.loadHasProfile();
+
+    _hasCheckedProfile = true;
+    // 如果用户未填写资料，跳转到资料页
+    if (!checkProfileControllerIns.hasProfile.value) {
+      // 延迟 3 秒后再跳转,防止调的过于突然
+      WcaoUtils.toast("系统检测到您没有填写用户信息，正在跳转到资料页");
+      await Future.delayed(const Duration(seconds: 3));
+
+      // 再次检查 mounted！因为 3 秒内用户可能已离开页面
+      if (!mounted) return;
+
+      Get.toNamed('/user/update_profile');
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+
+    // 在页面首帧渲染完成后执行检查
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _checkUserProfile(); // 检查是否用户填写用户信息
+      }
+    });
   }
 
   @override

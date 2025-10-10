@@ -342,6 +342,13 @@ class ApiService {
     }
   }
 
+  // 👇 获取用户信息
+  Future<Map<String, dynamic>> checkProfileComplete() async {
+    final response = await _dio.get('/api/accounts/check_profile/');
+    final data = response.data as Map<String, dynamic>;
+    return data;
+  }
+
   // 👇 获取用户的agent列表
   Future<List<dynamic>> getAgentList() async {
     final response = await _dio.get('/api/agents/');

@@ -22,6 +22,7 @@ import 'package:ai_assistant/controllers/agent_create_controller.dart';
 import 'package:ai_assistant/controllers/register_controller.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:ai_assistant/controllers/check_profile_controller.dart';
 
 // 是否启用调试工具
 const bool enableDebugTools = true;
@@ -123,6 +124,7 @@ void main() async {
   //LoginController中有页面操作，必须延迟初始化
   Get.put(LoginController());
   Get.lazyPut(() => CreateAgentController(), fenix: true);
+  Get.lazyPut(() => CheckProfileController(), fenix: true);
 
   /*
   flutters
