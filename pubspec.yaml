@@ -36,6 +36,8 @@ dependencies:
   flutter_easyloading: ^3.0.5  # 一个消息弹窗库
   cached_network_image: ^3.4.1  # 一个图片缓存库
   dart_mock: ^2.0.1  # app端 假数据mock工具
+  flutter_launcher_icons: ^0.14.4  # app图标自动制作
+  flutter_native_splash: ^2.4.6 # 启动图片控制工具
 
   
   
@@ -49,7 +51,6 @@ dependencies:
   audio_session: ^0.1.18
   flutter_pcm_player: ^0.0.1
   record: ^5.2.1
-  flutter_launcher_icons: ^0.14.3
   flutter_displaymode: ^0.6.0
   flutter_staggered_grid_view: ^0.7.0
   flutter_slidable: ^4.0.0
@@ -66,26 +67,39 @@ dev_dependencies:  # 额外的开发依赖，仅仅在开发阶段用，正式�
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+flutter_native_splash:
+  # 启动背景色（可选）
+  color: "#FFFFFF"
+
+  # 启动图片（关键！）
+  image: "assets/icon/pixnio.png"
+  android_gravity: fill
+
+
+  # Android 设置
+  android_12:
+    image: "assets/icon/pixnio.png"
+    color: "#FFFFFF"
+
+  # iOS 设置,这个需要再xcode中进行简单的设置
+
 # 配置应用图标
 flutter_launcher_icons:
+  image_path: "assets/icon/pixnio.jpg"
   android: true
   ios: true
-  image_path: "robot_3.png"
+  adaptive_icon_foreground: "assets/icon/pixnio.jpg" # 透明背景，仅图标主体
   adaptive_icon_background: "#FFFFFF"
-  adaptive_icon_foreground: "robot_3.png"
   remove_alpha_ios: true
   web:
     generate: true
-    image_path: "robot_3.png"
     background_color: "#FFFFFF"
     theme_color: "#FFFFFF"
   windows:
     generate: true
-    image_path: "robot_3.png"
     icon_size: 48
   macos:
     generate: true
-    image_path: "robot_3.png"
 
 # The following section is specific to Flutter packages.
 flutter:
