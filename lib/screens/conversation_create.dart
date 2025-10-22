@@ -4,6 +4,7 @@ import 'package:get/get.dart';
 import 'package:flutter/services.dart'; // 需要导入这个包
 import 'package:image_picker/image_picker.dart';
 
+// 这是新建剧场group的页面
 class ConversationTypeCreate extends StatefulWidget {
   const ConversationTypeCreate({super.key});
 
@@ -12,12 +13,12 @@ class ConversationTypeCreate extends StatefulWidget {
 }
 
 class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
-  final createAgentControllerIns = Get.find<CreateAgentController>();
+  final createGroupControllerIns = Get.find<CreateGroupController>();
 
   @override
   void initState() {
     super.initState();
-    createAgentControllerIns.getDefaultAvatar();
+    createGroupControllerIns.getDefaultAvatar();
   }
 
   @override
@@ -110,7 +111,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentControllerIns.agentNameController,
+                controller: createGroupControllerIns.agentNameController,
                 decoration: InputDecoration(
                   hintText: '请输入名字',
                   border: OutlineInputBorder(),
@@ -123,7 +124,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentControllerIns.ageController,
+                controller: createGroupControllerIns.ageController,
                 keyboardType: TextInputType.number, // 只显示数字键盘
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly, // 只允许数字
@@ -142,7 +143,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentControllerIns.birthdayController,
+                controller: createGroupControllerIns.birthdayController,
                 keyboardType: TextInputType.number,
                 decoration: InputDecoration(
                   hintText: '请输入生日',
@@ -157,7 +158,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
               ),
               Obx(
                 () => DropdownButtonFormField<String>(
-                  value: createAgentControllerIns.sex.value,
+                  value: createGroupControllerIns.sex.value,
                   decoration: InputDecoration(
                     border: OutlineInputBorder(),
                     // 可选：添加 label 或 hint
@@ -169,7 +170,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                   ],
                   onChanged: (String? newValue) {
                     if (newValue != null) {
-                      createAgentControllerIns.onSexChanged(
+                      createGroupControllerIns.onSexChanged(
                         newValue,
                       ); //更新sex 并自动更新 voices
                     }
@@ -191,10 +192,10 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
               ),
               Obx(
                 () => DropdownButtonFormField<String>(
-                  value: createAgentControllerIns.voices.value,
+                  value: createGroupControllerIns.voices.value,
                   decoration: InputDecoration(border: OutlineInputBorder()),
                   items:
-                      createAgentControllerIns.availableVoices
+                      createGroupControllerIns.availableVoices
                           .map(
                             (voice) => DropdownMenuItem<String>(
                               value: voice['value'],
@@ -204,7 +205,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                           .toList(),
                   onChanged: (String? newValue) {
                     if (newValue != null) {
-                      createAgentControllerIns.voices.value =
+                      createGroupControllerIns.voices.value =
                           newValue; // ✅ 同步到 controller
                     }
                   },
@@ -223,7 +224,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentControllerIns.characterSettingController,
+                controller: createGroupControllerIns.characterSettingController,
                 decoration: InputDecoration(
                   hintText: '请输入角色介绍',
                   border: OutlineInputBorder(),
@@ -258,9 +259,9 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
       ),
       child: ElevatedButton(
         onPressed:
-            createAgentControllerIns.isLoading.value
+            createGroupControllerIns.isLoading.value
                 ? null // 加载中禁用点击
-                : () => createAgentControllerIns.create_agent(), // 点击 创建角色按钮
+                : () => createGroupControllerIns.create_agent(), // 点击 创建角色按钮
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: Colors.black,
@@ -303,7 +304,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 border: Border.all(color: Colors.grey.shade300, width: 1),
               ),
               child:
-                  createAgentControllerIns.avatarFile.value == null
+                  createGroupControllerIns.avatarFile.value == null
                       ? Stack(
                         children: [
                           Container(
@@ -325,7 +326,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                         children: [
                           ClipOval(
                             child: Image.file(
-                              createAgentControllerIns.avatarFile.value!,
+                              createGroupControllerIns.avatarFile.value!,
                               fit: BoxFit.cover,
                               width: 80,
                               height: 80,
@@ -353,7 +354,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 title: const Text('从相册选择'),
                 onTap: () {
                   Navigator.pop(context);
-                  createAgentControllerIns.pickImage(ImageSource.gallery);
+                  createGroupControllerIns.pickImage(ImageSource.gallery);
                 },
               ),
               ListTile(
@@ -361,13 +362,13 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
                 title: const Text('拍照'),
                 onTap: () {
                   Navigator.pop(context);
-                  createAgentControllerIns.pickImage(ImageSource.camera);
+                  createGroupControllerIns.pickImage(ImageSource.camera);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.cancel),
                 title: const Text('随机AI生成'),
-                onTap: () => createAgentControllerIns.getDefaultAvatar(),
+                onTap: () => createGroupControllerIns.getDefaultAvatar(),
               ),
               ListTile(
                 leading: const Icon(Icons.cancel),

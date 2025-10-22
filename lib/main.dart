@@ -123,7 +123,7 @@ void main() async {
   Get.lazyPut(() => UserController(), fenix: true);
   //LoginController中有页面操作，必须延迟初始化
   Get.put(LoginController());
-  Get.lazyPut(() => CreateAgentController(), fenix: true);
+  Get.lazyPut(() => CreateGroupController(), fenix: true);
   Get.lazyPut(() => CheckProfileController(), fenix: true);
 
   /*

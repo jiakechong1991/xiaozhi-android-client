@@ -9,7 +9,8 @@ import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 
-class CreateAgentController extends GetxController {
+// 用于创建剧场group  CreateGroupController
+class CreateGroupController extends GetxController {
   final ApiService _api = Get.find<ApiService>();
 
   final isLoading = false.obs; // 用于显示 loading
@@ -142,9 +143,7 @@ class CreateAgentController extends GetxController {
       final conversation = await conversationControllerIns.createConversation(
         title: '与 ${agentName} 的对话',
         agentId: agentId!,
-        type: ConversationType.xiaozhi,
-        configId: xiaozhiConfigs.first.id, // 默认使用第一个小智server
-        avatarImgUrl: avatarImgUrl,
+        avatar: avatarImgUrl,
       );
       // 带参数跳转到聊天列表界面
       Get.offAndToNamed('/agent/chatlist', arguments: conversation);

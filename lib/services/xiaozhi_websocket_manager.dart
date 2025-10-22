@@ -32,6 +32,7 @@ class XiaozhiWebSocketManager {
   String? _agentID;
   String? _agentName;
   String? _deviceId;
+  String? _groupID;
 
   String? _accessToken;
   bool _enableToken;
@@ -43,12 +44,14 @@ class XiaozhiWebSocketManager {
 
   /// 构造函数
   XiaozhiWebSocketManager({
+    required String groupID,
     required String deviceId,
     required String userName,
     required String agentID,
     required String agentName,
     bool enableToken = false,
   }) : _deviceId = deviceId,
+       _groupID = groupID,
        _userName = userName,
        _agentID = agentID,
        _agentName = agentName,
@@ -110,12 +113,10 @@ class XiaozhiWebSocketManager {
         // 创建headers
         Map<String, dynamic> headers = {
           'device-id': _deviceId ?? '',
-          'client-id': _deviceId ?? '',
+          'group-id': _groupID,
           'protocol-version': '1',
-          // 'user-id': _userId ?? '',
           'user-name': _userName ?? '',
           'agent-id': _agentID ?? '',
-          // 'agent-name': _agentName ?? '',
         };
 
         // 添加Authorization头，参考Java实现

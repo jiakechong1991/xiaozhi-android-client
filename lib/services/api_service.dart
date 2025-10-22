@@ -359,6 +359,16 @@ class ApiService {
     }
   }
 
+  // 👇 获取用户的剧场group列表
+  Future<List<dynamic>> getGroupList() async {
+    final response = await _dio.get('/api/groups/');
+    if (response.statusCode == 200) {
+      return response.data as List<dynamic>? ?? [];
+    } else {
+      throw Exception('获取agent列表信息失败');
+    }
+  }
+
   // 👇 获取 指定agent的最近N条消息的列表
   Future<List<dynamic>> getMessageList(String agentId, int limit) async {
     final response = await _dio.get(

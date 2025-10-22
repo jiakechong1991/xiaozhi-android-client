@@ -16,9 +16,9 @@ import 'dart:async';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 
 class ChatScreen extends StatefulWidget {
-  final Conversation conversation; //  agent_conversation,代表一个agent的对话
+  final GroupConversation groupConversation; //  agent_conversation,代表一个agent的对话
 
-  const ChatScreen({super.key, required this.conversation});
+  const ChatScreen({super.key, required this.groupConversation});
 
   @override
   State<ChatScreen> createState() => _ChatScreenState();
@@ -81,11 +81,11 @@ class _ChatScreenState extends State<ChatScreen> {
 
       // 编辑该会话ID已读
       conversationControllerIns.markConversationAsRead(
-        widget.conversation.agentId,
+        widget.groupConversation.groupId,
       );
 
       // 如果是小智对话，初始化服务
-      if (widget.conversation.type == ConversationType.xiaozhi) {
+      if (true) {
         _initXiaozhiService();
         // 添加定时器，定期检查连接状态
         // 调用方法是： Timer.periodic(Duration interval, void Function(Timer) callback)
@@ -174,25 +174,24 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // 初始化小智服务
   Future<void> _initXiaozhiService() async {
-    print('agentName from conversation: ${widget.conversation.agentName}');
-    print('userName from conversation: ${widget.conversation.userName}');
-    print('agentId from conversation: ${widget.conversation.agentId}');
+    // print('agentName from conversation: ${widget.groupConversation.agentName}');
+    // print('userName from conversation: ${widget.groupConversation.userName}');
+    // print('agentId from conversation: ${widget.groupConversation.agentId}');
 
     print(
       '可用的 xiaozhi_server configs: ${configControllerIns.xiaozhiConfigs.map((c) => c.id)}',
     );
-    final xiaozhiConfig = configControllerIns.xiaozhiConfigs.firstWhere(
-      (config) => config.id == widget.conversation.configId,
-    );
+    final xiaozhiConfig = configControllerIns.xiaozhiConfigs[0];
 
     // 创建一个XiaozhiService实例
     _xiaozhiService = XiaozhiService(
+      groupID: ,
       websocketUrl: xiaozhiConfig.websocketUrl,
       macAddress: xiaozhiConfig.macAddress,
-      userName: widget.conversation.userName,
-      agentID: widget.conversation.agentId,
-      agentName: widget.conversation.agentName,
-      accessToken: "",
+      userName: widget.groupConversation.userName,
+      agentID: widget.groupConversation.groupId,
+      agentName: widget.groupConversation.createHumanAgentName,
+      accessToken: "kkkkhahah",
     );
 
     // 添加消息监听器 ---> 通知展示层，有消息来了
@@ -219,7 +218,7 @@ class _ChatScreenState extends State<ChatScreen> {
       // 忽略空消息
       if (content.isNotEmpty) {
         conversationControllerIns.addMessage(
-          conversationId: widget.conversation.agentId,
+          conversationId: widget.groupConversation.groupId,
           role: MessageRole.assistant,
           content: content,
         );
@@ -234,7 +233,7 @@ class _ChatScreenState extends State<ChatScreen> {
         // 语音消息可能有延迟，使用Future.microtask确保UI已更新
         Future.microtask(() {
           conversationControllerIns.addMessage(
-            conversationId: widget.conversation.agentId,
+            conversationId: widget.groupConversation.groupId,
             role: MessageRole.user,
             content: content,
           );
@@ -332,7 +331,7 @@ class _ChatScreenState extends State<ChatScreen> {
               child: CircleAvatar(
                 radius: 20,
                 backgroundColor: Colors.grey.shade700,
-                child: WcaoUtils.imageCache(widget.conversation.avatorImgUrl),
+                child: WcaoUtils.imageCache(widget.groupConversation.avator),
               ),
             ),
             const SizedBox(width: 12),
@@ -340,7 +339,7 @@ class _ChatScreenState extends State<ChatScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  widget.conversation.agentName, // 与xx的对话
+                  widget.groupConversation.title, // 与xx的对话
                   style: const TextStyle(
                     color: Colors.black,
                     fontWeight: FontWeight.bold,
@@ -383,17 +382,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // 构建小智 连接信息 区域
   Widget _buildXiaozhiInfo() {
-    final xiaozhiConfig = configControllerIns.xiaozhiConfigs.firstWhere(
-      (config) => config.id == widget.conversation.configId,
-      orElse:
-          () => XiaozhiConfig(
-            id: '',
-            name: '未知服务',
-            websocketUrl: '',
-            macAddress: '',
-            token: '',
-          ),
-    );
+    final xiaozhiConfig = configControllerIns.xiaozhiConfigs[0];
 
     final bool isConnected = _xiaozhiService?.isConnected ?? false;
 
@@ -512,7 +501,7 @@ class _ChatScreenState extends State<ChatScreen> {
     return Obx(() {
       // 获得该agent的所有消息
       final messages = conversationControllerIns.getMessages(
-        widget.conversation.agentId,
+        widget.groupConversation.groupId,
       );
 
       if (messages.isEmpty) {
@@ -545,8 +534,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 timestamp: DateTime.now(),
               ),
               isThinking: true,
-              conversationType: widget.conversation.type,
-              avatarImgUrl: widget.conversation.avatorImgUrl,
+              avatarImgUrl: widget.groupConversation.avator,
             );
           }
 
@@ -561,8 +549,7 @@ class _ChatScreenState extends State<ChatScreen> {
                 message.messageId,
               ), //从message.id初始化一个key，作为 listView比较多个item的id_key
               message: message,
-              conversationType: widget.conversation.type,
-              avatarImgUrl: widget.conversation.avatorImgUrl,
+              avatarImgUrl: widget.groupConversation.avator,
             ),
           );
         },
@@ -574,8 +561,7 @@ class _ChatScreenState extends State<ChatScreen> {
     final bool hasText = _textController.text.trim().isNotEmpty;
 
     // 根据状态决定显示文本输入还是语音输入
-    if (_isVoiceInputMode &&
-        widget.conversation.type == ConversationType.xiaozhi) {
+    if (_isVoiceInputMode) {
       return _buildVoiceInputArea();
     } else {
       return _buildTextInputArea(hasText);
@@ -656,8 +642,7 @@ class _ChatScreenState extends State<ChatScreen> {
                   ),
                 ),
                 _buildSendButton(hasText),
-                if (widget.conversation.type == ConversationType.xiaozhi &&
-                    !hasText)
+                if (!hasText)
                   IconButton(
                     icon: const Icon(
                       Icons.mic,
@@ -880,14 +865,14 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // 开始录音
   void _startRecording() async {
-    if (widget.conversation.type != ConversationType.xiaozhi ||
-        _xiaozhiService == null) {
-      _showCustomSnackbar('语音功能仅适用于小智对话');
-      setState(() {
-        _isVoiceInputMode = false;
-      });
-      return;
-    }
+    // if (widget.conversation.type != ConversationType.xiaozhi ||
+    //     _xiaozhiService == null) {
+    //   _showCustomSnackbar('语音功能仅适用于小智对话');
+    //   setState(() {
+    //     _isVoiceInputMode = false;
+    //   });
+    //   return;
+    // }
 
     try {
       // 震动反馈
@@ -993,7 +978,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // Add user message
     await conversationControllerIns.addMessage(
-      conversationId: widget.conversation.agentId,
+      conversationId: widget.groupConversation.groupId,
       role: MessageRole.user,
       content: message,
     );
@@ -1033,7 +1018,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
       // Add error message
       await conversationControllerIns.addMessage(
-        conversationId: widget.conversation.agentId,
+        conversationId: widget.groupConversation.groupId,
         role: MessageRole.assistant,
         content: '发生错误: ${e.toString()}',
       );
@@ -1061,9 +1046,7 @@ class _ChatScreenState extends State<ChatScreen> {
   }
 
   void _navigateToVoiceCall() {
-    final xiaozhiConfig = configControllerIns.xiaozhiConfigs.firstWhere(
-      (config) => config.id == widget.conversation.configId,
-    );
+    final xiaozhiConfig = configControllerIns.xiaozhiConfigs[0];
 
     // 导航前停止当前音频播放
     if (_xiaozhiService != null) {
@@ -1075,14 +1058,13 @@ class _ChatScreenState extends State<ChatScreen> {
       MaterialPageRoute(
         builder:
             (context) => VoiceCallScreen(
-              conversation: widget.conversation,
+              conversation: widget.groupConversation,
               xiaozhiConfig: xiaozhiConfig,
             ),
       ),
     ).then((_) {
       // 页面返回后，确保重新初始化服务以恢复正常对话功能
-      if (_xiaozhiService != null &&
-          widget.conversation.type == ConversationType.xiaozhi) {
+      if (_xiaozhiService != null) {
         // 重新连接服务
         _xiaozhiService!.connect();
       }
