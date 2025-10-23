@@ -2,7 +2,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/services/api_service.dart';
-import 'package:ai_assistant/controllers/conversation_controller.dart';
+import 'package:ai_assistant/controllers/group_list_controller.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -14,7 +14,7 @@ class CreateGroupController extends GetxController {
 
   final isLoading = false.obs; // 用于显示 loading
   final errorMessage = ''.obs; // 用于显示错误信息
-  final conversationControllerIns = Get.find<GroupChatController>();
+  final conversationControllerIns = Get.find<GroupChatListController>();
   final configControllerINs = Get.find<ConfigController>();
   final wcaoUtilsIns = Get.find<WcaoUtils>();
 

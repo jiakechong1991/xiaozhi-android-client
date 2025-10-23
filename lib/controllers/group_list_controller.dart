@@ -9,7 +9,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:ai_assistant/services/api_service.dart';
 
 // 这个对应 聊天页 的 剧场group列表，[每个group是一个对话项]
-class GroupChatController extends GetxController {
+class GroupChatListController extends GetxController {
   // 聊天页面的 剧场group的列表(类似聊天群组列表)
   final _groupChatList =
       <GroupChat>[].obs; // [conversation1, conversation2, ...]
@@ -30,7 +30,7 @@ class GroupChatController extends GetxController {
     return unpinned_;
   }
 
-  GroupChatController() {
+  GroupChatListController() {
     print("---调用ConversationController的构造函数了---");
     _loadConversations();
   }

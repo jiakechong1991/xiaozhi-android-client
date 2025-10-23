@@ -5,14 +5,14 @@ import 'package:flutter/services.dart'; // 需要导入这个包
 import 'package:image_picker/image_picker.dart';
 
 // 这是新建剧场group的页面
-class ConversationTypeCreate extends StatefulWidget {
-  const ConversationTypeCreate({super.key});
+class GroupChatTypeCreate extends StatefulWidget {
+  const GroupChatTypeCreate({super.key});
 
   @override
-  State<ConversationTypeCreate> createState() => _ConversationTypeCreateState();
+  State<GroupChatTypeCreate> createState() => _ConversationTypeCreateState();
 }
 
-class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
+class _ConversationTypeCreateState extends State<GroupChatTypeCreate> {
   final createGroupControllerIns = Get.find<CreateGroupController>();
 
   @override
@@ -28,7 +28,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
 
   @override
   Widget build(BuildContext context) {
-    print("新建角色了，进入build页面");
+    print("新建groupChat了，进入build页面");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -41,7 +41,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
-          '新建角色',
+          '新建剧场',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -87,19 +87,6 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(20),
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       const Text(
-          //         '请填写角色基本信息',
-          //         style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          //       ),
-          //       const SizedBox(height: 6),
-          //     ],
-          //   ),
-          // ),
           _buildAvatarSection(),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           const SizedBox(height: 16),
@@ -107,13 +94,13 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                '名字：',
+                '名称:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
                 controller: createGroupControllerIns.agentNameController,
                 decoration: InputDecoration(
-                  hintText: '请输入名字',
+                  hintText: '请输入房间名称',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -226,7 +213,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
               TextField(
                 controller: createGroupControllerIns.characterSettingController,
                 decoration: InputDecoration(
-                  hintText: '请输入角色介绍',
+                  hintText: '请输入剧场介绍',
                   border: OutlineInputBorder(),
                 ),
               ),
@@ -274,7 +261,7 @@ class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
           shadowColor: Colors.black.withOpacity(0.3),
         ),
         child: const Text(
-          '创建角色a',
+          '创建剧场',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ),

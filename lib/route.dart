@@ -3,6 +3,7 @@ import 'package:ai_assistant/screens/home_screen.dart';
 import 'package:ai_assistant/screens/login/login_password.dart';
 import 'package:ai_assistant/screens/login/register.dart';
 import 'package:ai_assistant/screens/conversation_create.dart';
+import 'package:ai_assistant/screens/group_create.dart';
 import 'package:ai_assistant/models/conversation.dart';
 
 import 'package:ai_assistant/screens/agreement/privacy.dart';
@@ -59,7 +60,9 @@ List<GetPage<dynamic>> getRoutes = [
   GetPage(name: '/agreement/user', page: () => const AgreementUser()),
   GetPage(name: '/agreement/privacy', page: () => const AgreementPrivacy()),
 
-  // 聊天相关
+  // groupChat路由
+  // 创建gourpChat群聊
+  GetPage(name: '/group/create', page: () => const GroupChatTypeCreate()),
   // 创建agent
   GetPage(name: '/agent/create', page: () => const ConversationTypeCreate()),
   GetPage(

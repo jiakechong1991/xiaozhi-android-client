@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:timeago/timeago.dart' as timeago;
 import 'package:ai_assistant/controllers/theme_controller.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
-import 'package:ai_assistant/controllers/conversation_controller.dart';
+import 'package:ai_assistant/controllers/group_list_controller.dart';
 import 'package:ai_assistant/utils/app_theme.dart';
 import 'package:ai_assistant/route.dart';
 import 'package:ai_assistant/state/token.dart';
@@ -18,8 +18,8 @@ import 'package:flutter_displaymode/flutter_displaymode.dart';
 import 'package:get/get.dart';
 import 'package:ai_assistant/controllers/login_controller.dart';
 import 'package:ai_assistant/controllers/user_controller.dart';
-import 'package:ai_assistant/controllers/agent_create_controller.dart';
 import 'package:ai_assistant/controllers/register_controller.dart';
+import 'package:ai_assistant/controllers/group_create_controller.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ai_assistant/controllers/check_profile_controller.dart';
@@ -119,7 +119,7 @@ void main() async {
   Get.put(ThemeController());
 
   Get.lazyPut(() => RegisterController(), fenix: true);
-  Get.lazyPut(() => GroupChatController(), fenix: true);
+  Get.lazyPut(() => GroupChatListController(), fenix: true);
   Get.lazyPut(() => UserController(), fenix: true);
   //LoginController中有页面操作，必须延迟初始化
   Get.put(LoginController());
