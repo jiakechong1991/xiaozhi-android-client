@@ -197,6 +197,9 @@ class GroupChatListController extends GetxController {
   }
 
   Future<GroupChat> createGroupChat({
+    required String userId,
+    required String userName,
+    required String groupId,
     required String createHumanAgentId, // 创建group的agent-human ID
     required String createHumanAgentName,
     required String title, // 创建group的标题
@@ -207,19 +210,10 @@ class GroupChatListController extends GetxController {
   }) async {
     final uuid = const Uuid();
 
-    // 这里请求服务器，创建剧组groupChat，然后从返回中获得groupId
-    final resJson_ = await _api.createGroup(
-      createHumanAgentId = createHumanAgentId,
-      groupAgents = groupAgents,
-      title = title,
-      settingContent = settingContent,
-      avator = avator,
-      backdrop = backdrop,
-    );
     final newConversation = GroupChat(
-      userId: resJson_["user_id"],
-      userName: resJson_["user_name"],
-      groupId: resJson_["groupId"],
+      userId: userId,
+      userName: userName,
+      groupId: groupId,
       createHumanAgentId: createHumanAgentId,
       createHumanAgentName: createHumanAgentName,
       title: title,

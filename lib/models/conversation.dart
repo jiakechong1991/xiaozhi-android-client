@@ -1,4 +1,4 @@
-// enum ConversationType { dify, xiaozhi }
+enum AgentType { human, ai, npc }
 
 // 剧场Group 对应的数据结构
 class GroupChat {
@@ -78,29 +78,102 @@ class GroupChat {
     };
   }
 
-  GroupChat copyWith({
-    String? title,
-    DateTime? latestActiveAt,
-    String? latestMsgContent,
-    int? unreadCount,
-    bool? isPinned,
-    String? avatar,
-  }) {
+  // 其实就是复制一个GroupChat，主要用于设置是否置顶
+  GroupChat copyWith({bool? isPinned}) {
     return GroupChat(
       userId: userId,
       userName: userName,
       groupId: groupId,
       createHumanAgentId: createHumanAgentId,
       createHumanAgentName: createHumanAgentName,
-      title: title ?? this.title,
+      title: title,
       settingContent: settingContent,
       groupAgents: groupAgents,
-      latestActiveAt: latestActiveAt ?? this.latestActiveAt,
-      latestMsgContent: latestMsgContent ?? this.latestMsgContent,
-      unreadCount: unreadCount ?? this.unreadCount,
+      latestActiveAt: latestActiveAt,
+      latestMsgContent: latestMsgContent,
+      unreadCount: unreadCount,
       isPinned: isPinned ?? this.isPinned,
-      avator: avatar ?? avator,
+      avator: avator,
       backdrop: backdrop,
+    );
+  }
+}
+
+// AgentRole演员 对应的数据结构
+class AgentRole {
+  final String agentId; // agent的ID
+  final String agentName; // 创建的agent的Name
+  final AgentType agentType; // agent的类型
+  final bool isDefault; // 是否是默认角色
+  final String avator; // 演员头像图片
+  final String sex; // 性别
+  final String voices; // 声音类型
+  final String birthday; // 生日
+  final int age; // 年龄
+  final bool isPinned; // 是否置顶
+  final String characterSetting; // 演员设定
+
+  AgentRole({
+    // 构造函数
+    required this.agentId,
+    required this.agentName,
+    required this.agentType,
+    required this.isDefault,
+    required this.avator,
+    required this.sex,
+    required this.voices,
+    required this.birthday,
+    required this.age,
+    this.isPinned = false,
+    required this.characterSetting,
+  });
+
+  // 创建GroupChat
+  factory AgentRole.fromJson(Map<String, dynamic> json) {
+    return AgentRole(
+      agentId: json['agentId'],
+      agentName: json['agentName'],
+      agentType: json['agentType'],
+      isDefault: json['isDefault'],
+      avator: json["avator"],
+      sex: json["sex"],
+      voices: json["voices"],
+      birthday: json["birthday"],
+      age: json["age"],
+      isPinned: json['isPinned'] ?? false,
+      characterSetting: json["characterSetting"],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'agentId': agentId,
+      'agentName': agentName,
+      'agentType': agentType,
+      'isDefault': isDefault,
+      'avator': avator,
+      'sex': sex,
+      'voices': voices,
+      'birthday': birthday,
+      'age': age,
+      'isPinned': isPinned,
+      'characterSetting': characterSetting,
+    };
+  }
+
+  AgentRole copyWith({bool? isPinned}) {
+    return AgentRole(
+      agentId: agentId,
+      agentName: agentName,
+      agentType: agentType,
+      isDefault: isDefault,
+      avator: avator,
+      sex: sex,
+      voices: voices,
+      birthday: birthday,
+      age: age,
+      characterSetting: characterSetting,
+      isPinned: isPinned ?? this.isPinned,
     );
   }
 }

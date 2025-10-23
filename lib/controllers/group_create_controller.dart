@@ -116,7 +116,7 @@ class CreateGroupController extends GetxController {
     errorMessage.value = '';
 
     try {
-      final responseData = await _api.createAgent(
+      final resData = await _api.createGroup(
         agentNameController.text,
         sex.value,
         birthdayController.text,
@@ -126,28 +126,19 @@ class CreateGroupController extends GetxController {
         avatarFile.value, // 👈 新增
       );
       print("创建agent成功,要返回聊天界面了， 这里先用log代替");
-      //回到 聊天界面
-      String? agentId = responseData['id']?.toString();
-      String agentName = responseData['agent_name'];
-      String avatarImgUrl = _api.getFullUrl(responseData["avatar"]);
-
-      final xiaozhiConfigs = configControllerINs.xiaozhiConfigs;
-
-      print('=== 调试：创建 Agent 的入参 ===');
-      print('✅ agentName: "${agentName}"');
-      print('✅ agentId: "${agentId}"');
-      print('✅ sex: ${xiaozhiConfigs.first.id!}');
-      print('=================================');
 
       // 这是要完善的地方
       final conversation = await conversationControllerIns.createGroupChat(
-        createHumanAgentId: agentId!,
-        createHumanAgentName: agentName,
-        title: '与 ${agentName} 的对话',
-        settingContent: "",
-        groupAgents: [],
-        avator: avatarImgUrl,
-        backdrop: avatarImgUrl,
+        userId: resData["user_id"],
+        userName: resData["user_name"],
+        groupId: resData["group_id"],
+        createHumanAgentId: resData["create_human_agent_id"],
+        createHumanAgentName: resData["create_human_agent_name"],
+        title: resData["title"],
+        settingContent: resData["setting_content"],
+        groupAgents: resData["group_agents"],
+        avator: _api.getFullUrl(resData["avatar"]),
+        backdrop: _api.getFullUrl(resData["backdrop"]),
       );
       // 带参数跳转到聊天列表界面
       Get.offAndToNamed('/agent/chatlist', arguments: conversation);

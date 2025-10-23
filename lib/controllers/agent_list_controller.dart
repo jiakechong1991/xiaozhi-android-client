@@ -8,52 +8,50 @@ import 'package:ai_assistant/models/message.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:ai_assistant/services/api_service.dart';
 
-// 这个对应 聊天页 的 剧场group列表，[每个group是一个对话项]
+// 这个对应 角色列表 的 角色列表，[每个AgentRole是一个角色]
 class AgentListController extends GetxController {
   // 聊天页面的 剧场group的列表(类似聊天群组列表)
-  final _groupChatList =
-      <GroupChat>[].obs; // [conversation1, conversation2, ...]
+  final _agentList = <AgentRole>[].obs; // [conversation1, conversation2, ...]
   final _messages =
       <String, List<Message>>{}.obs; // {groupId:[message1, message2, ...]}
   final ApiService _api = Get.find<ApiService>();
 
   ///封装的快捷方法
-  List<GroupChat> get groupConversations => _groupChatList;
+  List<AgentRole> get agentList => _agentList;
   // 置顶的剧场group会话
-  List<GroupChat> get pinnedGroupConversations =>
-      _groupChatList.where((conv) => conv.isPinned).toList();
+  List<AgentRole> get pinnedAgentList =>
+      _agentList.where((conv) => conv.isPinned).toList();
   // 非置顶的剧场group会话
-  List<GroupChat> get unpinnedGroupConversations {
-    final unpinned_ = _groupChatList.where((conv) => !conv.isPinned).toList();
-    // 按 lastMessageTime 倒序排序：最新消息在前
-    unpinned_.sort((a, b) => b.latestActiveAt.compareTo(a.latestActiveAt));
+  List<AgentRole> get unpinnedAgentList {
+    final unpinned_ = _agentList.where((conv) => !conv.isPinned).toList();
+    // TODO: 按照agent演员姓名排序
+    unpinned_.sort((a, b) => b.agentName.compareTo(a.agentName));
     return unpinned_;
   }
 
-  GroupChatController() {
-    print("---调用ConversationController的构造函数了---");
-    _loadConversations();
+  AgentListController() {
+    print("---调用AgentListController的构造函数了---");
+    _loadAgentList();
   }
 
-  Future<void> _loadConversations() async {
+  Future<void> _loadAgentList() async {
     bool hasReadServer = false;
     final prefs = await SharedPreferences.getInstance();
-    // Load 多agent的对话列表
+    // Load 加载agent演员列表
     // Step 1: 尝试从本地加载会话列表
-    final groupConversationsJson =
-        prefs.getStringList('groupConversations') ?? [];
+    final agentListJson = prefs.getStringList('agent_list') ?? [];
     print("--------77777755555------------111----");
-    print(groupConversationsJson);
-    if (true || groupConversationsJson.isEmpty) {
+    print(agentListJson);
+    if (true || agentListJson.isEmpty) {
       // 本地无会话，从服务器获取 agent 列表
       try {
-        final groups_ = await _api.getGroupList();
+        final agentListFromServer_ = await _api.getAgentList();
         print("从服务器拉去的剧场groups列表");
-        print(groups_);
-        _groupChatList.value =
-            groups_.map((itemGroup) {
+        print(agentListFromServer_);
+        _agentList.value =
+            agentListFromServer_.map((itemGroup) {
               final defaultTimeStr = '1970-09-25T10:10:10+08:00';
-              return GroupChat(
+              return AgentRole(
                 userId: itemGroup["user_id"],
                 userName: itemGroup["user_name"],
                 groupId: itemGroup['group_id'],
@@ -78,125 +76,30 @@ class AgentListController extends GetxController {
       }
     } else {
       // 本地有数据，正常解析
-      _groupChatList.value =
-          groupConversationsJson
-              .map((json) => GroupChat.fromJson(jsonDecode(json)))
+      _agentList.value =
+          agentListJson
+              .map((json) => AgentRole.fromJson(jsonDecode(json)))
               .toList();
     }
-
-    // Load messages for each 剧场group
-    // Step 2: 为每个会话加载消息（本地优先，缺失则从服务器拉取）
-    for (final itemGroupConversation in _groupChatList) {
-      // 从
-      final messagesByGroupId =
-          prefs.getStringList('messages_${itemGroupConversation.groupId}') ??
-          [];
-
-      print("--------77777755555------------222----");
-      print(messagesByGroupId);
-      if (true || messagesByGroupId.isEmpty) {
-        // 本地无消息，尝试从服务器拉取该group的最近 20 条
-        try {
-          final messagesData = await _api.getMessageList(
-            itemGroupConversation.groupId,
-            20,
-          );
-          final remoteMessages =
-              messagesData.map((itemMsgJson) {
-                final msgID_ = (itemMsgJson["msg_id"] as dynamic).toString();
-                final agentID_ =
-                    (itemMsgJson["agent_id"] as dynamic).toString();
-                // msg发送者和创建group的ID一致，则 role就是user角色
-                final role_ =
-                    (itemMsgJson["sender_id"] ==
-                            itemGroupConversation.createHumanAgentId)
-                        ? MessageRole.user
-                        : MessageRole.assistant;
-                final content_ = itemMsgJson["msg_content"] as String;
-                return Message(
-                  messageId: msgID_,
-                  conversationId: agentID_,
-                  role: role_,
-                  content: content_,
-                  timestamp: DateTime.parse(
-                    itemMsgJson["updated_at"] as String,
-                  ),
-                  isRead: true,
-                );
-              }).toList();
-
-          _messages[itemGroupConversation.groupId] = remoteMessages;
-          hasReadServer = true;
-        } catch (e, stackTrace) {
-          print('从服务器加载消息失败 (agent: ${itemGroupConversation.groupId}): $e');
-          print('堆栈: $stackTrace');
-          _messages[itemGroupConversation.groupId] = [];
-        }
-      } else {
-        _messages[itemGroupConversation.groupId] =
-            messagesByGroupId.map((json) {
-              final decoded = jsonDecode(json);
-              return Message.fromJson(decoded);
-            }).toList();
-      }
-
-      ////后续流程
-      try {
-        // 打印图片消息的信息
-        for (final message in _messages[itemGroupConversation.groupId] ?? []) {
-          if (message.isImage) {
-            // 检查图片文件是否存在
-            if (message.imageLocalPath != null) {
-              final imageFile = File(message.imageLocalPath!);
-              final exists = await imageFile.exists();
-            }
-          }
-        }
-
-        // 确保每个会话的图片目录存在
-        final appDir = await getApplicationDocumentsDirectory();
-        final conversationDir = Directory(
-          '${appDir.path}/conversations/${itemGroupConversation.groupId}/images',
-        );
-        if (!await conversationDir.exists()) {
-          await conversationDir.create(recursive: true);
-        }
-      } catch (e, stackTrace) {
-        print('加载会话 ${itemGroupConversation.groupId} 的消息时出错: $e');
-        print('堆栈跟踪: $stackTrace');
-        // 如果某个会话的消息加载失败，继续加载其他会话
-        _messages[itemGroupConversation.groupId] = [];
-      }
-    }
     // 如果请求了server，最后就要保存一下对话信息，避免下次继续为空
-    // if (hasReadServer) await _saveConversations();
+    // if (hasReadServer) await _saveAgentList();
   }
 
-  Future<void> _saveConversations() async {
+  Future<void> _saveAgentList() async {
     final prefs = await SharedPreferences.getInstance();
 
     // Save conversations
-    final groupConversationsJson =
-        _groupChatList
+    final agentRoleListJson =
+        _agentList
             .map(
               (itemGroupConversation) =>
                   jsonEncode(itemGroupConversation.toJson()),
             )
             .toList();
-    await prefs.setStringList('groupConversations', groupConversationsJson);
-
-    // Save messages for each conversation
-    for (final groupMsgEntry in _messages.entries) {
-      // agent_entry key 是agentId,value 是 [message1, message2, ...]
-      final messagesJson =
-          groupMsgEntry.value
-              .map((message) => jsonEncode(message.toJson()))
-              .toList();
-      await prefs.setStringList('messages_${groupMsgEntry.key}', messagesJson);
-    }
+    await prefs.setStringList('agent_list', agentRoleListJson);
   }
 
-  Future<GroupChat> createGroupChat({
+  Future<AgentRole> createAgentRole({
     required String createHumanAgentId, // 创建group的agent-human ID
     required String createHumanAgentName,
     required String title, // 创建group的标题
@@ -208,7 +111,7 @@ class AgentListController extends GetxController {
     final uuid = const Uuid();
 
     // 这里请求服务器，创建剧组groupChat，然后从返回中获得groupId
-    final resJson_ = await _api.createGroup(
+    final resJson_ = await _api.createAgent(
       createHumanAgentId = createHumanAgentId,
       groupAgents = groupAgents,
       title = title,
