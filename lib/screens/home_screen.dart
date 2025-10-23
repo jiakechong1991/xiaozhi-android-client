@@ -22,7 +22,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // 当前选中的底部导航栏索引
   final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
-  final conversationControllerIns = Get.find<ConversationController>();
+  final conversationControllerIns = Get.find<GroupChatController>();
 
   // 添加一个标记，防止重复跳转
   bool _hasCheckedProfile = false;
@@ -406,7 +406,9 @@ class _HomeScreenState extends State<HomeScreen> {
           // 这个列表是支持 条件判断的，动态确定显示哪些组件
 
           // 置顶对话的区域
-          if (conversationControllerIns.pinnedConversations.isNotEmpty) ...[
+          if (conversationControllerIns
+              .pinnedGroupConversations
+              .isNotEmpty) ...[
             // ... 将后面list的元素平铺到外层list中
             const Padding(
               padding: EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
@@ -429,18 +431,20 @@ class _HomeScreenState extends State<HomeScreen> {
             // 集合展开语法... ，将list中的元素逐个展开，添加到外层list中
             // 将pinnedConversations中的元素，逐个作为conversation，然后调用
             //    _buildConversationTile(conversation)方法，返回一个组件，然后添加到列表中
-            ...conversationControllerIns.pinnedConversations.map(
+            ...conversationControllerIns.pinnedGroupConversations.map(
               (conversation) => _buildConversationTile(conversation),
             ),
           ],
           // 非置顶对话的区域
-          if (conversationControllerIns.unpinnedConversations.isNotEmpty) ...[
+          if (conversationControllerIns
+              .unpinnedGroupConversations
+              .isNotEmpty) ...[
             Padding(
               padding: EdgeInsets.only(
                 left: 20,
                 right: 20,
                 top:
-                    conversationControllerIns.pinnedConversations.isEmpty
+                    conversationControllerIns.pinnedGroupConversations.isEmpty
                         ? 8
                         : 16,
                 bottom: 8,
@@ -461,13 +465,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            ...conversationControllerIns.unpinnedConversations.map(
+            ...conversationControllerIns.unpinnedGroupConversations.map(
               (conversation) => _buildConversationTile(conversation),
             ),
           ],
           // 如果为空，显示的区域
-          if (conversationControllerIns.pinnedConversations.isEmpty &&
-              conversationControllerIns.unpinnedConversations.isEmpty)
+          if (conversationControllerIns.pinnedGroupConversations.isEmpty &&
+              conversationControllerIns.unpinnedGroupConversations.isEmpty)
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(64.0),
@@ -556,14 +560,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildConversationTile(Conversation conversation) {
+  Widget _buildConversationTile(GroupChat conversation) {
     return SlidableDeleteTile(
       // 这是一个封装了 滑动删除功能的 组件
-      key: Key(conversation.agentId), // 为每个对话项设置唯一标识
+      key: Key(conversation.groupId), // 为每个对话项设置唯一标识
       // 滑动删除的回调函数
       onDelete: () {
         // 删除对话
-        conversationControllerIns.deleteConversation(conversation.agentId);
+        conversationControllerIns.deleteConversation(conversation.groupId);
 
         // 显示撤销消息
         // ScaffoldMessenger.of(context).clearSnackBars();
@@ -597,7 +601,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // 这是一个路由包装器，定义了 新页面，以及页面切换的过渡动画(提供符合 Material Design 风格的页面过渡动画)
           MaterialPageRoute(
             // builder 是一个函数，用于定义 新页面的内容()
-            builder: (context) => ChatScreen(conversation: conversation),
+            builder: (context) => ChatScreen(groupConversation: conversation),
           ),
         );
       },
@@ -614,7 +618,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  void _showConversationOptions(Conversation conversation) {
+  void _showConversationOptions(GroupChat conversation) {
     // showModalBottomSheet 是 Flutter 用于显示底部弹窗的[官方方法]，
     //    函数通过配置其参数和构建弹窗内容，实现了美观且交互友好的操作菜单
     showModalBottomSheet(
@@ -709,7 +713,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       ),
                       onTap: () {
                         conversationControllerIns.togglePinConversation(
-                          conversation.agentId,
+                          conversation.groupId,
                         );
                         Navigator.pop(context);
                       },
@@ -779,12 +783,12 @@ class _HomeScreenState extends State<HomeScreen> {
                         Navigator.pop(context);
                         //从数据源中移除该对话
                         conversationControllerIns.deleteConversation(
-                          conversation.agentId,
+                          conversation.groupId,
                         );
                         // 显示一个 SnackBar，告知用户对话已删除
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('${conversation.agentName} 已删除'),
+                            content: Text('${conversation.title} 已删除'),
                             backgroundColor: Colors.grey.shade800,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(

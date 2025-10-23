@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/services/api_service.dart';
 import 'package:ai_assistant/controllers/conversation_controller.dart';
-import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -15,7 +14,7 @@ class CreateGroupController extends GetxController {
 
   final isLoading = false.obs; // 用于显示 loading
   final errorMessage = ''.obs; // 用于显示错误信息
-  final conversationControllerIns = Get.find<ConversationController>();
+  final conversationControllerIns = Get.find<GroupChatController>();
   final configControllerINs = Get.find<ConfigController>();
   final wcaoUtilsIns = Get.find<WcaoUtils>();
 
@@ -140,10 +139,15 @@ class CreateGroupController extends GetxController {
       print('✅ sex: ${xiaozhiConfigs.first.id!}');
       print('=================================');
 
-      final conversation = await conversationControllerIns.createConversation(
+      // 这是要完善的地方
+      final conversation = await conversationControllerIns.createGroupChat(
+        createHumanAgentId: agentId!,
+        createHumanAgentName: agentName,
         title: '与 ${agentName} 的对话',
-        agentId: agentId!,
-        avatar: avatarImgUrl,
+        settingContent: "",
+        groupAgents: [],
+        avator: avatarImgUrl,
+        backdrop: avatarImgUrl,
       );
       // 带参数跳转到聊天列表界面
       Get.offAndToNamed('/agent/chatlist', arguments: conversation);

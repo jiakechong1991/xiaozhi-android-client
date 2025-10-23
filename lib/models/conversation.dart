@@ -1,7 +1,7 @@
 // enum ConversationType { dify, xiaozhi }
 
 // 剧场Group 对应的数据结构
-class GroupConversation {
+class GroupChat {
   final String userId;
   final String userName; // 所属账户
   final String groupId; // 剧场group_id
@@ -19,7 +19,7 @@ class GroupConversation {
   final String avator; // 头像图片
   final String backdrop; // 背景图片
 
-  GroupConversation({
+  GroupChat({
     // 构造函数
     required this.userId,
     required this.userName,
@@ -39,9 +39,9 @@ class GroupConversation {
     required this.backdrop,
   });
 
-  // 创建Conversation
-  factory GroupConversation.fromJson(Map<String, dynamic> json) {
-    return GroupConversation(
+  // 创建GroupChat
+  factory GroupChat.fromJson(Map<String, dynamic> json) {
+    return GroupChat(
       userId: json['userId'],
       userName: json['userName'],
       groupId: json["groupId"],
@@ -78,7 +78,7 @@ class GroupConversation {
     };
   }
 
-  GroupConversation copyWith({
+  GroupChat copyWith({
     String? title,
     DateTime? latestActiveAt,
     String? latestMsgContent,
@@ -86,7 +86,7 @@ class GroupConversation {
     bool? isPinned,
     String? avatar,
   }) {
-    return GroupConversation(
+    return GroupChat(
       userId: userId,
       userName: userName,
       groupId: groupId,

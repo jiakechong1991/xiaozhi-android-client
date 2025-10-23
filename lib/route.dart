@@ -66,8 +66,8 @@ List<GetPage<dynamic>> getRoutes = [
     name: '/agent/chatlist',
     page: () {
       // 从 Get.arguments 中获取参数
-      final conversation = Get.arguments as Conversation;
-      return ChatScreen(conversation: conversation);
+      final conversation = Get.arguments as GroupChat;
+      return ChatScreen(groupConversation: conversation);
     },
   ),
 ];

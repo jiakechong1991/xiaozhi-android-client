@@ -13,7 +13,7 @@ class UserController extends GetxController {
 
   final isLoading = false.obs; // 用于显示 loading
   final errorMessage = ''.obs; // 用于显示错误信息
-  final conversationControllerIns = Get.find<ConversationController>();
+  final conversationControllerIns = Get.find<GroupChatController>();
   final configControllerINs = Get.find<ConfigController>();
   final wcaoUtilsIns = Get.find<WcaoUtils>();
 

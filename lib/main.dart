@@ -119,7 +119,7 @@ void main() async {
   Get.put(ThemeController());
 
   Get.lazyPut(() => RegisterController(), fenix: true);
-  Get.lazyPut(() => ConversationController(), fenix: true);
+  Get.lazyPut(() => GroupChatController(), fenix: true);
   Get.lazyPut(() => UserController(), fenix: true);
   //LoginController中有页面操作，必须延迟初始化
   Get.put(LoginController());

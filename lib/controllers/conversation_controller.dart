@@ -9,30 +9,28 @@ import 'package:path_provider/path_provider.dart';
 import 'package:ai_assistant/services/api_service.dart';
 
 // 这个对应 聊天页 的 剧场group列表，[每个group是一个对话项]
-class ConversationController extends GetxController {
-  String? userName;
+class GroupChatController extends GetxController {
   // 聊天页面的 剧场group的列表(类似聊天群组列表)
-  final _groupConversations =
-      <GroupConversation>[].obs; // [conversation1, conversation2, ...]
+  final _groupChatList =
+      <GroupChat>[].obs; // [conversation1, conversation2, ...]
   final _messages =
       <String, List<Message>>{}.obs; // {groupId:[message1, message2, ...]}
   final ApiService _api = Get.find<ApiService>();
 
   ///封装的快捷方法
-  List<GroupConversation> get groupConversations => _groupConversations;
+  List<GroupChat> get groupConversations => _groupChatList;
   // 置顶的剧场group会话
-  List<GroupConversation> get pinnedGroupConversations =>
-      _groupConversations.where((conv) => conv.isPinned).toList();
+  List<GroupChat> get pinnedGroupConversations =>
+      _groupChatList.where((conv) => conv.isPinned).toList();
   // 非置顶的剧场group会话
-  List<GroupConversation> get unpinnedGroupConversations {
-    final unpinned_ =
-        _groupConversations.where((conv) => !conv.isPinned).toList();
+  List<GroupChat> get unpinnedGroupConversations {
+    final unpinned_ = _groupChatList.where((conv) => !conv.isPinned).toList();
     // 按 lastMessageTime 倒序排序：最新消息在前
     unpinned_.sort((a, b) => b.latestActiveAt.compareTo(a.latestActiveAt));
     return unpinned_;
   }
 
-  ConversationController() {
+  GroupChatController() {
     print("---调用ConversationController的构造函数了---");
     _loadConversations();
   }
@@ -52,10 +50,10 @@ class ConversationController extends GetxController {
         final groups_ = await _api.getGroupList();
         print("从服务器拉去的剧场groups列表");
         print(groups_);
-        _groupConversations.value =
+        _groupChatList.value =
             groups_.map((itemGroup) {
               final defaultTimeStr = '1970-09-25T10:10:10+08:00';
-              return GroupConversation(
+              return GroupChat(
                 userId: itemGroup["user_id"],
                 userName: itemGroup["user_name"],
                 groupId: itemGroup['group_id'],
@@ -80,15 +78,15 @@ class ConversationController extends GetxController {
       }
     } else {
       // 本地有数据，正常解析
-      _groupConversations.value =
+      _groupChatList.value =
           groupConversationsJson
-              .map((json) => GroupConversation.fromJson(jsonDecode(json)))
+              .map((json) => GroupChat.fromJson(jsonDecode(json)))
               .toList();
     }
 
     // Load messages for each 剧场group
     // Step 2: 为每个会话加载消息（本地优先，缺失则从服务器拉取）
-    for (final itemGroupConversation in _groupConversations) {
+    for (final itemGroupConversation in _groupChatList) {
       // 从
       final messagesByGroupId =
           prefs.getStringList('messages_${itemGroupConversation.groupId}') ??
@@ -136,7 +134,7 @@ class ConversationController extends GetxController {
         }
       } else {
         _messages[itemGroupConversation.groupId] =
-            messagesJson.map((json) {
+            messagesByGroupId.map((json) {
               final decoded = jsonDecode(json);
               return Message.fromJson(decoded);
             }).toList();
@@ -179,7 +177,7 @@ class ConversationController extends GetxController {
 
     // Save conversations
     final groupConversationsJson =
-        _groupConversations
+        _groupChatList
             .map(
               (itemGroupConversation) =>
                   jsonEncode(itemGroupConversation.toJson()),
@@ -198,49 +196,59 @@ class ConversationController extends GetxController {
     }
   }
 
-  Future<GroupConversation> createConversation({
-    required String title,
-    required String agentId,
-    required avatar,
+  Future<GroupChat> createGroupChat({
+    required String createHumanAgentId, // 创建group的agent-human ID
+    required String createHumanAgentName,
+    required String title, // 创建group的标题
+    required String settingContent,
+    required List groupAgents, // group的成员列表
+    required avator,
+    required backdrop,
   }) async {
     final uuid = const Uuid();
-    final conversationId = agentId;
-    // 如果username为空 或者字符串长度为0，读取存储
-    if (userName == null || userName!.isEmpty) {
-      final prefs = await SharedPreferences.getInstance();
-      userName = prefs.getString("saved_username"); // 获取用户名
-    }
-    // print("@@@@@@@@@userName:");
-    // print(userName);
-    final newConversation = Conversation(
-      userName: userName!,
-      agentId: conversationId,
-      agentName: title,
-      type: type,
-      configId: configId,
-      lastMessageTime: DateTime.now(),
-      lastMessage: '',
+
+    // 这里请求服务器，创建剧组groupChat，然后从返回中获得groupId
+    final resJson_ = await _api.createGroup(
+      createHumanAgentId = createHumanAgentId,
+      groupAgents = groupAgents,
+      title = title,
+      settingContent = settingContent,
+      avator = avator,
+      backdrop = backdrop,
+    );
+    final newConversation = GroupChat(
+      userId: resJson_["user_id"],
+      userName: resJson_["user_name"],
+      groupId: resJson_["groupId"],
+      createHumanAgentId: createHumanAgentId,
+      createHumanAgentName: createHumanAgentName,
+      title: title,
+      settingContent: settingContent,
+      groupAgents: groupAgents,
+      latestActiveAt: DateTime.now(),
+      latestMsgContent: '',
       unreadCount: 0,
       isPinned: false,
-      avatorImgUrl: avatarImgUrl,
+      avator: avator,
+      backdrop: backdrop,
     );
 
-    _conversations.add(newConversation);
-    _messages[newConversation.agentId] = [];
+    _groupChatList.add(newConversation);
+    _messages[newConversation.groupId] = [];
 
     await _saveConversations();
 
-    print('ConversationProvider: 创建新会话，ID = $conversationId');
+    print('ConversationProvider: 创建新会话，ID = $resJson_["groupId"]');
     return newConversation;
   }
 
   Future<void> deleteConversation(String id) async {
     // 寻找要删除的会话
-    final conversationIndex = _conversations.indexWhere(
-      (conversation) => conversation.agentId == id,
+    final itemGroupChatIndex = _groupChatList.indexWhere(
+      (itemGroupChat) => itemGroupChat.groupId == id,
     );
 
-    if (conversationIndex != -1) {
+    if (itemGroupChatIndex != -1) {
       // 找到确实存在这个agent_id
 
       try {
@@ -254,11 +262,8 @@ class ConversationController extends GetxController {
           print('已清理会话相关的图片文件: ${conversationDir.path}');
         }
 
-        // 保存最后删除的会话和消息用于恢复
-        _lastDeletedConversation = _conversations[conversationIndex];
-        _lastDeletedMessages = _messages[id]?.toList();
         // 从列表中移除
-        _conversations.removeAt(conversationIndex);
+        _groupChatList.removeAt(itemGroupChatIndex);
         _messages.remove(id);
 
         await _saveConversations();
@@ -268,51 +273,15 @@ class ConversationController extends GetxController {
     }
   }
 
-  // 恢复最后删除的会话
-  Future<void> restoreLastDeletedConversation() async {
-    if (_lastDeletedConversation != null) {
-      // 恢复图片文件
-      if (_lastDeletedMessages != null) {
-        for (final message in _lastDeletedMessages!) {
-          if (message.isImage && message.imageLocalPath != null) {
-            try {
-              final imageFile = File(message.imageLocalPath!);
-              if (!await imageFile.parent.exists()) {
-                await imageFile.parent.create(recursive: true);
-              }
-              // 如果文件不存在，说明已被删除，无法恢复
-              print('注意：图片文件 ${message.imageLocalPath} 已被删除，无法恢复');
-            } catch (e) {
-              print('恢复图片文件失败: $e');
-            }
-          }
-        }
-      }
-
-      _conversations.add(_lastDeletedConversation!);
-      if (_lastDeletedMessages != null) {
-        _messages[_lastDeletedConversation!.agentId] = _lastDeletedMessages!;
-      } else {
-        _messages[_lastDeletedConversation!.agentId] = [];
-      }
-
-      // 重置删除记录
-      _lastDeletedConversation = null;
-      _lastDeletedMessages = null;
-
-      await _saveConversations();
-    }
-  }
-
   Future<void> togglePinConversation(String id) async {
-    final index = _conversations.indexWhere(
-      (conversation) => conversation.agentId == id,
+    final index = _groupChatList.indexWhere(
+      (itemGroupChat) => itemGroupChat.groupId == id,
     );
     if (index != -1) {
-      final updatedConversation = _conversations[index].copyWith(
-        isPinned: !_conversations[index].isPinned,
+      final updatedConversation = _groupChatList[index].copyWith(
+        isPinned: !_groupChatList[index].isPinned,
       );
-      _conversations[index] = updatedConversation;
+      _groupChatList[index] = updatedConversation;
 
       await _saveConversations();
     }
@@ -372,19 +341,19 @@ class ConversationController extends GetxController {
     ];
 
     // Update conversation last message
-    final index = _conversations.indexWhere(
-      (conversation) => conversation.agentId == conversationId,
+    final index = _groupChatList.indexWhere(
+      (itemGroupChat) => itemGroupChat.groupId == conversationId,
     );
     if (index != -1) {
-      final updatedConversation = _conversations[index].copyWith(
-        lastMessage: content,
-        lastMessageTime: DateTime.now(),
+      final updatedConversation = _groupChatList[index].copyWith(
+        latestMsgContent: content,
+        latestActiveAt: DateTime.now(),
         unreadCount:
             role == MessageRole.assistant
-                ? _conversations[index].unreadCount + 1
-                : _conversations[index].unreadCount,
+                ? _groupChatList[index].unreadCount + 1
+                : _groupChatList[index].unreadCount,
       );
-      _conversations[index] = updatedConversation;
+      _groupChatList[index] = updatedConversation;
     }
 
     await _saveConversations();
@@ -438,14 +407,14 @@ class ConversationController extends GetxController {
 
       // 如果这是最后一条消息，也更新会话的lastMessage
       if (lastUserMessageIndex == messages.length - 1) {
-        final conversationIndex = _conversations.indexWhere(
-          (conversation) => conversation.agentId == conversationId,
+        final conversationIndex = _groupChatList.indexWhere(
+          (itemGroupChat) => itemGroupChat.groupId == conversationId,
         );
 
         if (conversationIndex != -1) {
-          final updatedConversation = _conversations[conversationIndex]
-              .copyWith(lastMessage: content);
-          _conversations[conversationIndex] = updatedConversation;
+          final updatedConversation = _groupChatList[conversationIndex]
+              .copyWith(latestMsgContent: content);
+          _groupChatList[conversationIndex] = updatedConversation;
         }
       }
 
@@ -457,14 +426,14 @@ class ConversationController extends GetxController {
 
   // 标记会话为已读
   Future<void> markConversationAsRead(String conversationId) async {
-    final index = _conversations.indexWhere(
-      (conversation) => conversation.agentId == conversationId,
+    final index = _groupChatList.indexWhere(
+      (itemChatGroup) => itemChatGroup.groupId == conversationId,
     );
     if (index != -1) {
-      final updatedConversation = _conversations[index].copyWith(
+      final updatedConversation = _groupChatList[index].copyWith(
         unreadCount: 0,
       );
-      _conversations[index] = updatedConversation;
+      _groupChatList[index] = updatedConversation;
 
       // Mark all messages as read
       if (_messages.containsKey(conversationId)) {

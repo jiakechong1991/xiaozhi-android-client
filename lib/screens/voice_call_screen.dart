@@ -11,7 +11,7 @@ import 'dart:async';
 import 'dart:io';
 
 class VoiceCallScreen extends StatefulWidget {
-  final Conversation conversation;
+  final GroupChat conversation;
   final XiaozhiConfig xiaozhiConfig;
 
   const VoiceCallScreen({
@@ -26,7 +26,7 @@ class VoiceCallScreen extends StatefulWidget {
 
 class _VoiceCallScreenState extends State<VoiceCallScreen>
     with SingleTickerProviderStateMixin {
-  final conversationControllerIns = Get.find<ConversationController>();
+  final conversationControllerIns = Get.find<GroupChatController>();
   late XiaozhiService _xiaozhiService;
 
   bool _isConnected = false;
@@ -77,13 +77,14 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
 
     // 获取XiaozhiService实例
     _xiaozhiService = XiaozhiService(
+      groupID: widget.conversation.groupId,
       websocketUrl: widget.xiaozhiConfig.websocketUrl,
       macAddress: widget.xiaozhiConfig.macAddress,
       userName: widget.conversation.userName,
-      agentID: widget.conversation.agentId,
-      agentName: widget.conversation.agentName,
+      agentID: widget.conversation.createHumanAgentId,
+      agentName: widget.conversation.createHumanAgentName,
       accessToken: "",
-      sessionId: widget.conversation.agentId,
+      sessionId: widget.conversation.groupId,
     );
 
     // 设置消息监听器
@@ -157,7 +158,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
 
       // 添加会话消息
       conversationControllerIns.addMessage(
-        conversationId: widget.conversation.agentId,
+        conversationId: widget.conversation.groupId,
         role: MessageRole.assistant,
         content: '语音通话已开始',
       );
@@ -364,7 +365,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
               children: [
                 // 圆形头像
                 Hero(
-                  tag: 'avatar_${widget.conversation.agentId}',
+                  tag: 'avatar_${widget.conversation.groupId}',
                   child: Container(
                     width: 120,
                     height: 120,
@@ -394,7 +395,7 @@ class _VoiceCallScreenState extends State<VoiceCallScreen>
 
                 // 名称显示
                 Text(
-                  widget.conversation.agentName,
+                  widget.conversation.title,
                   style: const TextStyle(
                     color: Colors.white,
                     fontSize: 28,

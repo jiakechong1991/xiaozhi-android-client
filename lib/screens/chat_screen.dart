@@ -16,7 +16,7 @@ import 'dart:async';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 
 class ChatScreen extends StatefulWidget {
-  final GroupConversation groupConversation; //  agent_conversation,代表一个agent的对话
+  final GroupChat groupConversation; //  agent_conversation,代表一个agent的对话
 
   const ChatScreen({super.key, required this.groupConversation});
 
@@ -26,7 +26,7 @@ class ChatScreen extends StatefulWidget {
 
 // 对话page的主体：
 class _ChatScreenState extends State<ChatScreen> {
-  final conversationControllerIns = Get.find<ConversationController>();
+  final conversationControllerIns = Get.find<GroupChatController>();
   final configControllerIns = Get.find<ConfigController>();
 
   final TextEditingController _textController = TextEditingController();
@@ -185,7 +185,7 @@ class _ChatScreenState extends State<ChatScreen> {
 
     // 创建一个XiaozhiService实例
     _xiaozhiService = XiaozhiService(
-      groupID: ,
+      groupID: widget.groupConversation.groupId,
       websocketUrl: xiaozhiConfig.websocketUrl,
       macAddress: xiaozhiConfig.macAddress,
       userName: widget.groupConversation.userName,

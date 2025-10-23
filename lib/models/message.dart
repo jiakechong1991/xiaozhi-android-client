@@ -1,6 +1,7 @@
 enum MessageRole { user, assistant, system }
 
 class Message {
+  // 代表agent和agent之间发送的消息
   final String messageId;
   final String conversationId;
   final MessageRole role;

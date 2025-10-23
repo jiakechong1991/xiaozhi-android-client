@@ -342,7 +342,7 @@ class ApiService {
     }
   }
 
-  // 👇 获取用户信息
+  // 👇 检查用户信息是否完整
   Future<Map<String, dynamic>> checkProfileComplete() async {
     final response = await _dio.get('/api/accounts/check_profile/');
     final data = response.data as Map<String, dynamic>;
@@ -356,6 +356,68 @@ class ApiService {
       return response.data as List<dynamic>? ?? [];
     } else {
       throw Exception('获取agent列表信息失败');
+    }
+  }
+
+  // 👇 create 剧场group接口
+  Future<Map<String, dynamic>> createGroup(
+    String createHumanAgentId,
+    List groupAgents,
+    String title,
+    String settingContent, // 角色介绍
+    File? avatar,
+    File? backdrop,
+  ) async {
+    final formData = FormData();
+
+    // 添加文本字段
+    formData.fields.addAll([
+      MapEntry('create_human_agent', createHumanAgentId),
+      // 将list转成json字符串
+      MapEntry('group_agents', json.encode(groupAgents)),
+      MapEntry('title', title),
+      MapEntry('setting_content', settingContent),
+    ]);
+
+    if (avatar != null) {
+      final filename = path.basename(avatar.path); // 剧场group头像
+      formData.files.add(
+        MapEntry(
+          'avatar',
+          await MultipartFile.fromFile(avatar.path, filename: filename),
+        ),
+      );
+    }
+
+    if (backdrop != null) {
+      final filename = path.basename(backdrop.path); // 背景图片
+      formData.files.add(
+        MapEntry(
+          'avatar',
+          await MultipartFile.fromFile(backdrop.path, filename: filename),
+        ),
+      );
+    }
+
+    final response = await _dio.post(
+      '/api/groups/',
+      data: formData,
+      options: Options(
+        contentType: "multipart/form-data", // 显式指定（dio 通常自动设）
+      ),
+    );
+
+    if (response.statusCode == 201) {
+      print("创建group成功");
+      final data = response.data as Map<String, dynamic>;
+      // 打印data
+      print(data);
+      return data;
+    } else {
+      print("创建group失败---");
+      final data = response.data as Map<String, dynamic>;
+      print(data);
+      throw Exception('创建group失败: ${response.statusMessage}');
     }
   }
 
