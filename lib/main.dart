@@ -4,6 +4,7 @@ import 'package:timeago/timeago.dart' as timeago;
 import 'package:ai_assistant/controllers/theme_controller.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/controllers/conversation_controller.dart';
+import 'package:ai_assistant/controllers/agent_list_controller.dart';
 import 'package:ai_assistant/utils/app_theme.dart';
 import 'package:ai_assistant/route.dart';
 import 'package:ai_assistant/state/token.dart';
@@ -120,6 +121,7 @@ void main() async {
 
   Get.lazyPut(() => RegisterController(), fenix: true);
   Get.lazyPut(() => ConversationController(), fenix: true);
+  Get.lazyPut(() => AgentRoleListController(), fenix: true);
   Get.lazyPut(() => UserController(), fenix: true);
   //LoginController中有页面操作，必须延迟初始化
   Get.put(LoginController());

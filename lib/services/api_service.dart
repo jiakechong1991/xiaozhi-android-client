@@ -154,10 +154,10 @@ class ApiService {
 
   // 👇 create_agent接口
   Future<Map<String, dynamic>> createAgent(
-    String agent_name,
+    String agentName,
     String sex,
     String birthday,
-    String character_setting, // 角色介绍
+    String characterSetting, // 角色介绍
     String age, // 年龄
     String voices,
     File? avatarFile,
@@ -166,10 +166,10 @@ class ApiService {
 
     // 添加文本字段
     formData.fields.addAll([
-      MapEntry('agent_name', agent_name),
+      MapEntry('agent_name', agentName),
       MapEntry('sex', sex),
       MapEntry('birthday', birthday),
-      MapEntry('character_setting', character_setting),
+      MapEntry('character_setting', characterSetting),
       MapEntry('age', age),
       MapEntry('voices', voices),
     ]);
@@ -206,6 +206,7 @@ class ApiService {
     }
   }
 
+  // 删除agent
   Future<bool> deleteAgent(String agentId) async {
     try {
       final response = await _dio.delete('/api/agents/$agentId/');

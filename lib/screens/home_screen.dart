@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/controllers/conversation_controller.dart';
+import 'package:ai_assistant/controllers/agent_list_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
 import 'package:ai_assistant/screens/settings_screen.dart';
 import 'package:ai_assistant/screens/mine/index.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 import 'package:ai_assistant/widgets/conversation_tile.dart';
+import 'package:ai_assistant/widgets/agent_list_tile.dart';
 import 'package:ai_assistant/widgets/slidable_delete_tile.dart';
-import 'package:ai_assistant/widgets/discovery_screen.dart';
 import 'package:get/get.dart';
 import 'package:ai_assistant/utils/audio_util.dart';
 import 'package:ai_assistant/controllers/check_profile_controller.dart';
@@ -23,6 +24,7 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // 当前选中的底部导航栏索引
   final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
   final conversationControllerIns = Get.find<ConversationController>();
+  final agentListControllerIns = Get.find<AgentRoleListController>();
 
   // 添加一个标记，防止重复跳转
   bool _hasCheckedProfile = false;
@@ -109,7 +111,11 @@ class _HomeScreenState extends State<HomeScreen> {
                     // 这是一个圆形悬浮在界面上的按钮, 一般在右下角
                     onPressed: () {
                       // 如果点击这个按钮，将回调 这个函数
-                      Get.toNamed('/agent/create');
+                      if (_selectedIndex == 0) {
+                        Get.toNamed('/group/create'); // 创建群组剧场
+                      } else if (_selectedIndex == 1) {
+                        Get.toNamed('/agent/create'); // 创建角色演员agent
+                      } else {}
                     },
                     backgroundColor: Colors.black, // 背景颜色
                     child: const Icon(
@@ -906,7 +912,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // 这个列表是支持 条件判断的，动态确定显示哪些组件
 
           // 置顶对话的区域
-          if (conversationControllerIns.pinnedConversations.isNotEmpty) ...[
+          if (agentListControllerIns.pinnedAgentRoleList.isNotEmpty) ...[
             // ... 将后面list的元素平铺到外层list中
             const Padding(
               padding: EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
@@ -929,20 +935,18 @@ class _HomeScreenState extends State<HomeScreen> {
             // 集合展开语法... ，将list中的元素逐个展开，添加到外层list中
             // 将pinnedConversations中的元素，逐个作为conversation，然后调用
             //    _buildConversationTile(conversation)方法，返回一个组件，然后添加到列表中
-            ...conversationControllerIns.pinnedConversations.map(
-              (conversation) => _buildConversationTile(conversation),
+            ...agentListControllerIns.pinnedAgentRoleList.map(
+              (conversation) => _buildAgentRoleListTile(conversation),
             ),
           ],
           // 非置顶对话的区域
-          if (conversationControllerIns.unpinnedConversations.isNotEmpty) ...[
+          if (agentListControllerIns.unpinnedAgentRoleList.isNotEmpty) ...[
             Padding(
               padding: EdgeInsets.only(
                 left: 20,
                 right: 20,
                 top:
-                    conversationControllerIns.pinnedConversations.isEmpty
-                        ? 8
-                        : 16,
+                    agentListControllerIns.pinnedAgentRoleList.isEmpty ? 8 : 16,
                 bottom: 8,
               ),
               child: const Text(
@@ -961,13 +965,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            ...conversationControllerIns.unpinnedConversations.map(
-              (conversation) => _buildConversationTile(conversation),
+            ...agentListControllerIns.unpinnedAgentRoleList.map(
+              (conversation) => _buildAgentRoleListTile(conversation),
             ),
           ],
           // 如果为空，显示的区域
-          if (conversationControllerIns.pinnedConversations.isEmpty &&
-              conversationControllerIns.unpinnedConversations.isEmpty)
+          if (agentListControllerIns.pinnedAgentRoleList.isEmpty &&
+              agentListControllerIns.unpinnedAgentRoleList.isEmpty)
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(64.0),
@@ -1056,65 +1060,41 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildAgentRoleListTile(Conversation conversation) {
+  Widget _buildAgentRoleListTile(AgentRole agentRole) {
     return SlidableDeleteTile(
       // 这是一个封装了 滑动删除功能的 组件
-      key: Key(conversation.agentId), // 为每个对话项设置唯一标识
+      key: Key(agentRole.agentId), // 为每个对话项设置唯一标识
       // 滑动删除的回调函数
       onDelete: () {
         // 删除对话
-        conversationControllerIns.deleteConversation(conversation.agentId);
-
-        // 显示撤销消息
-        // ScaffoldMessenger.of(context).clearSnackBars();
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text('${conversation.agentName} 已删除'),
-        //     backgroundColor: Colors.grey.shade800,
-        //     behavior: SnackBarBehavior.floating,
-        //     duration: const Duration(seconds: 3),
-        //     margin: EdgeInsets.only(bottom: 70, left: 20, right: 20),
-        //     shape: RoundedRectangleBorder(
-        //       borderRadius: BorderRadius.circular(10),
-        //     ),
-        //     action: SnackBarAction(
-        //       label: '撤销',
-        //       textColor: Colors.white,
-        //       onPressed: () {
-        //         // 恢复被删除的对话
-        //         conversationControllerIns.restoreLastDeletedConversation();
-        //       },
-        //     ),
-        //   ),
-        // );
+        agentListControllerIns.deleteAgent(agentRole.agentId);
       },
       // 点击的回调函数
       onTap: () {
-        // 直接导航到聊天页面
-        Navigator.push(
-          // 将一个新的页面push到栈顶部,作为显示页面
-          context,
-          // 这是一个路由包装器，定义了 新页面，以及页面切换的过渡动画(提供符合 Material Design 风格的页面过渡动画)
-          MaterialPageRoute(
-            // builder 是一个函数，用于定义 新页面的内容()
-            builder: (context) => ChatScreen(conversation: conversation),
-          ),
-        );
+        // 点击agent条目，将导航到agnet的详情页面， 这里以后再补充
+        // Navigator.push(
+        //   context,
+        //   // 这是一个路由包装器，定义了 新页面，以及页面切换的过渡动画(提供符合 Material Design 风格的页面过渡动画)
+        //   MaterialPageRoute(
+        //     // builder 是一个函数，用于定义 新页面的内容()
+        //     builder: (context) => ChatScreen(conversation: conversation),
+        //   ),
+        // );
       },
       // 长按的回调函数
       onLongPress: () {
         // 显示置顶等选项
-        _showConversationOptions(conversation);
+        _showAgentRoleListOptions(agentRole);
       },
-      child: ConversationTile(
-        conversation: conversation,
+      child: AgentTile(
+        agentRole: agentRole,
         onTap: null, // 不再需要处理点击
         onLongPress: null, // 不再需要处理长按
       ),
     );
   }
 
-  void _showAgentRoleListOptions(Conversation conversation) {
+  void _showAgentRoleListOptions(AgentRole agentRole) {
     // showModalBottomSheet 是 Flutter 用于显示底部弹窗的[官方方法]，
     //    函数通过配置其参数和构建弹窗内容，实现了美观且交互友好的操作菜单
     showModalBottomSheet(
@@ -1189,7 +1169,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         child: Icon(
-                          conversation.isPinned
+                          agentRole.isPinned
                               ? Icons.push_pin
                               : Icons.push_pin_outlined,
                           color: Colors.black,
@@ -1197,7 +1177,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       title: Text(
-                        conversation.isPinned ? '取消置顶' : '置顶对话',
+                        agentRole.isPinned ? '取消置顶' : '置顶对话',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -1208,8 +1188,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       onTap: () {
-                        conversationControllerIns.togglePinConversation(
-                          conversation.agentId,
+                        agentListControllerIns.togglePinAgent(
+                          agentRole.agentId,
                         );
                         Navigator.pop(context);
                       },
@@ -1278,13 +1258,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         //     将之后的栈顶 弹窗/页面 显示出俩
                         Navigator.pop(context);
                         //从数据源中移除该对话
-                        conversationControllerIns.deleteConversation(
-                          conversation.agentId,
-                        );
+                        agentListControllerIns.deleteAgent(agentRole.agentId);
                         // 显示一个 SnackBar，告知用户对话已删除
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('${conversation.agentName} 已删除'),
+                            content: Text('${agentRole.agentName} 已删除'),
                             backgroundColor: Colors.grey.shade800,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(

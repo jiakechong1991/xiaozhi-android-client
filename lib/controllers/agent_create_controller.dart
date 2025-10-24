@@ -2,7 +2,7 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/services/api_service.dart';
-import 'package:ai_assistant/controllers/conversation_controller.dart';
+import 'package:ai_assistant/controllers/agent_list_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'dart:io';
@@ -14,7 +14,7 @@ class CreateAgentController extends GetxController {
 
   final isLoading = false.obs; // 用于显示 loading
   final errorMessage = ''.obs; // 用于显示错误信息
-  final conversationControllerIns = Get.find<ConversationController>();
+  final agnetListCtlIns = Get.find<AgentRoleListController>();
   final configControllerINs = Get.find<ConfigController>();
   final wcaoUtilsIns = Get.find<WcaoUtils>();
 
@@ -116,38 +116,17 @@ class CreateAgentController extends GetxController {
     errorMessage.value = '';
 
     try {
-      final responseData = await _api.createAgent(
-        agentNameController.text,
-        sex.value,
-        birthdayController.text,
-        characterSettingController.text,
-        ageController.text,
-        voices.value,
-        avatarFile.value, // 👈 新增
+      final newAgentRole = await agnetListCtlIns.createAgentRole(
+        agentName: agentNameController.text,
+        sex: sex.value,
+        birthday: birthdayController.text,
+        characterSetting: characterSettingController.text,
+        age: ageController.text,
+        voices: voices.value,
+        avatarFile: avatarFile.value,
       );
-      print("创建agent成功,要返回聊天界面了， 这里先用log代替");
-      //回到 聊天界面
-      String? agentId = responseData['id']?.toString();
-      String agentName = responseData['agent_name'];
-      String avatarImgUrl = _api.getFullUrl(responseData["avatar"]);
-
-      final xiaozhiConfigs = configControllerINs.xiaozhiConfigs;
-
-      print('=== 调试：创建 Agent 的入参 ===');
-      print('✅ agentName: "${agentName}"');
-      print('✅ agentId: "${agentId}"');
-      print('✅ sex: ${xiaozhiConfigs.first.id!}');
-      print('=================================');
-
-      final conversation = await conversationControllerIns.createConversation(
-        title: '与 ${agentName} 的对话',
-        agentId: agentId!,
-        type: ConversationType.xiaozhi,
-        configId: xiaozhiConfigs.first.id, // 默认使用第一个小智server
-        avatarImgUrl: avatarImgUrl,
-      );
-      // 带参数跳转到聊天列表界面
-      Get.offAndToNamed('/agent/chatlist', arguments: conversation);
+      // 带参数回到home列表， 后续改成传参，还调回角色列表
+      Get.offAndToNamed('/home');
       print(">>> 创建agent成功end");
     } catch (e, stackTrace) {
       print(">>> 创建agent失败");
