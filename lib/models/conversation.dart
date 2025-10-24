@@ -103,7 +103,7 @@ class AgentRole {
   final String agentName; // 创建的agent的Name
   final AgentType agentType; // agent的类型
   final bool isDefault; // 是否是默认角色
-  final String avator; // 演员头像图片
+  final String avatar; // 演员头像图片
   final String sex; // 性别
   final String voices; // 声音类型
   final String birthday; // 生日
@@ -117,7 +117,7 @@ class AgentRole {
     required this.agentName,
     required this.agentType,
     required this.isDefault,
-    required this.avator,
+    required this.avatar,
     required this.sex,
     required this.voices,
     required this.birthday,
@@ -133,7 +133,7 @@ class AgentRole {
       agentName: json['agentName'],
       agentType: json['agentType'],
       isDefault: json['isDefault'],
-      avator: json["avator"],
+      avatar: json["avatar"],
       sex: json["sex"],
       voices: json["voices"],
       birthday: json["birthday"],
@@ -147,9 +147,9 @@ class AgentRole {
     return {
       'agentId': agentId,
       'agentName': agentName,
-      'agentType': agentType,
+      'agentType': agentType.name,
       'isDefault': isDefault,
-      'avator': avator,
+      'avatar': avatar,
       'sex': sex,
       'voices': voices,
       'birthday': birthday,
@@ -165,7 +165,7 @@ class AgentRole {
       agentName: agentName,
       agentType: agentType,
       isDefault: isDefault,
-      avator: avator,
+      avatar: avatar,
       sex: sex,
       voices: voices,
       birthday: birthday,

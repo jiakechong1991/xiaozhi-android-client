@@ -110,7 +110,7 @@ class AgentTile extends StatelessWidget {
     return CircleAvatar(
       radius: 24,
       backgroundColor: Colors.purple.shade400,
-      child: WcaoUtils.imageCache(agentRole.avator),
+      child: WcaoUtils.imageCache(agentRole.avatar),
     );
   }
 }

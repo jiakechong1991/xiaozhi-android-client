@@ -44,16 +44,16 @@ class AgentRoleListController extends GetxController {
       // 本地无结果，从服务器获取 agent 列表
       try {
         final agentListFromServer_ = await _api.getAgentList();
-        print("从服务器拉去的agent列表");
+        print("从服务器拉去的agent列表222");
         print(agentListFromServer_);
         _agentRoleList.value =
             agentListFromServer_.map((itemAgent) {
               return AgentRole(
-                agentId: itemAgent["id"],
-                agentName: itemAgent["username"],
+                agentId: itemAgent["id"].toString(),
+                agentName: itemAgent["agent_name"],
                 agentType: AgentType.fromString(itemAgent["agent_type"]),
                 isDefault: itemAgent["is_default"],
-                avator: _api.getFullUrl(itemAgent["avator"]),
+                avatar: _api.getFullUrl(itemAgent["avatar"]),
                 sex: itemAgent["sex"],
                 voices: itemAgent["voices"],
                 birthday: itemAgent["birthday"],
@@ -113,11 +113,11 @@ class AgentRoleListController extends GetxController {
     );
 
     final newAgentRole = AgentRole(
-      agentId: newAgentRes["id"],
-      agentName: newAgentRes["username"],
+      agentId: newAgentRes["id"].toString(),
+      agentName: newAgentRes["agent_name"],
       agentType: AgentType.fromString(newAgentRes["agent_type"]),
       isDefault: newAgentRes["is_default"],
-      avator: _api.getFullUrl(newAgentRes["avator"]),
+      avatar: _api.getFullUrl(newAgentRes["avatar"]),
       sex: newAgentRes["sex"],
       voices: newAgentRes["voices"],
       birthday: newAgentRes["birthday"],
