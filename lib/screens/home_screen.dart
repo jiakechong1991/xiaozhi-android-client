@@ -82,73 +82,11 @@ class _HomeScreenState extends State<HomeScreen> {
         extendBody: true, //让 body 内容延伸到底部导航栏下方
         extendBodyBehindAppBar: true,
         backgroundColor: const Color(0xFFF8F9FA), // 设置背景颜色
-        appBar: // 顶部导航栏
-            _selectedIndex == 0
-                ? AppBar(
-                  // 通常位于屏幕顶部，用于显示当前页面的标题和导航按钮，设置按钮等
-                  title: const Text(
-                    '消息哈哈1',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 28,
-                      color: Colors.black,
-                    ),
-                  ),
-                  leading: null,
-                  automaticallyImplyLeading: false,
-                  elevation: 0, // 设置导航栏阴影
-                  scrolledUnderElevation: 0, // 设置导航栏在滚动时的高度
-                  backgroundColor: const Color(0xFFF8F9FA), // 设置导航栏背景颜色
-                  centerTitle: false, // 设置标题是否居中
-                  titleSpacing: 20, //
-                  toolbarHeight: 65, // 设置导航栏的高度
-                  actions: [
-                    //右侧的操作按钮列表（如搜索、更多选项等）， 每个元素就是一个按钮
-                    Padding(
-                      // 按钮1
-                      padding: const EdgeInsets.only(right: 16),
-                      child: Material(
-                        color: Colors.transparent,
-                        borderRadius: BorderRadius.circular(12),
-                        child: InkWell(
-                          borderRadius: BorderRadius.circular(12),
-                          splashColor: Colors.grey.withOpacity(0.1),
-                          highlightColor: Colors.grey.withOpacity(0.1),
-                          // 如果点击这个 齿轮符号，将导航到 这个页面
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SettingsScreen(),
-                              ),
-                            );
-                          },
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Icon(
-                              // 齿轮icon
-                              Icons.settings,
-                              size: 26,
-                              color: Colors.grey.shade700,
-                              shadows: [
-                                Shadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 0.5,
-                                  offset: const Offset(0, 0.5),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                )
-                : null,
+        // 顶部导航栏
+        appBar: _buildTitleBar(_selectedIndex),
         body: _buildBody(_selectedIndex),
         floatingActionButton: // 悬浮按钮
-            _selectedIndex ==
-                    0 // 0是消息，只有这个有悬浮按钮
+            _selectedIndex == 0 || _selectedIndex == 1
                 ? Container(
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(30),
@@ -282,15 +220,27 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildBody(int selectedIndexT) {
     if (selectedIndexT == 0) {
-      //消息页面
+      //剧场对话列表 页面
       return SafeArea(
         bottom: false,
         child: Column(
-          children: [_buildSearchBar(), Expanded(child: _buildMsgPageBody())],
+          children: [
+            _buildSearchBar(),
+            Expanded(child: _buildGroupListPageBody()),
+          ],
         ),
       );
     } else if (selectedIndexT == 1) {
-      return const SafeArea(bottom: false, child: DiscoveryScreen());
+      //agent演员列表 组件
+      return SafeArea(
+        bottom: false,
+        child: Column(
+          children: [
+            _buildSearchBar(),
+            Expanded(child: _buildAgentRoleListPageBody()),
+          ],
+        ),
+      );
     } else {
       return PageViewMine();
     }
@@ -325,9 +275,144 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  AppBar? _buildTitleBar(int selectedIndexT) {
+    if (selectedIndexT == 0) {
+      //消息页面
+      return AppBar(
+        // 通常位于屏幕顶部，用于显示当前页面的标题和导航按钮，设置按钮等
+        title: const Text(
+          '聊天列表',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 28,
+            color: Colors.black,
+          ),
+        ),
+        leading: null,
+        automaticallyImplyLeading: false,
+        elevation: 0, // 设置导航栏阴影
+        scrolledUnderElevation: 0, // 设置导航栏在滚动时的高度
+        backgroundColor: const Color(0xFFF8F9FA), // 设置导航栏背景颜色
+        centerTitle: false, // 设置标题是否居中
+        titleSpacing: 20, //
+        toolbarHeight: 65, // 设置导航栏的高度
+        actions: [
+          //右侧的操作按钮列表（如搜索、更多选项等）， 每个元素就是一个按钮
+          Padding(
+            // 按钮1
+            padding: const EdgeInsets.only(right: 16),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                splashColor: Colors.grey.withOpacity(0.1),
+                highlightColor: Colors.grey.withOpacity(0.1),
+                // 如果点击这个 齿轮符号，将导航到 这个页面
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(
+                    // 齿轮icon
+                    Icons.settings,
+                    size: 26,
+                    color: Colors.grey.shade700,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 0.5,
+                        offset: const Offset(0, 0.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else if (selectedIndexT == 1) {
+      //消息页面
+      return AppBar(
+        // 通常位于屏幕顶部，用于显示当前页面的标题和导航按钮，设置按钮等
+        title: const Text(
+          '角色列表',
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 28,
+            color: Colors.black,
+          ),
+        ),
+        leading: null,
+        automaticallyImplyLeading: false,
+        elevation: 0, // 设置导航栏阴影
+        scrolledUnderElevation: 0, // 设置导航栏在滚动时的高度
+        backgroundColor: const Color(0xFFF8F9FA), // 设置导航栏背景颜色
+        centerTitle: false, // 设置标题是否居中
+        titleSpacing: 20, //
+        toolbarHeight: 65, // 设置导航栏的高度
+        actions: [
+          //右侧的操作按钮列表（如搜索、更多选项等）， 每个元素就是一个按钮
+          Padding(
+            // 按钮1
+            padding: const EdgeInsets.only(right: 16),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                borderRadius: BorderRadius.circular(12),
+                splashColor: Colors.grey.withOpacity(0.1),
+                highlightColor: Colors.grey.withOpacity(0.1),
+                // 如果点击这个 齿轮符号，将导航到 这个页面
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const SettingsScreen(),
+                    ),
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.all(12),
+                  child: Icon(
+                    // 齿轮icon
+                    Icons.settings,
+                    size: 26,
+                    color: Colors.grey.shade700,
+                    shadows: [
+                      Shadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 0.5,
+                        offset: const Offset(0, 0.5),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      return null;
+    }
+  }
+
   Widget _buildSearchBar() {
-    if (_selectedIndex == 1) {
-      return const SizedBox.shrink();
+    final textTip;
+    if (_selectedIndex == 0) {
+      textTip = "搜索对话";
+    } else if (_selectedIndex == 1) {
+      textTip = "搜索角色";
+    } else {
+      textTip = "搜索";
     }
 
     return Container(
@@ -353,7 +438,7 @@ class _HomeScreenState extends State<HomeScreen> {
             focusNode: _searchFocusNode, // 控制文本输入框的 焦点状态
             decoration: InputDecoration(
               // 定义文本输入框的样式
-              hintText: '搜索对话', // 当输入框为空时显示的提示文字
+              hintText: textTip, // 当输入框为空时显示的提示文字
               hintStyle: TextStyle(
                 color: Colors.grey.shade400,
                 fontSize: 16,
@@ -392,7 +477,8 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildMsgPageBody() {
+  ////////build gourpchat 剧场列表
+  Widget _buildGroupListPageBody() {
     return Obx(
       () => ListView(
         // 滚动容器
@@ -615,6 +701,420 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
   void _showConversationOptions(Conversation conversation) {
+    // showModalBottomSheet 是 Flutter 用于显示底部弹窗的[官方方法]，
+    //    函数通过配置其参数和构建弹窗内容，实现了美观且交互友好的操作菜单
+    showModalBottomSheet(
+      context: context, // 上下文
+      backgroundColor: Colors.white, // 弹窗背景色
+      elevation: 20, // 弹窗阴影高度
+      barrierColor: Colors.black.withOpacity(0.5), // 遮罩层颜色
+      shape: const RoundedRectangleBorder(
+        // 弹窗形状
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 36,
+                height: 5,
+                margin: const EdgeInsets.symmetric(vertical: 12),
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(2.5),
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.black.withOpacity(0.05),
+                      blurRadius: 1,
+                      spreadRadius: 0,
+                      offset: const Offset(0, 0.5),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 10,
+                        spreadRadius: 0,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 4,
+                      ),
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.06),
+                              blurRadius: 4,
+                              spreadRadius: 0,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: Icon(
+                          conversation.isPinned
+                              ? Icons.push_pin
+                              : Icons.push_pin_outlined,
+                          color: Colors.black,
+                          size: 24,
+                        ),
+                      ),
+                      title: Text(
+                        conversation.isPinned ? '取消置顶' : '置顶对话',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.black,
+                        ),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      onTap: () {
+                        conversationControllerIns.togglePinConversation(
+                          conversation.agentId,
+                        );
+                        Navigator.pop(context);
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
+                ),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.06),
+                        blurRadius: 10,
+                        spreadRadius: 0,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                        horizontal: 20,
+                        vertical: 4,
+                      ),
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.red.shade50,
+                          borderRadius: BorderRadius.circular(10),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.red.withOpacity(0.1),
+                              blurRadius: 4,
+                              spreadRadius: 0,
+                              offset: const Offset(0, 2),
+                            ),
+                          ],
+                        ),
+                        child: const Icon(
+                          Icons.delete,
+                          color: Colors.red,
+                          size: 24,
+                        ),
+                      ),
+                      title: const Text(
+                        '删除对话',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: Colors.red,
+                        ),
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      onTap: () {
+                        // 关闭对话框, pop(context)会将当前页面从堆栈中移除，相当于关闭这个页面/弹窗。
+                        //     将之后的栈顶 弹窗/页面 显示出俩
+                        Navigator.pop(context);
+                        //从数据源中移除该对话
+                        conversationControllerIns.deleteConversation(
+                          conversation.agentId,
+                        );
+                        // 显示一个 SnackBar，告知用户对话已删除
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text('${conversation.agentName} 已删除'),
+                            backgroundColor: Colors.grey.shade800,
+                            behavior: SnackBarBehavior.floating,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 24),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  ////// build 演员agent列表
+  Widget _buildAgentRoleListPageBody() {
+    return Obx(
+      () => ListView(
+        // 滚动容器
+        padding: EdgeInsets.only(
+          // 填充留白
+          // 16是基础留白 ，MediaQuery.of(context).padding.bottom是
+          // 设备底部安全区域（如全面屏的底部刘海 / 导航栏高度），避免对话项被设备边缘遮挡
+          bottom: 16 + MediaQuery.of(context).padding.bottom,
+        ),
+        children: [
+          // 这个列表是支持 条件判断的，动态确定显示哪些组件
+
+          // 置顶对话的区域
+          if (conversationControllerIns.pinnedConversations.isNotEmpty) ...[
+            // ... 将后面list的元素平铺到外层list中
+            const Padding(
+              padding: EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
+              child: Text(
+                '置顶对话',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                  fontSize: 15,
+                  shadows: [
+                    Shadow(
+                      color: Color(0x40000000),
+                      blurRadius: 0.5,
+                      offset: Offset(0, 0.5),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            // 集合展开语法... ，将list中的元素逐个展开，添加到外层list中
+            // 将pinnedConversations中的元素，逐个作为conversation，然后调用
+            //    _buildConversationTile(conversation)方法，返回一个组件，然后添加到列表中
+            ...conversationControllerIns.pinnedConversations.map(
+              (conversation) => _buildConversationTile(conversation),
+            ),
+          ],
+          // 非置顶对话的区域
+          if (conversationControllerIns.unpinnedConversations.isNotEmpty) ...[
+            Padding(
+              padding: EdgeInsets.only(
+                left: 20,
+                right: 20,
+                top:
+                    conversationControllerIns.pinnedConversations.isEmpty
+                        ? 8
+                        : 16,
+                bottom: 8,
+              ),
+              child: const Text(
+                '全部对话',
+                style: TextStyle(
+                  fontWeight: FontWeight.w500,
+                  color: Colors.grey,
+                  fontSize: 15,
+                  shadows: [
+                    Shadow(
+                      color: Color(0x40000000),
+                      blurRadius: 0.5,
+                      offset: Offset(0, 0.5),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            ...conversationControllerIns.unpinnedConversations.map(
+              (conversation) => _buildConversationTile(conversation),
+            ),
+          ],
+          // 如果为空，显示的区域
+          if (conversationControllerIns.pinnedConversations.isEmpty &&
+              conversationControllerIns.unpinnedConversations.isEmpty)
+            Center(
+              child: Padding(
+                padding: const EdgeInsets.all(64.0),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(24),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.05),
+                            blurRadius: 10,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 5),
+                          ),
+                        ],
+                      ),
+                      child: Icon(
+                        Icons.chat_bubble_outline, // 对话图标
+                        size: 48,
+                        color: Colors.grey.shade300,
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    Text(
+                      '没有对话',
+                      style: TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.grey.shade500,
+                        shadows: const [
+                          Shadow(
+                            color: Color(0x40000000),
+                            blurRadius: 0.5,
+                            offset: Offset(0, 0.5),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.08),
+                            blurRadius: 5,
+                            spreadRadius: 0,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.add_circle_outline,
+                            size: 18,
+                            color: Colors.grey.shade400,
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            '点击 + 创建新对话',
+                            style: TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey.shade500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAgentRoleListTile(Conversation conversation) {
+    return SlidableDeleteTile(
+      // 这是一个封装了 滑动删除功能的 组件
+      key: Key(conversation.agentId), // 为每个对话项设置唯一标识
+      // 滑动删除的回调函数
+      onDelete: () {
+        // 删除对话
+        conversationControllerIns.deleteConversation(conversation.agentId);
+
+        // 显示撤销消息
+        // ScaffoldMessenger.of(context).clearSnackBars();
+        // ScaffoldMessenger.of(context).showSnackBar(
+        //   SnackBar(
+        //     content: Text('${conversation.agentName} 已删除'),
+        //     backgroundColor: Colors.grey.shade800,
+        //     behavior: SnackBarBehavior.floating,
+        //     duration: const Duration(seconds: 3),
+        //     margin: EdgeInsets.only(bottom: 70, left: 20, right: 20),
+        //     shape: RoundedRectangleBorder(
+        //       borderRadius: BorderRadius.circular(10),
+        //     ),
+        //     action: SnackBarAction(
+        //       label: '撤销',
+        //       textColor: Colors.white,
+        //       onPressed: () {
+        //         // 恢复被删除的对话
+        //         conversationControllerIns.restoreLastDeletedConversation();
+        //       },
+        //     ),
+        //   ),
+        // );
+      },
+      // 点击的回调函数
+      onTap: () {
+        // 直接导航到聊天页面
+        Navigator.push(
+          // 将一个新的页面push到栈顶部,作为显示页面
+          context,
+          // 这是一个路由包装器，定义了 新页面，以及页面切换的过渡动画(提供符合 Material Design 风格的页面过渡动画)
+          MaterialPageRoute(
+            // builder 是一个函数，用于定义 新页面的内容()
+            builder: (context) => ChatScreen(conversation: conversation),
+          ),
+        );
+      },
+      // 长按的回调函数
+      onLongPress: () {
+        // 显示置顶等选项
+        _showConversationOptions(conversation);
+      },
+      child: ConversationTile(
+        conversation: conversation,
+        onTap: null, // 不再需要处理点击
+        onLongPress: null, // 不再需要处理长按
+      ),
+    );
+  }
+
+  void _showAgentRoleListOptions(Conversation conversation) {
     // showModalBottomSheet 是 Flutter 用于显示底部弹窗的[官方方法]，
     //    函数通过配置其参数和构建弹窗内容，实现了美观且交互友好的操作菜单
     showModalBottomSheet(
