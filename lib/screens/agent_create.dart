@@ -4,14 +4,14 @@ import 'package:get/get.dart';
 import 'package:flutter/services.dart'; // 需要导入这个包
 import 'package:image_picker/image_picker.dart';
 
-class ConversationTypeCreate extends StatefulWidget {
-  const ConversationTypeCreate({super.key});
+class AgentRoleCreatePage extends StatefulWidget {
+  const AgentRoleCreatePage({super.key});
 
   @override
-  State<ConversationTypeCreate> createState() => _ConversationTypeCreateState();
+  State<AgentRoleCreatePage> createState() => _ConversationTypeCreateState();
 }
 
-class _ConversationTypeCreateState extends State<ConversationTypeCreate> {
+class _ConversationTypeCreateState extends State<AgentRoleCreatePage> {
   final createAgentControllerIns = Get.find<CreateAgentController>();
 
   @override

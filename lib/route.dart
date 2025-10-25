@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 import 'package:ai_assistant/screens/home_screen.dart';
 import 'package:ai_assistant/screens/login/login_password.dart';
 import 'package:ai_assistant/screens/login/register.dart';
-import 'package:ai_assistant/screens/conversation_create.dart';
+import 'package:ai_assistant/screens/agent_create.dart';
 import 'package:ai_assistant/models/conversation.dart';
 
 import 'package:ai_assistant/screens/agreement/privacy.dart';
@@ -61,7 +61,7 @@ List<GetPage<dynamic>> getRoutes = [
 
   // 聊天相关
   // 创建agent
-  GetPage(name: '/agent/create', page: () => const ConversationTypeCreate()),
+  GetPage(name: '/agent/create', page: () => const AgentRoleCreatePage()),
   GetPage(
     name: '/agent/chatlist',
     page: () {
