@@ -125,7 +125,7 @@ class CreateAgentController extends GetxController {
         voices: voices.value,
         avatarFile: avatarFile.value,
       );
-      // 带参数回到home列表， 后续改成传参，还调回角色列表
+      // 带参数回到home列表， 后续改成
       Get.offAndToNamed('/home');
       print(">>> 创建agent成功end");
     } catch (e, stackTrace) {

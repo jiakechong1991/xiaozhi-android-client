@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/controllers/agent_create_controller.dart';
 import 'package:get/get.dart';
-import 'package:flutter/services.dart'; // 需要导入这个包
 import 'package:image_picker/image_picker.dart';
 
 class GroupChatCreatePage extends StatefulWidget {
@@ -27,7 +26,7 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
 
   @override
   Widget build(BuildContext context) {
-    print("新建角色了，进入build页面");
+    print("新建剧场group了，进入build页面");
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -40,7 +39,7 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
-          '新建角色',
+          '新建剧场',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -56,12 +55,12 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [_buildTypeSelectionCard()],
+                  children: [_buildTypeSelectionCard()], // 页面主体
                 ),
               ),
             ),
           ),
-          _buildBottomButton(),
+          _buildBottomButton(), // 底部按钮
         ],
       ),
     );
@@ -86,107 +85,61 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(20),
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       const Text(
-          //         '请填写角色基本信息',
-          //         style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          //       ),
-          //       const SizedBox(height: 6),
-          //     ],
-          //   ),
-          // ),
           _buildAvatarSection(),
+          _buildBackdropSection(),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           const SizedBox(height: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const Text(
-                '名字：',
+                '场景名称：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
                 controller: createAgentControllerIns.agentNameController,
                 decoration: InputDecoration(
-                  hintText: '请输入名字',
+                  hintText: '请输入场景名称',
                   border: OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 15),
 
               const Text(
-                '年龄：',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              TextField(
-                controller: createAgentControllerIns.ageController,
-                keyboardType: TextInputType.number, // 只显示数字键盘
-                inputFormatters: [
-                  FilteringTextInputFormatter.digitsOnly, // 只允许数字
-                  // 可选：限制最大长度，比如年龄最大为3位数
-                  LengthLimitingTextInputFormatter(3),
-                ],
-                decoration: InputDecoration(
-                  hintText: '请输入年龄',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 15),
-
-              const Text(
-                '生日：',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              TextField(
-                controller: createAgentControllerIns.birthdayController,
-                keyboardType: TextInputType.number,
-                decoration: InputDecoration(
-                  hintText: '请输入生日',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const SizedBox(height: 15),
-
-              const Text(
-                '可选性别a：',
+                '我的化身:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Obx(
                 () => DropdownButtonFormField<String>(
-                  value: createAgentControllerIns.sex.value,
-                  decoration: InputDecoration(
-                    border: OutlineInputBorder(),
-                    // 可选：添加 label 或 hint
-                    // labelText: '性别',
-                  ),
-                  items: [
-                    DropdownMenuItem<String>(value: 'm', child: Text('男')),
-                    DropdownMenuItem<String>(value: 'f', child: Text('女')),
-                  ],
+                  value: createAgentControllerIns.voices.value,
+                  decoration: InputDecoration(border: OutlineInputBorder()),
+                  items:
+                      createAgentControllerIns.availableVoices
+                          .map(
+                            (voice) => DropdownMenuItem<String>(
+                              value: voice['value'],
+                              child: Text(voice['label']!),
+                            ),
+                          )
+                          .toList(),
                   onChanged: (String? newValue) {
                     if (newValue != null) {
-                      createAgentControllerIns.onSexChanged(
-                        newValue,
-                      ); //更新sex 并自动更新 voices
+                      createAgentControllerIns.voices.value =
+                          newValue; // ✅ 同步到 controller
                     }
                   },
                   // 可选：添加验证
                   validator: (value) {
                     if (value == null || value.isEmpty) {
-                      return '请选择性别';
+                      return '请选择音色';
                     }
                     return null;
                   },
                 ),
               ),
-              const SizedBox(height: 15),
 
               const Text(
-                '可选声音:',
+                '可选聊天角色列表:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Obx(
@@ -273,7 +226,7 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
           shadowColor: Colors.black.withOpacity(0.3),
         ),
         child: const Text(
-          '创建角色a',
+          '创建聊天a',
           style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
         ),
       ),
@@ -286,7 +239,68 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
-            '点击修改头像：',
+            '点击场景头像：',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          GestureDetector(
+            onTap: () {
+              // 弹出选择菜单：拍照 or 相册
+              _showImagePickerDialog(context);
+            },
+            child: Container(
+              width: 80,
+              height: 80,
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: Colors.grey.shade300, width: 1),
+              ),
+              child:
+                  createAgentControllerIns.avatarFile.value == null
+                      ? Stack(
+                        children: [
+                          Container(
+                            width: 80,
+                            height: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black.withOpacity(0.3),
+                            ),
+                            child: const Icon(
+                              Icons.add_a_photo,
+                              size: 24,
+                              color: Colors.white,
+                            ),
+                          ),
+                        ],
+                      )
+                      : Stack(
+                        children: [
+                          ClipOval(
+                            child: Image.file(
+                              createAgentControllerIns.avatarFile.value!,
+                              fit: BoxFit.cover,
+                              width: 80,
+                              height: 80,
+                            ),
+                          ),
+                        ],
+                      ),
+            ),
+          ),
+          const SizedBox(height: 15),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildBackdropSection() {
+    return Obx(
+      () => Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Text(
+            '点击切换聊天背景图片：',
             style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
           ),
           const SizedBox(height: 8),

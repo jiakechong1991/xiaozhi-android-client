@@ -2,12 +2,13 @@ import 'package:get/get.dart';
 import 'package:ai_assistant/screens/home_screen.dart';
 import 'package:ai_assistant/screens/login/login_password.dart';
 import 'package:ai_assistant/screens/login/register.dart';
-import 'package:ai_assistant/screens/agent_create.dart';
 import 'package:ai_assistant/models/conversation.dart';
 
 import 'package:ai_assistant/screens/agreement/privacy.dart';
 import 'package:ai_assistant/screens/agreement/user.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';
+import 'package:ai_assistant/screens/agent_create.dart';
+import 'package:ai_assistant/screens/group_create.dart';
 
 import 'package:ai_assistant/screens/settings/index.dart';
 import 'package:ai_assistant/screens/settings/account/index.dart';
@@ -60,6 +61,7 @@ List<GetPage<dynamic>> getRoutes = [
   GetPage(name: '/agreement/privacy', page: () => const AgreementPrivacy()),
 
   // 聊天相关
+  GetPage(name: '/group/create', page: () => const GroupChatCreatePage()),
   // 创建agent
   GetPage(name: '/agent/create', page: () => const AgentRoleCreatePage()),
   GetPage(

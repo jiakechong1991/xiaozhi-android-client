@@ -169,7 +169,7 @@ class MyApp extends StatelessWidget {
 
     return GetMaterialApp(
       //
-      title: 'AI-小美', // app名称
+      title: '小狮陪伴', // app名称
       debugShowCheckedModeBanner: false,
       theme: AppTheme.lightTheme,
       darkTheme: AppTheme.darkTheme,
