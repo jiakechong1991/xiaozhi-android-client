@@ -42,7 +42,7 @@ class GroupListController extends GetxController {
     // Load 多agent的对话列表
     // Step 1: 尝试从本地加载会话列表
     final groupListCacheJson = prefs.getStringList(groupListCacheKey) ?? [];
-    print("--------77777755555------------111----");
+    print("-----GroupListController---的缓存-------111----");
     print(groupListCacheJson);
     if (true || groupListCacheJson.isEmpty) {
       // 本地无会话，从服务器获取 agent 列表
@@ -54,11 +54,12 @@ class GroupListController extends GetxController {
             groupListServerRes.map((itemGroup) {
               final defaultTimeStr = '1970-09-25T10:10:10+08:00';
               return GroupChat(
-                userId: itemGroup["user_id"],
+                userId: itemGroup["user_id"].toString(),
                 userName: itemGroup["user_name"],
-                groupId: itemGroup['group_id'],
-                createHumanAgentId: itemGroup['human_agent_id'],
-                createHumanAgentName: itemGroup['human_agent_name'],
+                groupId: itemGroup['group_id'].toString(),
+                createHumanAgentId:
+                    itemGroup['create_human_agent_id'].toString(),
+                createHumanAgentName: itemGroup['create_human_agent_name'],
                 title: itemGroup['title'],
                 settingContent: itemGroup['setting_content'],
                 groupAgents: itemGroup['group_agents'],
@@ -72,7 +73,7 @@ class GroupListController extends GetxController {
             }).toList();
         hasReadServer = true;
       } catch (e, stackTrace) {
-        print('从服务器加载 agent 列表失败: $e');
+        print('从服务器加载 groups 列表失败: $e');
         print('堆栈: $stackTrace');
         // 即使失败，也继续（可能用户离线），_conversations 保持为空
       }
@@ -98,19 +99,15 @@ class GroupListController extends GetxController {
           final messagesData = await _api.getMessageList(itemGroup.groupId, 20);
           final remoteMessages =
               messagesData.map((msgJson) {
-                final msgID_ = (msgJson["msg_id"] as dynamic).toString();
-                final agentID_ = (msgJson["agent_id"] as dynamic).toString();
-                // msgJson["direction"] 是  1或者2的字符串
                 final role_ =
-                    (msgJson["direction"] == "0")
+                    (msgJson["sender_id"] == itemGroup.createHumanAgentId)
                         ? MessageRole.user
                         : MessageRole.assistant;
-                final content_ = msgJson["msg_content"] as String;
                 return Message(
-                  messageId: msgID_,
-                  conversationId: agentID_,
+                  messageId: msgJson["msg_id"].toString(),
+                  groupId: msgJson["group_id"].toString(),
                   role: role_,
-                  content: content_,
+                  content: msgJson["content"],
                   timestamp: DateTime.parse(msgJson["updated_at"] as String),
                   isRead: true,
                 );
@@ -119,7 +116,7 @@ class GroupListController extends GetxController {
           _messages[itemGroup.groupId] = remoteMessages;
           hasReadServer = true;
         } catch (e, stackTrace) {
-          print('从服务器加载消息失败 (agent: ${itemGroup.groupId}): $e');
+          print('从服务器加载消息失败 (group: ${itemGroup.groupId}): $e');
           print('堆栈: $stackTrace');
           _messages[itemGroup.groupId] = [];
         }
@@ -192,7 +189,7 @@ class GroupListController extends GetxController {
     required String createHumanAgentName,
     required String title, // 创建group的标题
     required String settingContent,
-    required List groupAgents, // group的成员列表
+    required List<AgentRoleSummary> groupAgents, // group的成员列表
     required avator,
     required backdrop,
   }) async {
@@ -306,7 +303,7 @@ class GroupListController extends GetxController {
 
     final newMessage = Message(
       messageId: messageId,
-      conversationId: groupId,
+      groupId: groupId,
       role: role,
       content: content,
       timestamp: DateTime.now(),
@@ -419,7 +416,7 @@ class GroupListController extends GetxController {
             _messages[groupId]!.map((message) {
               return Message(
                 messageId: message.messageId,
-                conversationId: message.conversationId,
+                groupId: message.groupId,
                 role: message.role,
                 content: message.content,
                 timestamp: message.timestamp,

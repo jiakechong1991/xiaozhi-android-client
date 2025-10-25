@@ -2,7 +2,7 @@ enum MessageRole { user, assistant, system }
 
 class Message {
   final String messageId;
-  final String conversationId;
+  final String groupId;
   final MessageRole role;
   final String content;
   final DateTime timestamp;
@@ -13,7 +13,7 @@ class Message {
 
   Message({
     required this.messageId, // 消息id
-    required this.conversationId, // 聊天的agent
+    required this.groupId, // 聊天的agent
     required this.role, // 角色（user or assistant or system）
     required this.content, // 消息内容
     required this.timestamp, // 时间戳
@@ -26,7 +26,7 @@ class Message {
   factory Message.fromJson(Map<String, dynamic> json) {
     return Message(
       messageId: json['messageId'],
-      conversationId: json['conversationId'],
+      groupId: json['groupId'],
       role: MessageRole.values.byName(json['role']),
       content: json['content'],
       timestamp: DateTime.parse(json['timestamp']),
@@ -40,7 +40,7 @@ class Message {
   Map<String, dynamic> toJson() {
     return {
       'messageId': messageId,
-      'conversationId': conversationId,
+      'groupId': groupId,
       'role': role.name,
       'content': content,
       'timestamp': timestamp.toIso8601String(),

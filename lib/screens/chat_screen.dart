@@ -519,7 +519,7 @@ class _ChatScreenState extends State<ChatScreen> {
             return MessageBubble(
               message: Message(
                 messageId: 'loading',
-                conversationId: '',
+                groupId: widget.groupChatIns.groupId,
                 role: MessageRole.assistant,
                 content: '思考中...',
                 timestamp: DateTime.now(),

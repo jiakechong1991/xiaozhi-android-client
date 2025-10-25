@@ -361,15 +361,15 @@ class ApiService {
   }
 
   // 👇 获取 指定agent的最近N条消息的列表
-  Future<List<dynamic>> getMessageList(String agentId, int limit) async {
+  Future<List<dynamic>> getMessageList(String groupId, int limit) async {
     final response = await _dio.get(
       '/api/msg/query',
-      queryParameters: {'agent_id': agentId, 'limit': limit},
+      queryParameters: {'group_id': groupId, 'limit': limit},
     );
     if (response.statusCode == 200) {
       return response.data as List<dynamic>;
     } else {
-      throw Exception('获取agent($agentId)的msg信息列表 失败');
+      throw Exception('获取group($groupId)的msg信息列表 失败');
     }
   }
 

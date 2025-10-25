@@ -25,7 +25,7 @@ class GroupChat {
   final String settingContent; // 房间描述文本
   // final ConversationType type; // 没用，固定是ConversationType.xiaozhi
   // final String configId; // server类型 现在固定是Xiaozhi[0], 这是描述服务器配置的
-  final List groupAgents; // 剧场组中的agent演员列表
+  final List<AgentRoleSummary> groupAgents; // 剧场组中的agent演员列表
   final DateTime latestActiveAt; // 最后一条消息的时间
   final String latestMsgContent; // 最后一条消息内容
   final int unreadCount; //未读消息数
@@ -44,14 +44,29 @@ class GroupChat {
     // this.configId = '0',
     required this.title,
     required this.settingContent,
-    required this.groupAgents,
+    required dynamic groupAgents,
     required this.latestActiveAt,
     required this.latestMsgContent,
     this.unreadCount = 0,
     this.isPinned = false,
     required this.avator,
     required this.backdrop,
-  });
+  }) : groupAgents = _normalizeGroupAgents(groupAgents);
+
+  // 私有辅助方法：统一处理 groupAgents 输入
+  static List<AgentRoleSummary> _normalizeGroupAgents(dynamic input) {
+    if (input is List<AgentRoleSummary>) {
+      return List<AgentRoleSummary>.from(input);
+    } else if (input is List) {
+      return input
+          .where((e) => e != null)
+          .map((e) => AgentRoleSummary.fromJson(e as Map<String, dynamic>))
+          .toList();
+    } else {
+      // 非 List 类型，返回空列表（或可抛异常）
+      return [];
+    }
+  }
 
   // 创建GroupChat
   factory GroupChat.fromJson(Map<String, dynamic> json) {
@@ -63,7 +78,7 @@ class GroupChat {
       createHumanAgentName: json['createHumanAgentName'],
       title: json['title'],
       settingContent: json['settingContent'],
-      groupAgents: json['groupAgents'],
+      groupAgents: _normalizeGroupAgents(json['groupAgents']),
       latestActiveAt: DateTime.parse(json['latestActiveAt']),
       latestMsgContent: json['latestMsgContent'],
       unreadCount: json['unreadCount'] ?? 0,
@@ -82,7 +97,7 @@ class GroupChat {
       'createHumanAgentName': createHumanAgentName,
       'title': title,
       'settingContent': settingContent,
-      'groupAgents': groupAgents,
+      'groupAgents': groupAgents.map((agent) => agent.toJson()).toList(),
       'latestActiveAt': latestActiveAt.toIso8601String(),
       'latestMsgContent': latestMsgContent,
       'unreadCount': unreadCount,
@@ -115,6 +130,36 @@ class GroupChat {
       avator: avator,
       backdrop: backdrop,
     );
+  }
+}
+
+// AgentRoleSummary演员 对应的数据结构
+class AgentRoleSummary {
+  final String agentId; // agent的ID
+  final String agentName; // 创建的agent的Name
+  final AgentType agentType; // agent的类型
+  AgentRoleSummary({
+    // 构造函数
+    required this.agentId,
+    required this.agentName,
+    required this.agentType,
+  });
+
+  // 创建GroupChat
+  factory AgentRoleSummary.fromJson(Map<String, dynamic> json) {
+    return AgentRoleSummary(
+      agentId: json['agent_id'].toString(),
+      agentName: json['agent_name'],
+      agentType: AgentType.fromString(json['agent_type']),
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'agentId': agentId,
+      'agentName': agentName,
+      'agentType': agentType.name,
+    };
   }
 }
 
