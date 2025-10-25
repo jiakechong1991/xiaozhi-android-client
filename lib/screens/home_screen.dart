@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ai_assistant/controllers/conversation_controller.dart';
+import 'package:ai_assistant/controllers/group_list_controller.dart';
 import 'package:ai_assistant/controllers/agent_list_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/screens/chat_screen.dart';

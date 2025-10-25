@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:ai_assistant/controllers/agent_create_controller.dart';
+import 'package:ai_assistant/controllers/group_create_controller.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -7,16 +7,16 @@ class GroupChatCreatePage extends StatefulWidget {
   const GroupChatCreatePage({super.key});
 
   @override
-  State<GroupChatCreatePage> createState() => _ConversationTypeCreateState();
+  State<GroupChatCreatePage> createState() => _GroupChatCreateState();
 }
 
-class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
-  final createAgentControllerIns = Get.find<CreateAgentController>();
+class _GroupChatCreateState extends State<GroupChatCreatePage> {
+  final createGroupCtlIns = Get.find<CreateGroupController>();
 
   @override
   void initState() {
     super.initState();
-    createAgentControllerIns.getDefaultAvatar();
+    createGroupCtlIns.getDefaultAvatar();
   }
 
   @override
@@ -97,7 +97,7 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentControllerIns.agentNameController,
+                controller: createGroupCtlIns.titleEditCtlIns,
                 decoration: InputDecoration(
                   hintText: '请输入场景名称',
                   border: OutlineInputBorder(),
@@ -109,74 +109,100 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
                 '我的化身:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              Obx(
-                () => DropdownButtonFormField<String>(
-                  value: createAgentControllerIns.voices.value,
-                  decoration: InputDecoration(border: OutlineInputBorder()),
-                  items:
-                      createAgentControllerIns.availableVoices
-                          .map(
-                            (voice) => DropdownMenuItem<String>(
-                              value: voice['value'],
-                              child: Text(voice['label']!),
-                            ),
-                          )
-                          .toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      createAgentControllerIns.voices.value =
-                          newValue; // ✅ 同步到 controller
-                    }
-                  },
-                  // 可选：添加验证
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '请选择音色';
-                    }
-                    return null;
-                  },
-                ),
-              ),
+              Obx(() {
+                final selected =
+                    createGroupCtlIns.humanAgentUse; // 假设你用 aiAgentsUser 存多选结果
+                return Row(
+                  children: [
+                    // 已选角色头像列表（最多显示3个，可滚动）
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: selected.length,
+                          itemBuilder: (context, index) {
+                            final agent = selected[index];
+                            return Container(
+                              margin: const EdgeInsets.only(right: 8),
+                              child: CircleAvatar(
+                                backgroundImage: NetworkImage(agent.avatar),
+                                radius: 20,
+                                child: Text(
+                                  agent.agentName.characters.take(1).join(),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    // 下拉三角按钮
+                    IconButton(
+                      icon: const Icon(
+                        Icons.arrow_drop_down_circle,
+                        color: Colors.blue,
+                      ),
+                      onPressed:
+                          () => _showHumanAgentSelectionBottomSheet(context),
+                    ),
+                  ],
+                );
+              }),
 
               const Text(
                 '可选聊天角色列表:',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
-              Obx(
-                () => DropdownButtonFormField<String>(
-                  value: createAgentControllerIns.voices.value,
-                  decoration: InputDecoration(border: OutlineInputBorder()),
-                  items:
-                      createAgentControllerIns.availableVoices
-                          .map(
-                            (voice) => DropdownMenuItem<String>(
-                              value: voice['value'],
-                              child: Text(voice['label']!),
-                            ),
-                          )
-                          .toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      createAgentControllerIns.voices.value =
-                          newValue; // ✅ 同步到 controller
-                    }
-                  },
-                  // 可选：添加验证
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '请选择音色';
-                    }
-                    return null;
-                  },
-                ),
-              ),
+              Obx(() {
+                final selected =
+                    createGroupCtlIns.aiAgentsUser; // 假设你用 aiAgentsUser 存多选结果
+                return Row(
+                  children: [
+                    // 已选角色头像列表（最多显示3个，可滚动）
+                    Expanded(
+                      child: SizedBox(
+                        height: 50,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          itemCount: selected.length,
+                          itemBuilder: (context, index) {
+                            final agent = selected[index];
+                            return Container(
+                              margin: const EdgeInsets.only(right: 8),
+                              child: CircleAvatar(
+                                backgroundImage: NetworkImage(agent.avatar),
+                                radius: 20,
+                                child: Text(
+                                  agent.agentName.characters.take(1).join(),
+                                  style: TextStyle(color: Colors.white),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ),
+                    // 下拉三角按钮
+                    IconButton(
+                      icon: const Icon(
+                        Icons.arrow_drop_down_circle,
+                        color: Colors.blue,
+                      ),
+                      onPressed:
+                          () => _showAiAgentSelectionBottomSheet(context),
+                    ),
+                  ],
+                );
+              }),
 
               const Text(
                 '角色设定：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               TextField(
-                controller: createAgentControllerIns.characterSettingController,
+                controller: createGroupCtlIns.settingEditCtlIns,
                 decoration: InputDecoration(
                   hintText: '请输入角色介绍',
                   border: OutlineInputBorder(),
@@ -186,6 +212,144 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
           ),
         ],
       ),
+    );
+  }
+
+  void _showHumanAgentSelectionBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  '选择化身',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const Divider(),
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: createGroupCtlIns.humanAgentList.length,
+                  itemBuilder: (context, index) {
+                    final agent = createGroupCtlIns.humanAgentList[index];
+                    final isSelected = createGroupCtlIns.humanAgentList.any(
+                      (a) => a.agentId == agent.agentId,
+                    );
+
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(agent.avatar),
+                        radius: 20,
+                      ),
+                      title: Text(agent.agentName),
+                      trailing:
+                          isSelected
+                              ? const Icon(Icons.check, color: Colors.blue)
+                              : null,
+                      onTap: () {
+                        if (isSelected) {
+                          // 取消选择
+                          createGroupCtlIns.humanAgentList.removeWhere(
+                            (a) => a.agentId == agent.agentId,
+                          );
+                        } else {
+                          // 添加选择
+                          createGroupCtlIns.humanAgentList.add(agent);
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('完成'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showAiAgentSelectionBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Padding(
+                padding: EdgeInsets.all(16.0),
+                child: Text(
+                  '选择角色',
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+              const Divider(),
+              Expanded(
+                child: ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: createGroupCtlIns.aiAgentList.length,
+                  itemBuilder: (context, index) {
+                    final agent = createGroupCtlIns.aiAgentList[index];
+                    final isSelected = createGroupCtlIns.aiAgentsUser.any(
+                      (a) => a.agentId == agent.agentId,
+                    );
+
+                    return ListTile(
+                      leading: CircleAvatar(
+                        backgroundImage: NetworkImage(agent.avatar),
+                        radius: 20,
+                      ),
+                      title: Text(agent.agentName),
+                      trailing:
+                          isSelected
+                              ? const Icon(Icons.check, color: Colors.blue)
+                              : null,
+                      onTap: () {
+                        if (isSelected) {
+                          // 取消选择
+                          createGroupCtlIns.aiAgentsUser.removeWhere(
+                            (a) => a.agentId == agent.agentId,
+                          );
+                        } else {
+                          // 添加选择
+                          createGroupCtlIns.aiAgentsUser.add(agent);
+                        }
+                      },
+                    );
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: ElevatedButton(
+                  onPressed: () => Navigator.pop(context),
+                  child: const Text('完成'),
+                ),
+              ),
+            ],
+          ),
+        );
+      },
     );
   }
 
@@ -211,9 +375,9 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
       ),
       child: ElevatedButton(
         onPressed:
-            createAgentControllerIns.isLoading.value
+            createGroupCtlIns.isLoading.value
                 ? null // 加载中禁用点击
-                : () => createAgentControllerIns.create_agent(), // 点击 创建角色按钮
+                : () => createGroupCtlIns.create_group(), // 点击 创建group按钮
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: Colors.black,
@@ -256,7 +420,7 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
                 border: Border.all(color: Colors.grey.shade300, width: 1),
               ),
               child:
-                  createAgentControllerIns.avatarFile.value == null
+                  createGroupCtlIns.avatarFile.value == null
                       ? Stack(
                         children: [
                           Container(
@@ -278,7 +442,7 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
                         children: [
                           ClipOval(
                             child: Image.file(
-                              createAgentControllerIns.avatarFile.value!,
+                              createGroupCtlIns.avatarFile.value!,
                               fit: BoxFit.cover,
                               width: 80,
                               height: 80,
@@ -317,7 +481,7 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
                 border: Border.all(color: Colors.grey.shade300, width: 1),
               ),
               child:
-                  createAgentControllerIns.avatarFile.value == null
+                  createGroupCtlIns.avatarFile.value == null
                       ? Stack(
                         children: [
                           Container(
@@ -339,7 +503,7 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
                         children: [
                           ClipOval(
                             child: Image.file(
-                              createAgentControllerIns.avatarFile.value!,
+                              createGroupCtlIns.avatarFile.value!,
                               fit: BoxFit.cover,
                               width: 80,
                               height: 80,
@@ -367,7 +531,7 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
                 title: const Text('从相册选择'),
                 onTap: () {
                   Navigator.pop(context);
-                  createAgentControllerIns.pickImage(ImageSource.gallery);
+                  createGroupCtlIns.pickImage(ImageSource.gallery);
                 },
               ),
               ListTile(
@@ -375,13 +539,13 @@ class _ConversationTypeCreateState extends State<GroupChatCreatePage> {
                 title: const Text('拍照'),
                 onTap: () {
                   Navigator.pop(context);
-                  createAgentControllerIns.pickImage(ImageSource.camera);
+                  createGroupCtlIns.pickImage(ImageSource.camera);
                 },
               ),
               ListTile(
                 leading: const Icon(Icons.cancel),
                 title: const Text('随机AI生成'),
-                onTap: () => createAgentControllerIns.getDefaultAvatar(),
+                onTap: () => createGroupCtlIns.getDefaultAvatar(),
               ),
               ListTile(
                 leading: const Icon(Icons.cancel),

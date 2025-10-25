@@ -5,7 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/message.dart';
 import 'package:ai_assistant/models/xiaozhi_config.dart';
-import 'package:ai_assistant/controllers/conversation_controller.dart';
+import 'package:ai_assistant/controllers/group_list_controller.dart';
 import 'package:ai_assistant/services/xiaozhi_service.dart';
 import 'dart:async';
 import 'dart:io';

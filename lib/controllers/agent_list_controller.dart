@@ -18,14 +18,29 @@ class AgentRoleListController extends GetxController {
   List<AgentRole> get agentRoleList => _agentRoleList;
   // 置顶的agentRoleList
   List<AgentRole> get pinnedAgentRoleList =>
-      _agentRoleList.where((conv) => conv.isPinned).toList();
+      _agentRoleList.where((itemAgent) => itemAgent.isPinned).toList();
   // 非置顶的agentRoleList
   List<AgentRole> get unpinnedAgentRoleList {
-    final unpinned_ = _agentRoleList.where((conv) => !conv.isPinned).toList();
+    final unpinned_ =
+        _agentRoleList.where((itemAgent) => !itemAgent.isPinned).toList();
     // 按 lastMessageTime 倒序排序：最新消息在前
     unpinned_.sort((a, b) => b.agentName.compareTo(a.agentName));
     return unpinned_;
   }
+
+  /// 获取 ai类型的演员列表
+  List<AgentRole> get aiAgentRoleList =>
+      _agentRoleList
+          .where((itemAgent) => itemAgent.agentType == AgentType.ai)
+          .toList();
+  // 获得 真人的演员列表
+  List<AgentRole> get humanAgentRoleList =>
+      _agentRoleList
+          .where((itemAgent) => itemAgent.agentType == AgentType.human)
+          .toList();
+  // 获得 真人的演员列表
+  AgentRole get humanAgentRoleDefault =>
+      humanAgentRoleList.where((itemAgent) => itemAgent.isDefault).toList()[0];
 
   AgentRoleListController() {
     print("---调用AgentRoleListController的构造函数了---");
