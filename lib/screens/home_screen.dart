@@ -204,7 +204,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icons.search,
                         Icons.search_outlined,
                       ),
-                      label: "社区",
+                      label: "角色池",
                     ),
                     BottomNavigationBarItem(
                       icon: _buildBottomNavigationBarItem(
