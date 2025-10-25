@@ -86,19 +86,6 @@ class _ConversationTypeCreateState extends State<AgentRoleCreatePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Padding(
-          //   padding: const EdgeInsets.all(20),
-          //   child: Column(
-          //     crossAxisAlignment: CrossAxisAlignment.start,
-          //     children: [
-          //       const Text(
-          //         '请填写角色基本信息',
-          //         style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-          //       ),
-          //       const SizedBox(height: 6),
-          //     ],
-          //   ),
-          // ),
           _buildAvatarSection(),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           const SizedBox(height: 16),
@@ -260,7 +247,7 @@ class _ConversationTypeCreateState extends State<AgentRoleCreatePage> {
         onPressed:
             createAgentControllerIns.isLoading.value
                 ? null // 加载中禁用点击
-                : () => createAgentControllerIns.create_agent(), // 点击 创建角色按钮
+                : () => createAgentControllerIns.createAgent(), // 点击 创建角色按钮
         style: ElevatedButton.styleFrom(
           padding: const EdgeInsets.symmetric(vertical: 16),
           backgroundColor: Colors.black,
@@ -303,36 +290,46 @@ class _ConversationTypeCreateState extends State<AgentRoleCreatePage> {
                 border: Border.all(color: Colors.grey.shade300, width: 1),
               ),
               child:
-                  createAgentControllerIns.avatarFile.value == null
-                      ? Stack(
-                        children: [
-                          Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.black.withOpacity(0.3),
-                            ),
-                            child: const Icon(
-                              Icons.add_a_photo,
-                              size: 24,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      )
-                      : Stack(
-                        children: [
-                          ClipOval(
-                            child: Image.file(
-                              createAgentControllerIns.avatarFile.value!,
-                              fit: BoxFit.cover,
+                  (() {
+                    final file = createAgentControllerIns.avatarFile.value;
+                    if (file == null) {
+                      print("🖼️ avatarFile is NULL");
+                    } else {
+                      print("🖼️ avatarFile path: ${file.path}");
+                      print("🖼️ file exists: ${file.existsSync()}");
+                      print("🖼️ file length: ${file.lengthSync()} bytes");
+                    }
+                    return file == null
+                        ? Stack(
+                          children: [
+                            Container(
                               width: 80,
                               height: 80,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.black.withOpacity(0.3),
+                              ),
+                              child: const Icon(
+                                Icons.add_a_photo,
+                                size: 24,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                        ],
-                      ),
+                          ],
+                        )
+                        : Stack(
+                          children: [
+                            ClipOval(
+                              child: Image.file(
+                                createAgentControllerIns.avatarFile.value!,
+                                fit: BoxFit.cover,
+                                width: 80,
+                                height: 80,
+                              ),
+                            ),
+                          ],
+                        );
+                  })(),
             ),
           ),
           const SizedBox(height: 15),

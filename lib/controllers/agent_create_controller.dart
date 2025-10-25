@@ -3,7 +3,6 @@ import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/services/api_service.dart';
 import 'package:ai_assistant/controllers/agent_list_controller.dart';
-import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
@@ -58,7 +57,6 @@ class CreateAgentController extends GetxController {
   // 更新头像
   void setAvatar(File? file) {
     avatarFile.value = file;
-    // update(); // 触发 Obx 刷新 UI
   }
 
   // 从相册或相机选择图片
@@ -100,7 +98,7 @@ class CreateAgentController extends GetxController {
     super.onClose();
   }
 
-  Future<void> create_agent() async {
+  Future<void> createAgent() async {
     print(">>> create_agent 按钮被点击，开始创建agent");
     if (agentNameController.text.isEmpty ||
         characterSettingController.text.isEmpty) {
