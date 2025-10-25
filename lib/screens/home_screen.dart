@@ -23,7 +23,7 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0; // 当前选中的底部导航栏索引
   final FocusNode _searchFocusNode = FocusNode(); // 搜索框焦点管理器
-  final conversationControllerIns = Get.find<ConversationController>();
+  final groupListCtlIns = Get.find<GroupListController>();
   final agentListControllerIns = Get.find<AgentRoleListController>();
 
   // 添加一个标记，防止重复跳转
@@ -498,7 +498,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // 这个列表是支持 条件判断的，动态确定显示哪些组件
 
           // 置顶对话的区域
-          if (conversationControllerIns.pinnedConversations.isNotEmpty) ...[
+          if (groupListCtlIns.pinnedGroupList.isNotEmpty) ...[
             // ... 将后面list的元素平铺到外层list中
             const Padding(
               padding: EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
@@ -521,20 +521,17 @@ class _HomeScreenState extends State<HomeScreen> {
             // 集合展开语法... ，将list中的元素逐个展开，添加到外层list中
             // 将pinnedConversations中的元素，逐个作为conversation，然后调用
             //    _buildConversationTile(conversation)方法，返回一个组件，然后添加到列表中
-            ...conversationControllerIns.pinnedConversations.map(
+            ...groupListCtlIns.pinnedGroupList.map(
               (conversation) => _buildConversationTile(conversation),
             ),
           ],
           // 非置顶对话的区域
-          if (conversationControllerIns.unpinnedConversations.isNotEmpty) ...[
+          if (groupListCtlIns.unpinnedGroupList.isNotEmpty) ...[
             Padding(
               padding: EdgeInsets.only(
                 left: 20,
                 right: 20,
-                top:
-                    conversationControllerIns.pinnedConversations.isEmpty
-                        ? 8
-                        : 16,
+                top: groupListCtlIns.pinnedGroupList.isEmpty ? 8 : 16,
                 bottom: 8,
               ),
               child: const Text(
@@ -553,13 +550,13 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ),
             ),
-            ...conversationControllerIns.unpinnedConversations.map(
+            ...groupListCtlIns.unpinnedGroupList.map(
               (conversation) => _buildConversationTile(conversation),
             ),
           ],
           // 如果为空，显示的区域
-          if (conversationControllerIns.pinnedConversations.isEmpty &&
-              conversationControllerIns.unpinnedConversations.isEmpty)
+          if (groupListCtlIns.pinnedGroupList.isEmpty &&
+              groupListCtlIns.unpinnedGroupList.isEmpty)
             Center(
               child: Padding(
                 padding: const EdgeInsets.all(64.0),
@@ -648,37 +645,14 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildConversationTile(Conversation conversation) {
+  Widget _buildConversationTile(GroupChat groupchatIns) {
     return SlidableDeleteTile(
       // 这是一个封装了 滑动删除功能的 组件
-      key: Key(conversation.agentId), // 为每个对话项设置唯一标识
+      key: Key(groupchatIns.groupId), // 为每个对话项设置唯一标识
       // 滑动删除的回调函数
       onDelete: () {
         // 删除对话
-        conversationControllerIns.deleteConversation(conversation.agentId);
-
-        // 显示撤销消息
-        // ScaffoldMessenger.of(context).clearSnackBars();
-        // ScaffoldMessenger.of(context).showSnackBar(
-        //   SnackBar(
-        //     content: Text('${conversation.agentName} 已删除'),
-        //     backgroundColor: Colors.grey.shade800,
-        //     behavior: SnackBarBehavior.floating,
-        //     duration: const Duration(seconds: 3),
-        //     margin: EdgeInsets.only(bottom: 70, left: 20, right: 20),
-        //     shape: RoundedRectangleBorder(
-        //       borderRadius: BorderRadius.circular(10),
-        //     ),
-        //     action: SnackBarAction(
-        //       label: '撤销',
-        //       textColor: Colors.white,
-        //       onPressed: () {
-        //         // 恢复被删除的对话
-        //         conversationControllerIns.restoreLastDeletedConversation();
-        //       },
-        //     ),
-        //   ),
-        // );
+        groupListCtlIns.deleteGroupChat(groupchatIns.groupId);
       },
       // 点击的回调函数
       onTap: () {
@@ -689,24 +663,24 @@ class _HomeScreenState extends State<HomeScreen> {
           // 这是一个路由包装器，定义了 新页面，以及页面切换的过渡动画(提供符合 Material Design 风格的页面过渡动画)
           MaterialPageRoute(
             // builder 是一个函数，用于定义 新页面的内容()
-            builder: (context) => ChatScreen(conversation: conversation),
+            builder: (context) => ChatScreen(groupChatIns: groupchatIns),
           ),
         );
       },
       // 长按的回调函数
       onLongPress: () {
         // 显示置顶等选项
-        _showConversationOptions(conversation);
+        _showConversationOptions(groupchatIns);
       },
       child: ConversationTile(
-        conversation: conversation,
+        groupChatIns: groupchatIns,
         onTap: null, // 不再需要处理点击
         onLongPress: null, // 不再需要处理长按
       ),
     );
   }
 
-  void _showConversationOptions(Conversation conversation) {
+  void _showConversationOptions(GroupChat groupchatIns) {
     // showModalBottomSheet 是 Flutter 用于显示底部弹窗的[官方方法]，
     //    函数通过配置其参数和构建弹窗内容，实现了美观且交互友好的操作菜单
     showModalBottomSheet(
@@ -781,7 +755,7 @@ class _HomeScreenState extends State<HomeScreen> {
                           ],
                         ),
                         child: Icon(
-                          conversation.isPinned
+                          groupchatIns.isPinned
                               ? Icons.push_pin
                               : Icons.push_pin_outlined,
                           color: Colors.black,
@@ -789,7 +763,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                       ),
                       title: Text(
-                        conversation.isPinned ? '取消置顶' : '置顶对话',
+                        groupchatIns.isPinned ? '取消置顶' : '置顶对话',
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -800,8 +774,8 @@ class _HomeScreenState extends State<HomeScreen> {
                         borderRadius: BorderRadius.circular(16),
                       ),
                       onTap: () {
-                        conversationControllerIns.togglePinConversation(
-                          conversation.agentId,
+                        groupListCtlIns.togglePinGroupChat(
+                          groupchatIns.groupId,
                         );
                         Navigator.pop(context);
                       },
@@ -870,13 +844,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         //     将之后的栈顶 弹窗/页面 显示出俩
                         Navigator.pop(context);
                         //从数据源中移除该对话
-                        conversationControllerIns.deleteConversation(
-                          conversation.agentId,
-                        );
+                        groupListCtlIns.deleteGroupChat(groupchatIns.groupId);
                         // 显示一个 SnackBar，告知用户对话已删除
                         ScaffoldMessenger.of(context).showSnackBar(
                           SnackBar(
-                            content: Text('${conversation.agentName} 已删除'),
+                            content: Text('${groupchatIns.title} 已删除'),
                             backgroundColor: Colors.grey.shade800,
                             behavior: SnackBarBehavior.floating,
                             shape: RoundedRectangleBorder(

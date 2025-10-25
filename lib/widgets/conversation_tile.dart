@@ -6,14 +6,14 @@ import 'package:ai_assistant/screens/base/kit/index.dart';
 
 // home page的agent chat列表
 class ConversationTile extends StatelessWidget {
-  final Conversation conversation;
+  final GroupChat groupChatIns;
   final VoidCallback? onTap;
   final VoidCallback? onLongPress;
   final configControllerIns = Get.find<ConfigController>();
 
   ConversationTile({
     super.key,
-    required this.conversation,
+    required this.groupChatIns,
     this.onTap,
     this.onLongPress,
   });
@@ -57,7 +57,7 @@ class ConversationTile extends StatelessWidget {
                             child: Row(
                               children: [
                                 Text(
-                                  conversation.agentName,
+                                  groupChatIns.title,
                                   style: const TextStyle(
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
@@ -70,7 +70,7 @@ class ConversationTile extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            _formatTime(conversation.lastMessageTime),
+                            _formatTime(groupChatIns.latestActiveAt),
                             style: TextStyle(
                               fontSize: 14,
                               color: Colors.grey.shade500,
@@ -80,7 +80,7 @@ class ConversationTile extends StatelessWidget {
                       ),
                       const SizedBox(height: 6),
                       Text(
-                        conversation.lastMessage,
+                        groupChatIns.latestMsgContent,
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
@@ -112,15 +112,10 @@ class ConversationTile extends StatelessWidget {
     String label = '语音';
 
     // 如果有配置ID且不为空，则显示配置名称
-    if (conversation.configId.isNotEmpty) {
-      // 尝试查找匹配的小智配置
-      final matchingConfig =
-          configControllerIns.xiaozhiConfigs
-              .where((config) => config.id == conversation.configId)
-              .firstOrNull;
-      if (matchingConfig != null) {
-        label = '${matchingConfig.name}';
-      }
+    // 尝试查找匹配的小智配置
+    final matchingConfig = configControllerIns.xiaozhiConfigs[0];
+    if (matchingConfig != null) {
+      label = '${matchingConfig.name}';
     }
 
     return Container(
@@ -140,7 +135,7 @@ class ConversationTile extends StatelessWidget {
     return CircleAvatar(
       radius: 24,
       backgroundColor: Colors.purple.shade400,
-      child: WcaoUtils.imageCache(conversation.avatorImgUrl),
+      child: WcaoUtils.imageCache(groupChatIns.avator),
     );
   }
 

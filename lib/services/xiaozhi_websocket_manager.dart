@@ -32,6 +32,7 @@ class XiaozhiWebSocketManager {
   String? _agentID;
   String? _agentName;
   String? _deviceId;
+  String? _groupId;
 
   String? _accessToken;
   bool _enableToken;
@@ -43,6 +44,7 @@ class XiaozhiWebSocketManager {
 
   /// 构造函数
   XiaozhiWebSocketManager({
+    required String groupId,
     required String deviceId,
     required String userName,
     required String agentID,
@@ -52,7 +54,8 @@ class XiaozhiWebSocketManager {
        _userName = userName,
        _agentID = agentID,
        _agentName = agentName,
-       _enableToken = enableToken;
+       _enableToken = enableToken,
+       _groupId = groupId;
 
   /// 添加事件监听器
   void addListener(XiaozhiWebSocketListener listener) {

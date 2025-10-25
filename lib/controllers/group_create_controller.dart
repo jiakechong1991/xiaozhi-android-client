@@ -5,7 +5,6 @@ import 'package:ai_assistant/services/api_service.dart';
 import 'package:ai_assistant/controllers/group_list_controller.dart';
 import 'package:ai_assistant/controllers/agent_list_controller.dart';
 import 'package:ai_assistant/models/conversation.dart';
-import 'package:ai_assistant/controllers/config_controller.dart';
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
@@ -15,7 +14,7 @@ class CreateGroupController extends GetxController {
 
   final isLoading = false.obs; // 用于显示 loading
   final errorMessage = ''.obs; // 用于显示错误信息
-  final groupListCtlIns = Get.find<ConversationController>();
+  final groupListCtlIns = Get.find<GroupListController>();
   final agentListCtlIns = Get.find<AgentRoleListController>();
   final wcaoUtilsIns = Get.find<WcaoUtils>();
 

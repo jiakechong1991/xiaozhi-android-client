@@ -44,6 +44,7 @@ class XiaozhiService {
   final String agentID; // agentID
   final String agentName; // agent名称
   final String accessToken; // 访问令牌
+  final String groupID;
   String? _sessionId; // 会话ID将由服务器提供
 
   XiaozhiWebSocketManager? _webSocketManager;
@@ -57,6 +58,7 @@ class XiaozhiService {
   MessageListener? _messageListener;
 
   XiaozhiService({
+    required this.groupID,
     required this.websocketUrl,
     required this.macAddress,
     required this.userName,
@@ -119,6 +121,7 @@ class XiaozhiService {
 
     // 初始化WebSocket管理器，启用 token
     _webSocketManager = XiaozhiWebSocketManager(
+      groupId: groupID,
       deviceId: macAddress,
       userName: userName,
       agentID: agentID,
@@ -167,6 +170,7 @@ class XiaozhiService {
 
       // 创建WebSocket管理器
       _webSocketManager = XiaozhiWebSocketManager(
+        groupId: groupID,
         deviceId: macAddress,
         userName: userName,
         agentID: agentID,
@@ -306,6 +310,7 @@ class XiaozhiService {
 
       // 使用 WebSocketManager 连接
       _webSocketManager = XiaozhiWebSocketManager(
+        groupId: groupID,
         deviceId: macAddress,
         userName: userName,
         agentID: agentID,
