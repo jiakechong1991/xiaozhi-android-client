@@ -97,20 +97,26 @@ class CreateGroupController extends GetxController {
     errorMessage.value = '';
 
     try {
-      // final newAgentRole = await groupListCtlIns.createAgentRole(
-      //   agentName: agentNameController.text,
-      //   sex: sex.value,
-      //   birthday: birthdayController.text,
-      //   characterSetting: characterSettingController.text,
-      //   age: ageController.text,
-      //   voices: voices.value,
-      //   avatarFile: avatarFile.value,
-      // );
+      List<AgentRole> mergedAgentList = humanAgentUse + aiAgentsUser;
+      print(">>> 创建group开始");
+      print(mergedAgentList[0].toJson());
+      List<AgentRoleSummary> groupAgentsSum =
+          mergedAgentList
+              .map((agent) => AgentRoleSummary.fromJson(agent.toJson()))
+              .toList();
+      final newAgentRole = await groupListCtlIns.createGroupChat(
+        createHumanAgentId: humanAgentUse[0].agentId,
+        title: titleEditCtlIns.text,
+        settingContent: settingEditCtlIns.text,
+        groupAgents: groupAgentsSum,
+        avatorFile: avatarFile.value!,
+        backdropFile: avatarFile.value!,
+      );
       // 带参数回到home列表， 后续改成
-      Get.offAndToNamed('/home');
-      print(">>> 创建agent成功end");
+      // Get.offAndToNamed('/home');
+      print(">>> 创建group成功end");
     } catch (e, stackTrace) {
-      print(">>> 创建agent失败");
+      print(">>> 创建group失败");
       print("错误信息: $e");
       print("完整堆栈:");
       print(stackTrace); //

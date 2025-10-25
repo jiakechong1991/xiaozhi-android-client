@@ -147,10 +147,11 @@ class AgentRoleSummary {
 
   // 创建GroupChat
   factory AgentRoleSummary.fromJson(Map<String, dynamic> json) {
+    String agentId = json['agent_id'] ?? json['agentId'];
     return AgentRoleSummary(
-      agentId: json['agent_id'].toString(),
-      agentName: json['agent_name'],
-      agentType: AgentType.fromString(json['agent_type']),
+      agentId: agentId.toString(),
+      agentName: json['agent_name'] ?? json['agentName'],
+      agentType: AgentType.fromString(json['agent_type'] ?? json['agentType']),
     );
   }
 

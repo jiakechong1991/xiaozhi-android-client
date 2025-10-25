@@ -86,7 +86,7 @@ class _GroupChatCreateState extends State<GroupChatCreatePage> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildAvatarSection(),
-          _buildBackdropSection(),
+          // _buildBackdropSection(),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           const SizedBox(height: 16),
           Column(

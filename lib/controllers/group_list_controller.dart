@@ -182,32 +182,38 @@ class GroupListController extends GetxController {
   }
 
   Future<GroupChat> createGroupChat({
-    required String userId,
-    required String userName,
-    required String groupId,
     required String createHumanAgentId, // 创建group的agent-human ID
-    required String createHumanAgentName,
     required String title, // 创建group的标题
     required String settingContent,
     required List<AgentRoleSummary> groupAgents, // group的成员列表
-    required avator,
-    required backdrop,
+    required File avatorFile,
+    required File backdropFile,
   }) async {
+    final newGroupRes = await _api.createGroup(
+      createHumanAgentId,
+      groupAgents,
+      title,
+      settingContent,
+      avatorFile,
+      backdropFile,
+    );
+    print("group服务端创建成功：");
+    print(newGroupRes);
     final newGroupChatIns = GroupChat(
-      userId: userId,
-      userName: userName,
-      groupId: groupId,
-      createHumanAgentId: createHumanAgentId,
-      createHumanAgentName: createHumanAgentName,
-      title: title,
-      settingContent: settingContent,
-      groupAgents: groupAgents,
+      userId: newGroupRes["user_id"].toString(),
+      userName: newGroupRes["user_name"],
+      groupId: newGroupRes["group_id"].toString(),
+      createHumanAgentId: newGroupRes["create_human_agent_id"].toString(),
+      createHumanAgentName: newGroupRes["create_human_agent_name"],
+      title: newGroupRes["title"],
+      settingContent: newGroupRes["setting_content"],
+      groupAgents: newGroupRes["group_agents"],
       latestActiveAt: DateTime.now(),
       latestMsgContent: '',
       unreadCount: 0,
       isPinned: false,
-      avator: avator,
-      backdrop: backdrop,
+      avator: newGroupRes["avatar"],
+      backdrop: newGroupRes["backdrop"],
     );
 
     _groupChatList.add(newGroupChatIns);
@@ -215,7 +221,7 @@ class GroupListController extends GetxController {
 
     await _saveGroupChatList();
 
-    print('createGroupChat: 创建新group会话，ID = $groupId');
+    print('createGroupChat: 创建新group会话，ID = $newGroupRes["group_id"]');
     return newGroupChatIns;
   }
 

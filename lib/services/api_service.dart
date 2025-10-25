@@ -407,7 +407,7 @@ class ApiService {
       final filename = path.basename(backdrop.path); // 背景图片
       formData.files.add(
         MapEntry(
-          'avatar',
+          'backdrop',
           await MultipartFile.fromFile(backdrop.path, filename: filename),
         ),
       );
