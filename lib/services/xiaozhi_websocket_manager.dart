@@ -116,6 +116,7 @@ class XiaozhiWebSocketManager {
           'client-id': _deviceId ?? '',
           'protocol-version': '1',
           // 'user-id': _userId ?? '',
+          'group-id': _groupId,
           'user-name': _userName ?? '',
           'agent-id': _agentID ?? '',
           // 'agent-name': _agentName ?? '',

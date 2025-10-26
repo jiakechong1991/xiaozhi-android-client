@@ -144,7 +144,7 @@ class GroupListController extends GetxController {
         // 确保每个会话的图片目录存在
         final appDir = await getApplicationDocumentsDirectory();
         final conversationDir = Directory(
-          '${appDir.path}/conversations/${itemGroup.groupId}/images',
+          '${appDir.path}/group/${itemGroup.groupId}/images',
         );
         if (!await conversationDir.exists()) {
           await conversationDir.create(recursive: true);
@@ -236,12 +236,10 @@ class GroupListController extends GetxController {
 
       try {
         // 在服务端标记删除
-        _api.deleteAgent(groupId);
+        _api.deleteGroup(groupId);
         // 清理图片文件
         final appDir = await getApplicationDocumentsDirectory();
-        final conversationDir = Directory(
-          '${appDir.path}/conversations/$groupId',
-        );
+        final conversationDir = Directory('${appDir.path}/group/$groupId');
         if (await conversationDir.exists()) {
           await conversationDir.delete(recursive: true);
           print('已清理会话相关的图片文件: ${conversationDir.path}');

@@ -445,6 +445,21 @@ class ApiService {
     }
   }
 
+  // 删除agent
+  Future<bool> deleteGroup(String groupId) async {
+    try {
+      final response = await _dio.delete('/api/groups/$groupId/');
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        throw Exception('删除groups失败: ${response.statusCode}');
+      }
+    } catch (e) {
+      throw Exception('删除groups失败: 网络连接失败');
+    }
+  }
+
   // 👇 通用 GET 请求
   Future<dynamic> get(String path) async {
     final response = await _dio.get(path);

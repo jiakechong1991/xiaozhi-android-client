@@ -1,4 +1,6 @@
 // lib/controllers/login_controller.dart
+import 'dart:math';
+
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/services/api_service.dart';
@@ -25,7 +27,7 @@ class CreateGroupController extends GetxController {
   var groupAgents = <AgentRole>[];
   var humanAgentList = <AgentRole>[]; // 完整的可选人类演员表
   var humanAgentUse = <AgentRole>[].obs;
-  var aiAgentsUser = <AgentRole>[].obs;
+  var aiAgentsUse = <AgentRole>[].obs;
   var aiAgentList = <AgentRole>[]; // 完整的可选ai演员表
   // 头像背景 图片文件（可选）
   var avatarFile = Rx<File?>(null);
@@ -82,14 +84,19 @@ class CreateGroupController extends GetxController {
     print(">>> create_agent 按钮被点击，开始创建agent");
     if (titleEditCtlIns.text.isEmpty) {
       errorMessage.value = "场景名称不能为空";
+      print(errorMessage.value);
       return;
     }
-    if (humanAgentUse.value == null) {
+    if (humanAgentUse.length < 1) {
       errorMessage.value = "请选择自己的演员化身";
+      print(errorMessage.value);
+
       return;
     }
-    if (aiAgentsUser.value.isEmpty) {
+    if (aiAgentsUse.length < 1) {
       errorMessage.value = "请至少选择一个ai角色";
+      print(errorMessage.value);
+
       return;
     }
 
@@ -97,8 +104,17 @@ class CreateGroupController extends GetxController {
     errorMessage.value = '';
 
     try {
-      List<AgentRole> mergedAgentList = humanAgentUse + aiAgentsUser;
       print(">>> 创建group开始");
+      print(humanAgentUse.length);
+      print(aiAgentsUse.length);
+      List<AgentRole> mergedAgentList = [
+        ...humanAgentUse.toList(),
+        ...aiAgentsUse.toList(),
+      ];
+      print(">>> 创建group开始22");
+      print(humanAgentUse.length);
+      print(aiAgentsUse.length);
+      print(mergedAgentList.length);
       print(mergedAgentList[0].toJson());
       List<AgentRoleSummary> groupAgentsSum =
           mergedAgentList

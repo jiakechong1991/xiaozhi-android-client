@@ -157,7 +157,7 @@ class _GroupChatCreateState extends State<GroupChatCreatePage> {
               ),
               Obx(() {
                 final selected =
-                    createGroupCtlIns.aiAgentsUser; // 假设你用 aiAgentsUser 存多选结果
+                    createGroupCtlIns.aiAgentsUse; // 假设你用 aiAgentsUser 存多选结果
                 return Row(
                   children: [
                     // 已选角色头像列表（最多显示3个，可滚动）
@@ -216,6 +216,13 @@ class _GroupChatCreateState extends State<GroupChatCreatePage> {
   }
 
   void _showHumanAgentSelectionBottomSheet(BuildContext context) {
+    // 先确保数据已加载
+    if (createGroupCtlIns.humanAgentList.isEmpty) {
+      // 可选：提示“加载中”或先加载数据
+      print("humanAgentList为空，没有下拉列表，请先创建默认角色");
+      return;
+    }
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -241,8 +248,11 @@ class _GroupChatCreateState extends State<GroupChatCreatePage> {
                   itemCount: createGroupCtlIns.humanAgentList.length,
                   itemBuilder: (context, index) {
                     final agent = createGroupCtlIns.humanAgentList[index];
-                    final isSelected = createGroupCtlIns.humanAgentList.any(
+                    final isSelected = createGroupCtlIns.humanAgentUse.any(
                       (a) => a.agentId == agent.agentId,
+                    );
+                    print(
+                      "构建 item $index, agentId=${agent.agentId}, isSelected=$isSelected, useList长度=${createGroupCtlIns.humanAgentUse.length}",
                     );
 
                     return ListTile(
@@ -256,15 +266,30 @@ class _GroupChatCreateState extends State<GroupChatCreatePage> {
                               ? const Icon(Icons.check, color: Colors.blue)
                               : null,
                       onTap: () {
+                        // print("我被点击了");
+                        // print(
+                        //   "点击前 humanAgentUse 长度: ${createGroupCtlIns.humanAgentUse.length}",
+                        // );
                         if (isSelected) {
+                          // print("我执行这里了");
                           // 取消选择
-                          createGroupCtlIns.humanAgentList.removeWhere(
+                          createGroupCtlIns.humanAgentUse.removeWhere(
                             (a) => a.agentId == agent.agentId,
                           );
                         } else {
                           // 添加选择
-                          createGroupCtlIns.humanAgentList.add(agent);
+                          // print("我要添加到humanAgentUse");
+                          // print(createGroupCtlIns.humanAgentUse.length);
+                          createGroupCtlIns.humanAgentUse.add(agent);
+                          // print("添加后");
+                          // print(createGroupCtlIns.humanAgentUse.length);
                         }
+                        // print(
+                        //   "点击后 humanAgentUse 长度: ${createGroupCtlIns.humanAgentUse.length}",
+                        // );
+                        // setState(() {
+                        //   print("BottomSheet 触发了 rebuild");
+                        // });
                       },
                     );
                   },
@@ -310,7 +335,7 @@ class _GroupChatCreateState extends State<GroupChatCreatePage> {
                   itemCount: createGroupCtlIns.aiAgentList.length,
                   itemBuilder: (context, index) {
                     final agent = createGroupCtlIns.aiAgentList[index];
-                    final isSelected = createGroupCtlIns.aiAgentsUser.any(
+                    final isSelected = createGroupCtlIns.aiAgentsUse.any(
                       (a) => a.agentId == agent.agentId,
                     );
 
@@ -327,12 +352,12 @@ class _GroupChatCreateState extends State<GroupChatCreatePage> {
                       onTap: () {
                         if (isSelected) {
                           // 取消选择
-                          createGroupCtlIns.aiAgentsUser.removeWhere(
+                          createGroupCtlIns.aiAgentsUse.removeWhere(
                             (a) => a.agentId == agent.agentId,
                           );
                         } else {
                           // 添加选择
-                          createGroupCtlIns.aiAgentsUser.add(agent);
+                          createGroupCtlIns.aiAgentsUse.add(agent);
                         }
                       },
                     );
