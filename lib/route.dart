@@ -20,6 +20,7 @@ import 'package:ai_assistant/screens/settings/about/index.dart';
 import 'package:ai_assistant/screens/settings/backlist/index.dart';
 import 'package:ai_assistant/screens/settings/privacy/index.dart';
 import 'package:ai_assistant/screens/userprofile_create.dart';
+import 'package:ai_assistant/screens/consume/account_about_page.dart';
 
 List<GetPage<dynamic>> getRoutes = [
   GetPage(name: '/home', page: () => const HomeScreen()),
@@ -72,4 +73,6 @@ List<GetPage<dynamic>> getRoutes = [
       return ChatScreen(groupChatIns: groupChatIns);
     },
   ),
+  /////// account consume point页面
+  GetPage(name: '/account/about', page: () => const AccountAboutPage()),
 ];

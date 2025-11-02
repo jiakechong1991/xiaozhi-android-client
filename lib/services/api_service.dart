@@ -5,6 +5,7 @@ import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:ai_assistant/services/token_storage.dart'; // 替换为你的包名
 import 'package:ai_assistant/state/token.dart'; // 你的 TokenController
 import 'dart:io';
+import 'package:ai_assistant/utils/time_util.dart';
 import 'package:path/path.dart' as path;
 
 class ApiService {
@@ -457,6 +458,47 @@ class ApiService {
       }
     } catch (e) {
       throw Exception('删除groups失败: 网络连接失败');
+    }
+  }
+
+  ////////////////////////account point consume类型的api函数
+  // 👇 获取用户的 账户积分
+  Future<Map<String, dynamic>> getAccountPonit() async {
+    final response = await _dio.get('/api/consume/account_profile/');
+    print(response.data);
+    if (response.statusCode == 200) {
+      return response.data as Map<String, dynamic>? ?? {};
+    } else {
+      throw Exception('获取账户积分信息失败');
+    }
+  }
+
+  // 👇 获取用户 的积分消耗 记录
+  Future<Map<String, dynamic>> getAccountConsumePonitRecords({
+    // 开始时间 必须使用app所在时区的时间格式 2025-07-02 00:00:00， 不能添加时区信息
+    required String startTime,
+    required String endTime, // 结束时间
+    required String aggregationDim, // 聚合维度 支持 month, day两个
+    required String timeZone, // 时区，"Asia/Shanghai" 等标准的时区名称
+  }) async {
+    // 检查aggregationDim
+    if (aggregationDim != TimeUtil.month && aggregationDim != TimeUtil.day) {
+      throw Exception('aggregationDim参数错误');
+    }
+    final response = await _dio.post(
+      '/api/consume/point_consume/',
+      data: {
+        'start_time': startTime,
+        'end_time': endTime,
+        'aggregation_dim': aggregationDim,
+        'timezone': timeZone,
+      },
+    );
+    print(response.data);
+    if (response.statusCode == 200) {
+      return response.data["data"] as Map<String, dynamic>? ?? {};
+    } else {
+      throw Exception('获取用户的 积分消费列表 失败');
     }
   }
 

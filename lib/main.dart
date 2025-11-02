@@ -25,6 +25,7 @@ import 'package:ai_assistant/controllers/register_controller.dart';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ai_assistant/controllers/check_profile_controller.dart';
+import 'package:ai_assistant/screens/consume/account_about_controller.dart';
 
 // 是否启用调试工具
 const bool enableDebugTools = true;
@@ -130,6 +131,7 @@ void main() async {
   Get.lazyPut(() => CreateGroupController(), fenix: true);
 
   Get.lazyPut(() => CheckProfileController(), fenix: true);
+  Get.lazyPut(() => AccountAboutPageController(), fenix: true);
 
   /*
   flutters

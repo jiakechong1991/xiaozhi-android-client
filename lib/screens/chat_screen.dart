@@ -6,7 +6,6 @@ import 'dart:math';
 import 'dart:io';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/message.dart';
-import 'package:ai_assistant/models/xiaozhi_config.dart';
 import 'package:ai_assistant/controllers/group_list_controller.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/services/xiaozhi_service.dart';

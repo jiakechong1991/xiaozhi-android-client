@@ -243,3 +243,27 @@ class AgentRole {
     );
   }
 }
+
+// 对应的 一个时间(天/月) 的积分消费记录 数据结构
+class ConsumePointRecord {
+  final String timeStr; // 日期
+  final double consumePoints; // 该日期的消费积分
+
+  ConsumePointRecord({
+    // 构造函数
+    required this.timeStr,
+    required this.consumePoints,
+  });
+
+  // 创建ConsumePointRecord
+  factory ConsumePointRecord.fromJson(Map<String, dynamic> json) {
+    return ConsumePointRecord(
+      timeStr: json['timeStr'],
+      consumePoints: json['consumePoints'],
+    );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {'timeStr': timeStr, 'consumePoints': consumePoints};
+  }
+}
