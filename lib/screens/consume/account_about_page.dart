@@ -41,7 +41,7 @@ class _AccountAboutState extends State<AccountAboutPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
-          '新建角色',
+          '账户信息',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
