@@ -26,6 +26,7 @@ import 'package:ai_assistant/screens/base/kit/index.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ai_assistant/controllers/check_profile_controller.dart';
 import 'package:ai_assistant/screens/consume/account_about_controller.dart';
+import 'package:ai_assistant/utils/time_util.dart';
 
 // 是否启用调试工具
 const bool enableDebugTools = true;
@@ -117,6 +118,8 @@ void main() async {
 
   // 初始化并注入全局服务
   await Get.putAsync<WcaoUtils>(() => WcaoUtils().init());
+  // 启动app时，获得app的时区
+  await TimeUtil.getDeviceTimeZoneId();
 
   Get.put(ApiService()); // ApiService 无异步构造函数时
   Get.put(ThemeController());

@@ -26,7 +26,7 @@ class AccountAboutPageController extends GetxController {
         startTime: TimeUtil.getTodayStartTimeString(),
         endTime: TimeUtil.getNowTimeString(),
         aggregationDim: TimeUtil.day,
-        timeZone: TimeUtil.getTimeZone(),
+        timeZone: TimeUtil.cachedTimeZoneId!,
       );
       print("从服务器拉取今天的 账户积分 列表成功");
       print(resConsumePointRecords);
@@ -58,7 +58,7 @@ class AccountAboutPageController extends GetxController {
         startTime: TimeUtil.getTodayStartTimeString(),
         endTime: TimeUtil.getNowTimeString(),
         aggregationDim: aggregationDim,
-        timeZone: TimeUtil.getTimeZone(),
+        timeZone: TimeUtil.cachedTimeZoneId!,
       );
       print("从服务器拉取时间段的 账户积分 列表成功");
       print(resConsumePointRecords);

@@ -6,7 +6,7 @@ import 'package:ai_assistant/models/conversation.dart';
 
 import 'package:ai_assistant/screens/agreement/privacy.dart';
 import 'package:ai_assistant/screens/agreement/user.dart';
-import 'package:ai_assistant/screens/chat_screen.dart';
+import 'package:ai_assistant/screens/chat/chat_screen.dart';
 import 'package:ai_assistant/screens/agent_create.dart';
 import 'package:ai_assistant/screens/group_create.dart';
 
