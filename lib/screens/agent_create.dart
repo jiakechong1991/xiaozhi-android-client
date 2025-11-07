@@ -106,6 +106,35 @@ class _ConversationTypeCreateState extends State<AgentRoleCreatePage> {
               const SizedBox(height: 15),
 
               const Text(
+                '角色类型：',
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              ),
+              Obx(
+                () => DropdownButtonFormField<String>(
+                  value: createAgentControllerIns.agentType.value,
+                  decoration: InputDecoration(border: OutlineInputBorder()),
+                  items: [
+                    DropdownMenuItem<String>(value: 'ai', child: Text('机器人')),
+                    DropdownMenuItem<String>(value: 'human', child: Text('人类')),
+                  ],
+                  onChanged: (String? newValue) {
+                    if (newValue != null) {
+                      createAgentControllerIns.agentType.value =
+                          newValue; // ✅ 同步到 controller
+                    }
+                  },
+                  // 可选：添加验证
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return '请选择角色类型';
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(height: 15),
+
+              const Text(
                 '年龄：',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
@@ -172,37 +201,52 @@ class _ConversationTypeCreateState extends State<AgentRoleCreatePage> {
               ),
               const SizedBox(height: 15),
 
-              const Text(
-                '可选声音:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
               Obx(
-                () => DropdownButtonFormField<String>(
-                  value: createAgentControllerIns.voices.value,
-                  decoration: InputDecoration(border: OutlineInputBorder()),
-                  items:
-                      createAgentControllerIns.availableVoices
-                          .map(
-                            (voice) => DropdownMenuItem<String>(
-                              value: voice['value'],
-                              child: Text(voice['label']!),
+                () =>
+                    createAgentControllerIns.agentType.value == 'ai'
+                        ? Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start, // 添加这行，确保内容左对齐
+                          children: [
+                            const Text(
+                              '可选声音:',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
-                          )
-                          .toList(),
-                  onChanged: (String? newValue) {
-                    if (newValue != null) {
-                      createAgentControllerIns.voices.value =
-                          newValue; // ✅ 同步到 controller
-                    }
-                  },
-                  // 可选：添加验证
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return '请选择音色';
-                    }
-                    return null;
-                  },
-                ),
+                            DropdownButtonFormField<String>(
+                              value: createAgentControllerIns.voices.value,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                              ),
+                              items:
+                                  createAgentControllerIns.availableVoices
+                                      .map(
+                                        (voice) => DropdownMenuItem<String>(
+                                          value: voice['value'],
+                                          child: Text(voice['label']!),
+                                        ),
+                                      )
+                                      .toList(),
+                              onChanged: (String? newValue) {
+                                if (newValue != null) {
+                                  createAgentControllerIns.voices.value =
+                                      newValue; // ✅ 同步到 controller
+                                }
+                              },
+                              // 可选：添加验证
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return '请选择音色';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 15),
+                          ],
+                        )
+                        : const SizedBox.shrink(), // 如果不是 human 类型，则不显示
               ),
 
               const Text(
@@ -215,6 +259,56 @@ class _ConversationTypeCreateState extends State<AgentRoleCreatePage> {
                   hintText: '请输入角色介绍',
                   border: OutlineInputBorder(),
                 ),
+              ),
+
+              // 只在角色类型为 'human' 时显示"是否设定为默认角色"选项
+              Obx(
+                () =>
+                    createAgentControllerIns.agentType.value == 'human'
+                        ? Column(
+                          crossAxisAlignment:
+                              CrossAxisAlignment.start, // 添加这行，确保内容左对齐
+                          children: [
+                            const Text(
+                              '是否设定为默认角色：',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                            DropdownButtonFormField<bool>(
+                              value: createAgentControllerIns.isDefault.value,
+                              decoration: InputDecoration(
+                                border: OutlineInputBorder(),
+                              ),
+                              items: [
+                                DropdownMenuItem<bool>(
+                                  value: true,
+                                  child: Text('是'),
+                                ),
+                                DropdownMenuItem<bool>(
+                                  value: false,
+                                  child: Text('否'),
+                                ),
+                              ],
+                              onChanged: (bool? newValue) {
+                                if (newValue != null) {
+                                  createAgentControllerIns.isDefault.value =
+                                      newValue;
+                                }
+                              },
+                              // 可选：添加验证
+                              validator: (value) {
+                                if (value == null) {
+                                  return '请选择是否为默认角色';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 15),
+                          ],
+                        )
+                        : const SizedBox.shrink(), // 如果不是 human 类型，则不显示
               ),
             ],
           ),

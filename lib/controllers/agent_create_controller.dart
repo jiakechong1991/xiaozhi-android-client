@@ -1,4 +1,5 @@
 // lib/controllers/login_controller.dart
+import 'package:ai_assistant/models/conversation.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:ai_assistant/services/api_service.dart';
@@ -22,6 +23,8 @@ class CreateAgentController extends GetxController {
   final birthdayController = TextEditingController();
   final characterSettingController = TextEditingController();
   final ageController = TextEditingController();
+  var agentType = 'ai'.obs;
+  var isDefault = true.obs;
   var sex = 'f'.obs;
   var voices = "Chinese (Mandarin)_Soft_Girl".obs;
 
@@ -120,6 +123,8 @@ class CreateAgentController extends GetxController {
         birthday: birthdayController.text,
         characterSetting: characterSettingController.text,
         age: ageController.text,
+        agentType: AgentType.fromString(agentType.value),
+        isDefault: isDefault.value,
         voices: voices.value,
         avatarFile: avatarFile.value,
       );

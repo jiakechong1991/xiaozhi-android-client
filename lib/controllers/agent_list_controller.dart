@@ -114,6 +114,8 @@ class AgentRoleListController extends GetxController {
     required String characterSetting, // 角色介绍
     required String age, // 年龄
     required String voices,
+    required AgentType agentType,
+    required bool isDefault,
     required File? avatarFile,
   }) async {
     // print("请求后端服务器，创建演员agent角色");
@@ -124,6 +126,8 @@ class AgentRoleListController extends GetxController {
       characterSetting = characterSetting,
       age = age,
       voices = voices,
+      agentType = agentType,
+      isDefault = isDefault,
       avatarFile = avatarFile,
     );
 

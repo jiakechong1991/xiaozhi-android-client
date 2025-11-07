@@ -7,6 +7,7 @@ import 'package:ai_assistant/state/token.dart'; // 你的 TokenController
 import 'dart:io';
 import 'package:ai_assistant/utils/time_util.dart';
 import 'package:path/path.dart' as path;
+import 'package:ai_assistant/models/conversation.dart';
 
 class ApiService {
   final Dio _dio = Dio();
@@ -161,6 +162,8 @@ class ApiService {
     String characterSetting, // 角色介绍
     String age, // 年龄
     String voices,
+    AgentType agentType,
+    bool isDefault,
     File? avatarFile,
   ) async {
     final formData = FormData();
@@ -172,6 +175,8 @@ class ApiService {
       MapEntry('birthday', birthday),
       MapEntry('character_setting', characterSetting),
       MapEntry('age', age),
+      MapEntry('agent_type', agentType.name),
+      MapEntry('is_default', isDefault.toString()),
       MapEntry('voices', voices),
     ]);
 

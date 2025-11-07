@@ -221,7 +221,7 @@ class GroupListController extends GetxController {
 
     await _saveGroupChatList();
 
-    print('createGroupChat: 创建新group会话，ID = $newGroupRes["group_id"]');
+    // print('createGroupChat: 创建新group会话，ID = $newGroupRes["group_id"]');
     return newGroupChatIns;
   }
 
