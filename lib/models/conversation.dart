@@ -158,9 +158,9 @@ class AgentRoleSummary {
 
   Map<String, dynamic> toJson() {
     return {
-      'agentId': agentId,
-      'agentName': agentName,
-      'agentType': agentType.name,
+      'agent_id': agentId,
+      'agent_name': agentName,
+      'agent_type': agentType.name,
     };
   }
 }
