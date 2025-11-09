@@ -22,7 +22,7 @@ class CreateGroupController extends GetxController {
 
   // 表单控制器
   final titleEditCtlIns = TextEditingController();
-  final settingEditCtlIns = TextEditingController();
+  final settingEditCtlIns = TextEditingController(); // group介绍
   // 整个剧组的演员表
   var groupAgents = <AgentRole>[];
   var humanAgentList = <AgentRole>[]; // 完整的可选人类演员表

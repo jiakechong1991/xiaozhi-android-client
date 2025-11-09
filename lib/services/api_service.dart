@@ -507,6 +507,78 @@ class ApiService {
     }
   }
 
+  ////////////////mac 绑定相关接口
+  Future<Map<String, dynamic>> getMacBandingInfo({
+    // 查询该group的mac绑定信息
+    required String groupId,
+  }) async {
+    // 检查参数
+    if (groupId.isEmpty) {
+      throw Exception('groupId参数错误');
+    }
+    final response = await _dio.post(
+      '/xiaozhi/search/',
+      data: {'group_id': groupId},
+    );
+    print(response.data);
+    if (response.statusCode == 200) {
+      return response.data["data"] as Map<String, dynamic>? ?? {};
+    } else {
+      throw Exception('获取该group的mac绑定信息 失败');
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteMacBandingInfo({
+    // 删除该激活码 对应绑定设备
+    required String activateCode,
+  }) async {
+    // 检查参数
+    if (activateCode.isEmpty) {
+      throw Exception('activateCode参数错误');
+    }
+    final response = await _dio.post(
+      '/xiaozhi/del_banding/',
+      data: {'activate_code': activateCode},
+    );
+    print(response.data);
+    if (response.statusCode == 200) {
+      return response.data["data"] as Map<String, dynamic>? ?? {};
+    } else {
+      throw Exception('删除该激活码 对应绑定设备 失败');
+    }
+  }
+
+  Future<Map<String, dynamic>> doMacBanding({
+    // 将激活码 绑定到当前的剧场group
+    required String activateCode,
+    required String groupId,
+    required String bandingAgentId,
+    required String timezone, // 用户的app时区，"Asia/Shanghai" 等标准的时区名称
+  }) async {
+    // 检查参数
+    if (activateCode.isEmpty ||
+        groupId.isEmpty ||
+        bandingAgentId.isEmpty ||
+        timezone.isEmpty) {
+      throw Exception('参数不完整');
+    }
+    final response = await _dio.post(
+      '/xiaozhi/do_banding/',
+      data: {
+        'activate_code': activateCode,
+        "group_id": groupId,
+        "banding_agent_id": bandingAgentId,
+        "timezone": timezone,
+      },
+    );
+    print(response.data);
+    if (response.statusCode == 200) {
+      return response.data["data"] as Map<String, dynamic>? ?? {};
+    } else {
+      throw Exception('将激活码 绑定到当前的剧场group 失败');
+    }
+  }
+
   // 👇 通用 GET 请求
   Future<dynamic> get(String path) async {
     final response = await _dio.get(path);

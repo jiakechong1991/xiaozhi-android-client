@@ -1,16 +1,14 @@
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'dart:math' as math;
 import 'dart:math';
-import 'dart:io';
 import 'package:ai_assistant/models/conversation.dart';
 import 'package:ai_assistant/models/message.dart';
 import 'package:ai_assistant/controllers/group_list_controller.dart';
 import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/services/xiaozhi_service.dart';
 import 'package:ai_assistant/widgets/message_bubble.dart';
-import 'package:ai_assistant/screens/voice_call_screen.dart';
+import 'package:ai_assistant/screens/chat/voice_call_screen.dart';
 import 'dart:async';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 
@@ -288,6 +286,40 @@ class _ChatScreenState extends State<ChatScreen> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Icon(Icons.phone, color: Colors.black, size: 16),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // 新增的设置按钮 (模仿电话按钮的结构)
+          Container(
+            // margin: const EdgeInsets.only(right: 12), // 如果不需要右边距，可以移除这行
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: null, // 新的点击事件
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      Icons.manage_accounts,
+                      color: Colors.black,
+                      size: 16,
+                    ), // 使用 settings 图标
                   ),
                 ),
               ),
