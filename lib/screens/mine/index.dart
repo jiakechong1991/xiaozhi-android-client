@@ -41,7 +41,7 @@ class _PageViewMineState extends State<PageViewMine> {
               IconButton(
                 icon: Icon(
                   Icons.settings_outlined,
-                  size: WcaoTheme.fsBase * 1.6,
+                  size: WcaoTheme.fsBase * 2.1,
                   color: WcaoTheme.base,
                 ),
                 onPressed: () {

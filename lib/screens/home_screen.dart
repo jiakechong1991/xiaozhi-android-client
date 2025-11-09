@@ -196,23 +196,23 @@ class _HomeScreenState extends State<HomeScreen> {
                         Icons.chat_bubble,
                         Icons.chat_bubble_outline,
                       ),
-                      label: "消息",
+                      label: "聊天",
                     ),
                     BottomNavigationBarItem(
                       icon: _buildBottomNavigationBarItem(
                         _selectedIndex == 1,
-                        Icons.search,
-                        Icons.search_outlined,
+                        Icons.person,
+                        Icons.person_outline,
                       ),
                       label: "角色池",
                     ),
                     BottomNavigationBarItem(
                       icon: _buildBottomNavigationBarItem(
                         _selectedIndex == 2,
-                        Icons.person,
-                        Icons.person_outline,
+                        Icons.search,
+                        Icons.search_outlined,
                       ),
-                      label: "我的",
+                      label: "社区",
                     ),
                   ],
                 ),
@@ -248,6 +248,7 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
       );
     } else {
+      // 第三个tab: 社区
       return PageViewMine();
     }
   }
