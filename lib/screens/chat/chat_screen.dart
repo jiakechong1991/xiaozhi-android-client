@@ -9,6 +9,7 @@ import 'package:ai_assistant/controllers/config_controller.dart';
 import 'package:ai_assistant/services/xiaozhi_service.dart';
 import 'package:ai_assistant/widgets/message_bubble.dart';
 import 'package:ai_assistant/screens/chat/voice_call_screen.dart';
+import 'package:ai_assistant/screens/chat/mac_setting_page.dart';
 import 'dart:async';
 import 'package:ai_assistant/screens/base/kit/index.dart';
 
@@ -302,7 +303,7 @@ class _ChatScreenState extends State<ChatScreen> {
               color: Colors.transparent,
               borderRadius: BorderRadius.circular(12),
               child: InkWell(
-                onTap: null, // 新的点击事件
+                onTap: _navigateToMacSettingPage, // 新的点击事件
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.symmetric(
@@ -1082,6 +1083,26 @@ class _ChatScreenState extends State<ChatScreen> {
               groupChatIns: widget.groupChatIns,
               xiaozhiConfig: xiaozhiConfig,
             ),
+      ),
+    ).then((_) {
+      // 页面返回后，确保重新初始化服务以恢复正常对话功能
+      if (_xiaozhiService != null) {
+        // 重新连接服务
+        _xiaozhiService!.connect();
+      }
+    });
+  }
+
+  void _navigateToMacSettingPage() {
+    // 导航前停止当前音频播放
+    if (_xiaozhiService != null) {
+      _xiaozhiService!.stopPlayback();
+    }
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => MacSettingPage(groupChatIns: widget.groupChatIns),
       ),
     ).then((_) {
       // 页面返回后，确保重新初始化服务以恢复正常对话功能

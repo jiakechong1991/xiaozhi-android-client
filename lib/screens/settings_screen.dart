@@ -2,7 +2,6 @@ import 'package:ai_assistant/controllers/theme_controller.dart';
 import 'package:flutter/material.dart';
 import 'dart:math' as math;
 import 'package:ai_assistant/controllers/config_controller.dart';
-import 'package:ai_assistant/widgets/settings_section.dart';
 import 'package:get/get.dart';
 
 // 引入main.dart中定义的常量

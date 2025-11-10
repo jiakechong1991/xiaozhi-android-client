@@ -1,27 +1,32 @@
 import 'package:flutter/material.dart';
-import 'package:ai_assistant/controllers/group_create_controller.dart';
+import 'package:ai_assistant/screens/chat/mac_setting_controller.dart';
+import 'package:ai_assistant/models/conversation.dart';
 import 'package:get/get.dart';
-import 'package:image_picker/image_picker.dart';
 
+// 本页面用于 根据硬件激活码，将硬件绑定到这个聊天组上
 class MacSettingPage extends StatefulWidget {
-  const MacSettingPage({super.key});
+  final GroupChat groupChatIns; //  groupChatIns,代表一个聊天对话组
+
+  const MacSettingPage({super.key, required this.groupChatIns});
 
   @override
   State<MacSettingPage> createState() => _MacSettingState();
 }
 
 class _MacSettingState extends State<MacSettingPage> {
-  final createGroupCtlIns = Get.find<CreateGroupController>();
+  final macSettingCtlIns = Get.find<MacSettingController>();
 
   @override
   void initState() {
     super.initState();
-    createGroupCtlIns.getDefaultAvatar();
+    // 创建页面时，查询当前group的硬件绑定信息
+    macSettingCtlIns.getBandingInfo(widget.groupChatIns);
   }
 
   @override
   void dispose() {
     super.dispose();
+    macSettingCtlIns.clearActivateCode();
   }
 
   @override
@@ -39,7 +44,7 @@ class _MacSettingState extends State<MacSettingPage> {
           onPressed: () => Navigator.of(context).pop(),
         ),
         title: const Text(
-          '新建剧场',
+          '绑定硬件',
           style: TextStyle(
             color: Colors.black,
             fontWeight: FontWeight.bold,
@@ -55,18 +60,17 @@ class _MacSettingState extends State<MacSettingPage> {
                 padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [_buildTypeSelectionCard()], // 页面主体
+                  children: [_buildBody()], // 页面主体
                 ),
               ),
             ),
           ),
-          _buildBottomButton(), // 底部按钮
         ],
       ),
     );
   }
 
-  Widget _buildTypeSelectionCard() {
+  Widget _buildBody() {
     return Container(
       width: double.infinity,
       margin: const EdgeInsets.only(bottom: 20),
@@ -85,322 +89,120 @@ class _MacSettingState extends State<MacSettingPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          _buildAvatarSection(),
-          // _buildBackdropSection(),
           const Divider(height: 1, color: Color(0xFFEEEEEE)),
           const SizedBox(height: 16),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                '我的化身:',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+              const SizedBox(height: 15),
+
+              Text(
+                '绑定的人类角色: ${widget.groupChatIns.createHumanAgentName}',
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
+              const SizedBox(height: 15),
+
+              // 根据 macSettingCtlIns.activateCode.value 是否为空，显示不同的内容
+              // 如果激活码为空，就显示输入框，让和用户输入激活码, 并显示 绑定激活码的按钮
+              // 如果激活码不为空，就显示激活码，并显示 删除绑定的按钮
+              // 头像和名称
+
+              // 根据 macSettingCtlIns.activateCode.value 是否为空，显示不同的内容
               Obx(() {
-                final selected =
-                    createGroupCtlIns.humanAgentUse; // 假设你用 aiAgentsUser 存多选结果
-                return Row(
-                  children: [
-                    // 已选角色头像列表（最多显示3个，可滚动）
-                    Expanded(
-                      child: SizedBox(
-                        height: 50,
-                        child: ListView.builder(
-                          scrollDirection: Axis.horizontal,
-                          itemCount: selected.length,
-                          itemBuilder: (context, index) {
-                            final agent = selected[index];
-                            return Container(
-                              margin: const EdgeInsets.only(right: 8),
-                              child: CircleAvatar(
-                                backgroundImage: NetworkImage(agent.avatar),
-                                radius: 20,
-                                child: Text(
-                                  agent.agentName.characters.take(1).join(),
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                              ),
-                            );
-                          },
+                final activateCode = macSettingCtlIns.activateCode.value;
+                if (activateCode.isEmpty) {
+                  // 如果激活码为空，就显示输入框，让用户输入激活码，并显示绑定激活码的按钮
+                  return Column(
+                    children: [
+                      TextField(
+                        controller: macSettingCtlIns.codeEditCtlIns,
+                        keyboardType: TextInputType.number,
+                        decoration: const InputDecoration(
+                          hintText: '请输入硬件上提示的数字激活码',
+                          border: OutlineInputBorder(),
                         ),
                       ),
-                    ),
-                    // 下拉三角按钮
-                    IconButton(
-                      icon: const Icon(
-                        Icons.arrow_drop_down_circle,
-                        color: Colors.blue,
+                      const SizedBox(height: 15),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            macSettingCtlIns.doBanding(widget.groupChatIns);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.blue,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            '添加绑定',
+                            style: TextStyle(fontSize: 15),
+                          ),
+                        ),
                       ),
-                      onPressed:
-                          () => _showHumanAgentSelectionBottomSheet(context),
-                    ),
-                  ],
-                );
+                    ],
+                  );
+                } else {
+                  // 如果激活码不为空，就显示激活码，并显示删除绑定的按钮
+                  return Column(
+                    crossAxisAlignment:
+                        CrossAxisAlignment.start, // 添加这行，让子组件左对齐
+                    children: [
+                      const Text(
+                        '已绑定的激活码：',
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 15),
+                      Container(
+                        padding: const EdgeInsets.all(12),
+                        decoration: BoxDecoration(
+                          color: Colors.grey[100],
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.grey[300]!),
+                        ),
+                        child: Text(
+                          activateCode,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      SizedBox(
+                        width: double.infinity,
+                        height: 48,
+                        child: ElevatedButton(
+                          onPressed: () {
+                            macSettingCtlIns.deleteBanding(widget.groupChatIns);
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.red,
+                            foregroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8),
+                            ),
+                          ),
+                          child: const Text(
+                            '删除绑定',
+                            style: TextStyle(fontSize: 16),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                }
               }),
-
-              const Text(
-                '已绑定/输入 激活码：',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              TextField(
-                controller: createGroupCtlIns.settingEditCtlIns,
-                decoration: InputDecoration(
-                  hintText: '请输入角色介绍',
-                  border: OutlineInputBorder(),
-                ),
-              ),
-              const Text(
-                '删除绑定',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
-              const Text(
-                '添加绑定',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-              ),
             ],
           ),
         ],
       ),
-    );
-  }
-
-  void _showHumanAgentSelectionBottomSheet(BuildContext context) {
-    // 先确保数据已加载
-    if (createGroupCtlIns.humanAgentList.isEmpty) {
-      // 可选：提示“加载中”或先加载数据
-      print("humanAgentList为空，没有下拉列表，请先创建默认角色");
-      return;
-    }
-
-    showModalBottomSheet(
-      context: context,
-      isScrollControlled: true,
-      builder: (context) {
-        return Padding(
-          padding: EdgeInsets.only(
-            bottom: MediaQuery.of(context).viewInsets.bottom,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Text(
-                  '选择化身',
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
-              ),
-              const Divider(),
-              Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  itemCount: createGroupCtlIns.humanAgentList.length,
-                  itemBuilder: (context, index) {
-                    final agent = createGroupCtlIns.humanAgentList[index];
-                    final isSelected = createGroupCtlIns.humanAgentUse.any(
-                      (a) => a.agentId == agent.agentId,
-                    );
-                    print(
-                      "构建 item $index, agentId=${agent.agentId}, isSelected=$isSelected, useList长度=${createGroupCtlIns.humanAgentUse.length}",
-                    );
-
-                    return ListTile(
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(agent.avatar),
-                        radius: 20,
-                      ),
-                      title: Text(agent.agentName),
-                      trailing:
-                          isSelected
-                              ? const Icon(Icons.check, color: Colors.blue)
-                              : null,
-                      onTap: () {
-                        // print("我被点击了");
-                        // print(
-                        //   "点击前 humanAgentUse 长度: ${createGroupCtlIns.humanAgentUse.length}",
-                        // );
-                        if (isSelected) {
-                          // print("我执行这里了");
-                          // 取消选择
-                          createGroupCtlIns.humanAgentUse.removeWhere(
-                            (a) => a.agentId == agent.agentId,
-                          );
-                        } else {
-                          // 添加选择
-                          // print("我要添加到humanAgentUse");
-                          // print(createGroupCtlIns.humanAgentUse.length);
-                          createGroupCtlIns.humanAgentUse.add(agent);
-                          // print("添加后");
-                          // print(createGroupCtlIns.humanAgentUse.length);
-                        }
-                        // print(
-                        //   "点击后 humanAgentUse 长度: ${createGroupCtlIns.humanAgentUse.length}",
-                        // );
-                        // setState(() {
-                        //   print("BottomSheet 触发了 rebuild");
-                        // });
-                      },
-                    );
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: ElevatedButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text('完成'),
-                ),
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildBottomButton() {
-    return Container(
-      width: double.infinity,
-      padding: EdgeInsets.only(
-        left: 20,
-        top: 20,
-        right: 20,
-        bottom: 20 + MediaQuery.of(context).padding.bottom,
-      ),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.05),
-            blurRadius: 10,
-            spreadRadius: 0,
-            offset: const Offset(0, -2),
-          ),
-        ],
-      ),
-      child: ElevatedButton(
-        onPressed:
-            createGroupCtlIns.isLoading.value
-                ? null // 加载中禁用点击
-                : () => createGroupCtlIns.create_group(), // 点击 创建group按钮
-        style: ElevatedButton.styleFrom(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          backgroundColor: Colors.black,
-          foregroundColor: Colors.white,
-          disabledBackgroundColor: Colors.grey.shade300,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          elevation: 4,
-          shadowColor: Colors.black.withOpacity(0.3),
-        ),
-        child: const Text(
-          '创建聊天a',
-          style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildAvatarSection() {
-    return Obx(
-      () => Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Text(
-            '点击场景头像：',
-            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-          ),
-          const SizedBox(height: 8),
-          GestureDetector(
-            onTap: () {
-              // 弹出选择菜单：拍照 or 相册
-              _showImagePickerDialog(context);
-            },
-            child: Container(
-              width: 80,
-              height: 80,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(color: Colors.grey.shade300, width: 1),
-              ),
-              child:
-                  createGroupCtlIns.avatarFile.value == null
-                      ? Stack(
-                        children: [
-                          Container(
-                            width: 80,
-                            height: 80,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: Colors.black.withOpacity(0.3),
-                            ),
-                            child: const Icon(
-                              Icons.add_a_photo,
-                              size: 24,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
-                      )
-                      : Stack(
-                        children: [
-                          ClipOval(
-                            child: Image.file(
-                              createGroupCtlIns.avatarFile.value!,
-                              fit: BoxFit.cover,
-                              width: 80,
-                              height: 80,
-                            ),
-                          ),
-                        ],
-                      ),
-            ),
-          ),
-          const SizedBox(height: 15),
-        ],
-      ),
-    );
-  }
-
-  void _showImagePickerDialog(BuildContext context) {
-    showModalBottomSheet(
-      context: context,
-      builder: (BuildContext context) {
-        return SafeArea(
-          child: Wrap(
-            children: [
-              ListTile(
-                leading: const Icon(Icons.photo_library),
-                title: const Text('从相册选择'),
-                onTap: () {
-                  Navigator.pop(context);
-                  createGroupCtlIns.pickImage(ImageSource.gallery);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.camera_alt),
-                title: const Text('拍照'),
-                onTap: () {
-                  Navigator.pop(context);
-                  createGroupCtlIns.pickImage(ImageSource.camera);
-                },
-              ),
-              ListTile(
-                leading: const Icon(Icons.cancel),
-                title: const Text('随机AI生成'),
-                onTap: () => createGroupCtlIns.getDefaultAvatar(),
-              ),
-              ListTile(
-                leading: const Icon(Icons.cancel),
-                title: const Text('取消'),
-                textColor: Colors.red,
-                onTap: () => Navigator.pop(context),
-              ),
-            ],
-          ),
-        );
-      },
     );
   }
 }

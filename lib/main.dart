@@ -27,6 +27,7 @@ import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:ai_assistant/controllers/check_profile_controller.dart';
 import 'package:ai_assistant/screens/consume/account_about_controller.dart';
 import 'package:ai_assistant/utils/time_util.dart';
+import 'package:ai_assistant/screens/chat/mac_setting_controller.dart';
 
 // 是否启用调试工具
 const bool enableDebugTools = true;
@@ -135,6 +136,7 @@ void main() async {
 
   Get.lazyPut(() => CheckProfileController(), fenix: true);
   Get.lazyPut(() => AccountAboutPageController(), fenix: true);
+  Get.lazyPut(() => MacSettingController(), fenix: true);
 
   /*
   flutters

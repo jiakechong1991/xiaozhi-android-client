@@ -66,7 +66,7 @@ class WcaoUtils {
     }
   }
 
-  /// toast
+  /// 弹窗提示
   static toast(String msg) async {
     await EasyLoading.showToast(msg); //显示短时间的文本提示
   }

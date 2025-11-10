@@ -520,12 +520,7 @@ class ApiService {
       '/xiaozhi/search/',
       data: {'group_id': groupId},
     );
-    print(response.data);
-    if (response.statusCode == 200) {
-      return response.data["data"] as Map<String, dynamic>? ?? {};
-    } else {
-      throw Exception('获取该group的mac绑定信息 失败');
-    }
+    return response.data as Map<String, dynamic>? ?? {};
   }
 
   Future<Map<String, dynamic>> deleteMacBandingInfo({
@@ -541,11 +536,7 @@ class ApiService {
       data: {'activate_code': activateCode},
     );
     print(response.data);
-    if (response.statusCode == 200) {
-      return response.data["data"] as Map<String, dynamic>? ?? {};
-    } else {
-      throw Exception('删除该激活码 对应绑定设备 失败');
-    }
+    return response.data as Map<String, dynamic>? ?? {};
   }
 
   Future<Map<String, dynamic>> doMacBanding({
@@ -571,12 +562,7 @@ class ApiService {
         "timezone": timezone,
       },
     );
-    print(response.data);
-    if (response.statusCode == 200) {
-      return response.data["data"] as Map<String, dynamic>? ?? {};
-    } else {
-      throw Exception('将激活码 绑定到当前的剧场group 失败');
-    }
+    return response.data as Map<String, dynamic>? ?? {};
   }
 
   // 👇 通用 GET 请求

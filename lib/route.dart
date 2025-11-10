@@ -21,6 +21,7 @@ import 'package:ai_assistant/screens/settings/backlist/index.dart';
 import 'package:ai_assistant/screens/settings/privacy/index.dart';
 import 'package:ai_assistant/screens/userprofile_create.dart';
 import 'package:ai_assistant/screens/consume/account_about_page.dart';
+import 'package:ai_assistant/screens/chat/mac_setting_page.dart';
 
 List<GetPage<dynamic>> getRoutes = [
   GetPage(name: '/home', page: () => const HomeScreen()),
@@ -63,6 +64,7 @@ List<GetPage<dynamic>> getRoutes = [
 
   // 聊天相关
   GetPage(name: '/group/create', page: () => const GroupChatCreatePage()),
+
   // 创建agent
   GetPage(name: '/agent/create', page: () => const AgentRoleCreatePage()),
   GetPage(
@@ -71,6 +73,15 @@ List<GetPage<dynamic>> getRoutes = [
       // 从 Get.arguments 中获取参数
       final groupChatIns = Get.arguments as GroupChat;
       return ChatScreen(groupChatIns: groupChatIns);
+    },
+  ),
+  ////// 群组聊天界面的Setting界面，可以设置硬件绑定
+  GetPage(
+    name: '/group/mac_setting',
+    page: () {
+      // 从 Get.arguments 中获取参数
+      final groupChatIns = Get.arguments as GroupChat;
+      return MacSettingPage(groupChatIns: groupChatIns);
     },
   ),
   /////// account consume point页面
