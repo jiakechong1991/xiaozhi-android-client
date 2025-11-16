@@ -890,7 +890,7 @@ class _HomeScreenState extends State<HomeScreen> {
             const Padding(
               padding: EdgeInsets.only(left: 20, right: 20, top: 8, bottom: 8),
               child: Text(
-                '置顶对话',
+                '置顶角色',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   color: Colors.grey,
@@ -923,7 +923,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 bottom: 8,
               ),
               child: const Text(
-                '全部对话',
+                '全部角色',
                 style: TextStyle(
                   fontWeight: FontWeight.w500,
                   color: Colors.grey,

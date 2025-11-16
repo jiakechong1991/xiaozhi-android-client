@@ -60,7 +60,43 @@ class AgentTile extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                _buildTypeTag(context),
+                                if (agentRole.isDefault) ...[
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.purple.shade50,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      "default",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.purple.shade600,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                                // tag标签
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 8,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.purple.shade50,
+                                    borderRadius: BorderRadius.circular(4),
+                                  ),
+                                  child: Text(
+                                    agentRole.agentType.name,
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.purple.shade600,
+                                    ),
+                                  ),
+                                ),
                               ],
                             ),
                           ),
@@ -81,27 +117,6 @@ class AgentTile extends StatelessWidget {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  Widget _buildTypeTag(BuildContext context) {
-    String label = '语音';
-    // 显示小智配置名称
-    final matchingConfig = configControllerIns.xiaozhiConfigs[0];
-    if (matchingConfig != null) {
-      label = '${matchingConfig.name}';
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-      decoration: BoxDecoration(
-        color: Colors.purple.shade50,
-        borderRadius: BorderRadius.circular(4),
-      ),
-      child: Text(
-        label,
-        style: TextStyle(fontSize: 12, color: Colors.purple.shade600),
       ),
     );
   }
