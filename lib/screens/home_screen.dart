@@ -523,7 +523,7 @@ class _HomeScreenState extends State<HomeScreen> {
             // 将pinnedConversations中的元素，逐个作为conversation，然后调用
             //    _buildConversationTile(conversation)方法，返回一个组件，然后添加到列表中
             ...groupListCtlIns.pinnedGroupList.map(
-              (conversation) => _buildConversationTile(conversation),
+              (conversation) => _buildGroupTile(conversation),
             ),
           ],
           // 非置顶对话的区域
@@ -552,7 +552,7 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
             ...groupListCtlIns.unpinnedGroupList.map(
-              (conversation) => _buildConversationTile(conversation),
+              (conversation) => _buildGroupTile(conversation),
             ),
           ],
           // 如果为空，显示的区域
@@ -646,7 +646,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildConversationTile(GroupChat groupchatIns) {
+  Widget _buildGroupTile(GroupChat groupchatIns) {
     return SlidableDeleteTile(
       // 这是一个封装了 滑动删除功能的 组件
       key: Key(groupchatIns.groupId), // 为每个对话项设置唯一标识

@@ -60,25 +60,7 @@ class AgentTile extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                if (agentRole.isDefault) ...[
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 8,
-                                      vertical: 2,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.purple.shade50,
-                                      borderRadius: BorderRadius.circular(4),
-                                    ),
-                                    child: Text(
-                                      "default",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.purple.shade600,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+
                                 // tag标签
                                 Container(
                                   padding: const EdgeInsets.symmetric(
@@ -97,6 +79,27 @@ class AgentTile extends StatelessWidget {
                                     ),
                                   ),
                                 ),
+
+                                if (agentRole.isDefault) ...[
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 8,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: Colors.purple.shade50,
+                                      borderRadius: BorderRadius.circular(4),
+                                    ),
+                                    child: Text(
+                                      "default",
+                                      style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.purple.shade600,
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                ],
                               ],
                             ),
                           ),

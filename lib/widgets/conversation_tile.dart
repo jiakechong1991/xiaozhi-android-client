@@ -65,7 +65,7 @@ class ConversationTile extends StatelessWidget {
                                   ),
                                 ),
                                 const SizedBox(width: 6),
-                                _buildTypeTag(context),
+                                // _buildTypeTag(context),
                               ],
                             ),
                           ),
@@ -108,15 +108,7 @@ class ConversationTile extends StatelessWidget {
   }
 
   Widget _buildTypeTag(BuildContext context) {
-    final configControllerIns = Get.find<ConfigController>();
     String label = '语音';
-
-    // 如果有配置ID且不为空，则显示配置名称
-    // 尝试查找匹配的小智配置
-    final matchingConfig = configControllerIns.xiaozhiConfigs[0];
-    if (matchingConfig != null) {
-      label = '${matchingConfig.name}';
-    }
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),

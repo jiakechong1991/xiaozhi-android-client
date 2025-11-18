@@ -29,19 +29,19 @@ class ApiService {
           return handler.next(options);
         },
         onError: (DioException error, handler) async {
+          // 如果是刷新token的请求失败，直接退出
+          if (error.requestOptions.path == '/api/auth/refresh/') {
+            await _clearAndRedirect();
+            return handler.reject(error);
+          }
           // 👇 如果是 401，尝试刷新 token
           if (error.response?.statusCode == 401) {
-            try {
-              final newTokens = await _refreshToken();
-              if (newTokens != null) {
-                // 重试原请求
-                error.requestOptions.headers['Authorization'] =
-                    'Bearer ${newTokens['access']}';
-                return handler.resolve(await _dio.fetch(error.requestOptions));
-              }
-            } catch (e) {
-              // 刷新失败，清除 token 并跳转登录
-              await _clearAndRedirect();
+            final newTokens = await _refreshToken();
+            if (newTokens != null) {
+              // 重试原请求
+              error.requestOptions.headers['Authorization'] =
+                  'Bearer ${newTokens['access']}';
+              return handler.resolve(await _dio.fetch(error.requestOptions));
             }
           }
           if (error.response != null) {

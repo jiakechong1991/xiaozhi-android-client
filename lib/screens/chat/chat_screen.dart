@@ -462,60 +462,60 @@ class _ChatScreenState extends State<ChatScreen> {
           const SizedBox(width: 12),
 
           // WebSocket信息
-          Expanded(
-            child: Text(
-              '${xiaozhiConfig.websocketUrl}',
-              style: const TextStyle(
-                color: Colors.black54,
-                fontSize: 12,
-                fontWeight: FontWeight.w400,
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
+          // Expanded(
+          //   child: Text(
+          //     '${xiaozhiConfig.websocketUrl}',
+          //     style: const TextStyle(
+          //       color: Colors.black54,
+          //       fontSize: 12,
+          //       fontWeight: FontWeight.w400,
+          //     ),
+          //     overflow: TextOverflow.ellipsis,
+          //   ),
+          // ),
 
           // MAC地址信息
-          if (xiaozhiConfig.macAddress.isNotEmpty)
-            Padding(
-              padding: const EdgeInsets.only(left: 8),
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: Colors.grey.shade200),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.04),
-                      blurRadius: 4,
-                      spreadRadius: 0,
-                      offset: const Offset(0, 1),
-                    ),
-                    BoxShadow(
-                      color: Colors.white.withOpacity(0.9),
-                      blurRadius: 3,
-                      spreadRadius: 0,
-                      offset: const Offset(0, -1),
-                    ),
-                  ],
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Icon(Icons.devices, size: 12, color: Colors.grey.shade500),
-                    const SizedBox(width: 4),
-                    Text(
-                      '${xiaozhiConfig.macAddress}',
-                      style: TextStyle(
-                        color: Colors.grey.shade700,
-                        fontSize: 11,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
+          // if (xiaozhiConfig.macAddress.isNotEmpty)
+          //   Padding(
+          //     padding: const EdgeInsets.only(left: 8),
+          //     child: Container(
+          //       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+          //       decoration: BoxDecoration(
+          //         color: Colors.white,
+          //         borderRadius: BorderRadius.circular(12),
+          //         border: Border.all(color: Colors.grey.shade200),
+          //         boxShadow: [
+          //           BoxShadow(
+          //             color: Colors.black.withOpacity(0.04),
+          //             blurRadius: 4,
+          //             spreadRadius: 0,
+          //             offset: const Offset(0, 1),
+          //           ),
+          //           BoxShadow(
+          //             color: Colors.white.withOpacity(0.9),
+          //             blurRadius: 3,
+          //             spreadRadius: 0,
+          //             offset: const Offset(0, -1),
+          //           ),
+          //         ],
+          //       ),
+          //       child: Row(
+          //         mainAxisSize: MainAxisSize.min,
+          //         children: [
+          //           Icon(Icons.devices, size: 12, color: Colors.grey.shade500),
+          //           const SizedBox(width: 4),
+          //           Text(
+          //             '${xiaozhiConfig.macAddress}',
+          //             style: TextStyle(
+          //               color: Colors.grey.shade700,
+          //               fontSize: 11,
+          //               fontWeight: FontWeight.w500,
+          //             ),
+          //           ),
+          //         ],
+          //       ),
+          //     ),
+          //   ),
         ],
       ),
     );
