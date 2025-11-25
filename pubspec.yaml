@@ -77,23 +77,23 @@ flutter_native_splash:
   color: "#FFFFFF"
 
   # 启动图片（关键！）
-  image: "assets/icon/pixnio.png"
+  image: "assets/icon/big_xiaoshi.png"
   android_gravity: fill
 
 
   # Android 设置
   android_12:
-    image: "assets/icon/pixnio.png"
+    image: "assets/icon/big_xiaoshi.png"
     color: "#FFFFFF"
 
   # iOS 设置,这个需要再xcode中进行简单的设置
 
 # 配置应用图标
 flutter_launcher_icons:
-  image_path: "assets/icon/pixnio.jpg"
+  image_path: "assets/icon/icon_xiaoshi.png"
   android: true
   ios: true
-  adaptive_icon_foreground: "assets/icon/pixnio.jpg" # 透明背景，仅图标主体
+  adaptive_icon_foreground: "assets/icon/icon_xiaoshi.png" # 透明背景，仅图标主体
   adaptive_icon_background: "#FFFFFF"
   remove_alpha_ios: true
   web:
