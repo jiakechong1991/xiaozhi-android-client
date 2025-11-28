@@ -36,3 +36,19 @@
 -dontwarn com.google.android.play.core.tasks.OnFailureListener
 -dontwarn com.google.android.play.core.tasks.OnSuccessListener
 -dontwarn com.google.android.play.core.tasks.Task
+
+
+-dontwarn com.hihonor.ads.identifier.AdvertisingIdClient$Info
+-dontwarn com.hihonor.ads.identifier.AdvertisingIdClient
+-dontwarn org.bouncycastle.crypto.CipherParameters
+-dontwarn org.bouncycastle.crypto.InvalidCipherTextException
+-dontwarn org.bouncycastle.crypto.digests.SM3Digest
+-dontwarn org.bouncycastle.crypto.engines.SM2Engine
+-dontwarn org.bouncycastle.crypto.params.ECDomainParameters
+-dontwarn org.bouncycastle.crypto.params.ECPublicKeyParameters
+-dontwarn org.bouncycastle.crypto.params.ParametersWithRandom
+-dontwarn org.bouncycastle.jce.ECNamedCurveTable
+-dontwarn org.bouncycastle.jce.spec.ECNamedCurveParameterSpec
+-dontwarn org.bouncycastle.jce.spec.ECParameterSpec
+-dontwarn org.bouncycastle.math.ec.ECCurve
+-dontwarn org.bouncycastle.math.ec.ECPoint

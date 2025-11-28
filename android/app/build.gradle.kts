@@ -6,28 +6,27 @@ plugins {
 }
 
 
-// 添加这两行导入
+// 签名配置加载
 import java.io.FileInputStream
 import java.util.Properties
 
-// 修改后的属性加载代码
 val keystorePropertiesFile = rootProject.file("key.properties")
 val keystoreProperties = Properties().apply {
     if (keystorePropertiesFile.exists()) {
-        // 使用 Kotlin 的 inputStream() 扩展函数替代 FileInputStream
         load(keystorePropertiesFile.inputStream())
     }
 }
 
 
 android {
-    namespace = "com.lhht.ai_assistant"  //app包名
-    compileSdk = flutter.compileSdkVersion
-    ndkVersion = "27.0.12077973"
+    namespace = "com.lhht.ai_assistant"  
+    compileSdk = flutter.compileSdkVersion // flutter版本
+    ndkVersion = "27.0.12077973" //ndk版本 
 
+    // Java编译选项
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
+        sourceCompatibility = JavaVersion.VERSION_11 // Java源代码兼容版本（JDK 11）
+        targetCompatibility = JavaVersion.VERSION_11 // 编译后的字节码兼容版本（JDK 11）
     }
 
     kotlinOptions {
@@ -35,17 +34,31 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.lhht.ai_assistant"
+        applicationId = "com.lhht.ai_assistant" //app包名
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = 24
+        minSdk = 24  // 最低支持的 Android 版本
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
+
+        // ndk {
+        //     // 选择要添加的对应 cpu 类型的 .so 库。
+        //     abiFilters 'armeabi', 'armeabi-v7a', 'arm64-v8a',
+        // }
+        // 新增JPush占位符
+        manifestPlaceholders["JPUSH_PKGNAME"] = "com.lhht.ai_assistant"
+        manifestPlaceholders["JPUSH_APPKEY"] = "429e098ff4eabb22f780efd0"
+        manifestPlaceholders["JPUSH_CHANNEL"] = "default_developer"
+        // manifestPlaceholders = [
+        //     // 设置manifest.xml中的变量
+        //     JPUSH_PKGNAME: applicationId,
+        //     JPUSH_APPKEY : "429e098ff4eabb22f780efd0", //  JPush 上注册的包名对应的 Appkey
+        //     JPUSH_CHANNEL: "default_developer", //暂时填写默认值即可
+        // ]
     }
 
-    //新增的签名代码
+    //签名配置
     signingConfigs {
         create("release") {
             keyAlias = keystoreProperties["keyAlias"] as String? ?: "my-key-alias"
@@ -54,21 +67,24 @@ android {
             storePassword = keystoreProperties["storePassword"] as String?
         }
     }
-
+    // 构建配置
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+        release { // 正式发布版本的配置
+            // 指定 release 版本使用的签名配置为之前定义的release签名配置
             signingConfig = signingConfigs.getByName("release")
-            //signingConfig = signingConfigs.getByName("debug")
-            // 启用R8优化
-            isMinifyEnabled = true 
-            isDebuggable = false
-            isShrinkResources = true
-            proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            isMinifyEnabled = true // 启用代码混淆和压缩
+            isDebuggable = false // 关闭 release 版本的调试模式
+            isShrinkResources = true  // 启用 压缩资源
+            // 指定混淆规则文件的路径
+            proguardFiles(
+                // 默认的混淆规则文件
+                getDefaultProguardFile("proguard-android-optimize.txt"), 
+                // 自定义的混淆规则文件
+                "proguard-rules.pro"
+            )
         }
         
-        debug {
+        debug { // 调试版本的配置
             // 启用更好的调试性能
             isMinifyEnabled = false
             isShrinkResources = false

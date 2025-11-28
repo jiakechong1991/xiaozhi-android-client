@@ -51,13 +51,17 @@ dependencies:
   path_provider: ^2.1.5
   just_audio: ^0.9.36
   audio_session: ^0.1.18
-  flutter_pcm_player: ^0.0.1
+  flutter_pcm_player:
+    git:
+      url: git@github.com:rocchen/flutter_pcm_player.git
+      ref: 2fab62beae6221c0e284a3e876e7ae14894db97e
   record: ^5.2.1
   flutter_displaymode: ^0.6.0
   flutter_staggered_grid_view: ^0.7.0
   flutter_slidable: ^4.0.0
   flutter_blue_plus: ^1.35.3
   audio_streamer: ^4.1.1
+  jverify: ^3.1.6
   
 dev_dependencies:  # 额外的开发依赖，仅仅在开发阶段用，正式打包，不会打包进app
   flutter_test:
