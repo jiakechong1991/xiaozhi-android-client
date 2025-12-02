@@ -888,14 +888,6 @@ class _ChatScreenState extends State<ChatScreen> {
 
   // 开始录音
   void _startRecording() async {
-    if (_xiaozhiService == null) {
-      _showCustomSnackbar('语音功能仅适用于小智对话');
-      setState(() {
-        _isVoiceInputMode = false;
-      });
-      return;
-    }
-
     try {
       // 震动反馈
       HapticFeedback.mediumImpact();

@@ -718,6 +718,8 @@ class XiaozhiService {
       await connect();
     }
 
+    await sendAbortMessage(); // 因为要发起语音识别，所以要先停止tts播放
+
     try {
       // 确保已经有会话ID
       if (_sessionId == null) {
@@ -784,7 +786,7 @@ class XiaozhiService {
           'reason': 'wake_word_detected',
         };
         _webSocketManager?.sendMessage(jsonEncode(abortMessage));
-        print('$TAG: 发送中断消息: $abortMessage');
+        print('$TAG: 发送abort打断信号: $abortMessage');
 
         // 如果当前正在录音，短暂停顿后继续
         if (_isSpeaking) {
