@@ -100,7 +100,7 @@ class GroupListController extends GetxController {
           final remoteMessages =
               messagesData.map((msgJson) {
                 final role_ =
-                    (msgJson["sender_id"] == itemGroup.createHumanAgentId)
+                    (msgJson["sender_agent_id"] == itemGroup.createHumanAgentId)
                         ? MessageRole.user
                         : MessageRole.assistant;
                 return Message(
