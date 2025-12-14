@@ -51,7 +51,10 @@ class MessageBubble extends StatelessWidget {
                             vertical: 12,
                           ),
                   decoration: BoxDecoration(
-                    color: isUser ? const Color(0xFF4B5563) : Colors.white,
+                    color:
+                        isUser
+                            ? const Color.fromARGB(255, 87, 89, 94)
+                            : Colors.white,
                     borderRadius: BorderRadius.circular(12),
                     border:
                         !isUser
