@@ -214,7 +214,7 @@ class XiaozhiService {
     }
   }
 
-  /// 发送文本消息
+  /// 发送通信文本消息
   Future<String> sendTextMessage(String message) async {
     if (!_isConnected && _webSocketManager == null) {
       await connect();
@@ -281,6 +281,17 @@ class XiaozhiService {
       print('$TAG: 发送消息失败: $e');
       rethrow;
     }
+  }
+
+  /// 发送控制消息
+  Future<void> sendControlMessage(Map<String, String> jsonMessage) async {
+    if (!_isConnected && _webSocketManager == null) {
+      await connect();
+    }
+    print('$TAG: 开始发送控制消息: $jsonMessage');
+    _webSocketManager!.sendLowTextRequest(
+      jsonMessage,
+    ); // 这一步必须添加user_name, agent_id
   }
 
   /// 连接语音通话

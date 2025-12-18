@@ -254,7 +254,7 @@ class XiaozhiWebSocketManager {
     }
   }
 
-  /// 发送文本请求
+  /// 发送 通用的LLM-user消息 文本请求
   void sendTextRequest(String text) {
     if (!isConnected) {
       print('$TAG: 发送失败，连接未建立');
@@ -269,6 +269,29 @@ class XiaozhiWebSocketManager {
         "text": text,
         "source": "text",
       };
+
+      print('$TAG: 发送文本请求: ${jsonEncode(jsonMessage)}');
+      sendMessage(jsonEncode(jsonMessage));
+    } catch (e) {
+      print('$TAG: 发送文本请求失败: $e');
+    }
+  }
+
+  void sendLowTextRequest(Map<String, String> jsonMessage) {
+    // 发送控制类的文本消息(可以自由控制)
+    if (!isConnected) {
+      print('$TAG: 发送失败，连接未建立');
+      return;
+    }
+
+    try {
+      // 构造消息格式，与Java实现保持一致
+      // final jsonMessage = {
+      //   "type": "listen",
+      //   "state": "detect",
+      //   "text": text,
+      //   "source": "text",
+      // };
 
       print('$TAG: 发送文本请求: ${jsonEncode(jsonMessage)}');
       sendMessage(jsonEncode(jsonMessage));

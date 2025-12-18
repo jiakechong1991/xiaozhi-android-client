@@ -263,6 +263,49 @@ class _ChatScreenState extends State<ChatScreen> {
           statusBarBrightness: Brightness.light,
         ),
         actions: [
+          // 喇叭按钮，按一下静音，在按一下恢复
+          Container(
+            margin: const EdgeInsets.only(right: 12),
+            decoration: BoxDecoration(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Material(
+              color: Colors.transparent,
+              borderRadius: BorderRadius.circular(12),
+              child: InkWell(
+                onTap: () {
+                  // 切换静音状态
+                  final newSilent = !configControllerIns.isSlient;
+                  configControllerIns.isSlient = newSilent;
+                  // 发送新的状态到服务器
+                  _sendSilentMessage(newSilent);
+                },
+                borderRadius: BorderRadius.circular(12),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  child: Container(
+                    padding: const EdgeInsets.all(4),
+                    decoration: BoxDecoration(
+                      color: Colors.grey.shade300,
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Icon(
+                      configControllerIns.isSlient
+                          ? Icons.volume_off
+                          : Icons.volume_up,
+                      color: Colors.black,
+                      size: 16,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          //  语音通话按钮
           Container(
             margin: const EdgeInsets.only(right: 12),
             decoration: BoxDecoration(
@@ -981,6 +1024,41 @@ class _ChatScreenState extends State<ChatScreen> {
     );
 
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  // 向着服务器发送 静音/取消静音 msg
+  void _sendSilentMessage(isSilent) async {
+    if (!mounted) return;
+    setState(() {});
+    Map<String, String> jsonMessage = {
+      "type": "server", // 操作服务器
+      "action": "do_silent", // 设置静音状态
+      "state": isSilent.toString(), // true/false
+    };
+    try {
+      // 确保服务已连接
+      if (_xiaozhiService == null) {
+        await _initXiaozhiService();
+      } else if (!_xiaozhiService!.isConnected) {
+        // 如果未连接，尝试重新连接
+        print('聊天屏幕: 服务未连接，尝试重新连接');
+        await _xiaozhiService!.connect();
+
+        // 如果重连失败，提示用户
+        if (!_xiaozhiService!.isConnected) {
+          throw Exception("无法连接到小智服务，请检查网络或服务配置");
+        }
+        // 刷新UI显示连接状态
+        setState(() {});
+      }
+
+      // 向着服务器发送msg消息
+      await _xiaozhiService!.sendControlMessage(jsonMessage);
+    } catch (e) {
+      print('静音控制信号 发送错误: $e');
+    } finally {
+      if (!mounted) return;
+    }
   }
 
   // 向着服务器发送msg

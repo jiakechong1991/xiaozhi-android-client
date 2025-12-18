@@ -12,10 +12,16 @@ class ConfigController extends GetxController {
   // 创建一个默认的XiaozhiConfig
   List<XiaozhiConfig> _xiaozhiConfigs = [];
   bool _isLoaded = false;
+  bool _isSlient = false; // 是否静默模式
 
   List<XiaozhiConfig> get xiaozhiConfigs => _xiaozhiConfigs;
 
   bool get isLoaded => _isLoaded;
+
+  bool get isSlient => _isSlient;
+  set isSlient(bool value) {
+    _isSlient = value;
+  }
 
   ConfigController() {
     _loadConfigs();
