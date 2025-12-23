@@ -39,6 +39,7 @@ class _ChatScreenState extends State<ChatScreen> {
   bool _isVoiceInputMode = false;
   bool _isRecording = false;
   bool _isCancelling = false;
+  bool _isProcessingSilent = false; // 是否处在 正在设置喇叭中，加锁保护
   double _startDragY = 0.0;
   final double _cancelThreshold = 50.0; // 上滑超过这个距离认为是取消
   Timer? _waveAnimationTimer;
@@ -276,10 +277,15 @@ class _ChatScreenState extends State<ChatScreen> {
               child: InkWell(
                 onTap: () {
                   // 切换静音状态
+                  if (_isProcessingSilent) return; // 处理中，避免重复点击
+                  _isProcessingSilent = true;
+
                   final newSilent = !configControllerIns.isSlient;
                   configControllerIns.isSlient = newSilent;
                   // 发送新的状态到服务器
                   _sendSilentMessage(newSilent);
+
+                  _isProcessingSilent = false;
                 },
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
